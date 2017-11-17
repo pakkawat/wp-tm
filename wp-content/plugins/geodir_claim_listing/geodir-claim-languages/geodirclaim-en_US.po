@@ -1,0 +1,496 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory Claim Listing 1.3.22\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-08-23 16:17+0100\n"
+"PO-Revision-Date: 2017-08-23 16:17+0100\n"
+"Last-Translator: Stiofan <info@geotheme.com>\n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2;esc_attr_e;esc_attr__\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: geodir_claim_functions.php:67
+msgid ""
+"<span style=\"color:#FF0000\">There was an issue determining where "
+"GeoDirectory Plugin is installed and activated. Please install or activate "
+"GeoDirectory Plugin.</span>"
+msgstr ""
+
+#: geodir_claim_functions.php:250 geodir_claim_template_tags.php:17
+msgid "Options"
+msgstr ""
+
+#: geodir_claim_functions.php:252
+msgid "Geo Directory Claim Listing Options"
+msgstr ""
+
+#: geodir_claim_functions.php:255
+msgid "Enable claim listing?"
+msgstr ""
+
+#: geodir_claim_functions.php:256
+msgid "Select 'yes' to enable claim listing."
+msgstr ""
+
+#: geodir_claim_functions.php:264 geodir_claim_functions.php:280
+#: geodir_claim_functions.php:296 geodir_claim_functions.php:312
+#: geodir_claim_functions.php:343
+msgid "Select"
+msgstr ""
+
+#: geodir_claim_functions.php:265 geodir_claim_functions.php:281
+#: geodir_claim_functions.php:297 geodir_claim_functions.php:313
+#: geodir_claim_functions.php:344 language.php:92
+msgid "Yes"
+msgstr ""
+
+#: geodir_claim_functions.php:266 geodir_claim_functions.php:282
+#: geodir_claim_functions.php:298 geodir_claim_functions.php:314
+#: geodir_claim_functions.php:345 language.php:94
+msgid "No"
+msgstr ""
+
+#: geodir_claim_functions.php:271
+msgid "Auto approve claim listing? (email verification)"
+msgstr ""
+
+#: geodir_claim_functions.php:272
+msgid "Select 'yes' to auto approve claim listing."
+msgstr ""
+
+#: geodir_claim_functions.php:287
+msgid "Show owner verified text on listings?"
+msgstr ""
+
+#: geodir_claim_functions.php:288
+msgid "Select 'yes' to show owner verified text on listings."
+msgstr ""
+
+#: geodir_claim_functions.php:303
+msgid "Show link to author page on listings?"
+msgstr ""
+
+#: geodir_claim_functions.php:304
+msgid "Select 'yes' to show link to author page on listings."
+msgstr ""
+
+#: geodir_claim_functions.php:319
+msgid "Choose post types for show claim listing link"
+msgstr ""
+
+#: geodir_claim_functions.php:326
+msgid "Select post types"
+msgstr ""
+
+#: geodir_claim_functions.php:334
+msgid "Force an upgrade to complete the claim listing procedure"
+msgstr ""
+
+#: geodir_claim_functions.php:335
+msgid ""
+"Select 'yes' to force an upgrade to complete the claim listing procedure."
+msgstr ""
+
+#: geodir_claim_functions.php:360 geodir_claim_template_tags.php:23
+msgid "Notifications"
+msgstr ""
+
+#: geodir_claim_functions.php:362
+msgid "Manage Geo Directory Claim Notifications"
+msgstr ""
+
+#: geodir_claim_functions.php:365
+msgid "Admin claim listing request notice"
+msgstr ""
+
+#: geodir_claim_functions.php:370 geodir_claim_functions.php:387
+msgid "Claim Listing Requested"
+msgstr ""
+
+#: geodir_claim_functions.php:378
+msgid ""
+"<p>Dear Admin,<p><p>A user has requested to become the owner of the below "
+"lisitng.</p><p>[#listing_link#]</p><p>You may wish to login and check the "
+"claim details.</p><p>Thank you,<br /><br />[#site_name#].</p>"
+msgstr ""
+
+#: geodir_claim_functions.php:382
+msgid "Claim listing request"
+msgstr ""
+
+#: geodir_claim_functions.php:395
+msgid ""
+"<p>Dear [#client_name#],<p><p>You have requested to become the owner of the "
+"below listing.</p><p>[#listing_link#]</p><p>We may contact you to confirm "
+"your request is genuine.</p><p>You will receive a email once your request "
+"has been verified</p><p>Thank you,<br /><br />[#site_name#].</p>"
+msgstr ""
+
+#: geodir_claim_functions.php:399
+msgid "Claim listing approval"
+msgstr ""
+
+#: geodir_claim_functions.php:404
+msgid "Claim Listing Approved"
+msgstr ""
+
+#: geodir_claim_functions.php:412
+msgid ""
+"<p>Dear [#client_name#],<p><p>Your request to become the owner of the below "
+"listing has been APPROVED.</p><p>[#listing_link#]</p><p>You may now login "
+"and edit your listing.</p><p>Thank you,<br /><br />[#site_name_url#].</p>"
+msgstr ""
+
+#: geodir_claim_functions.php:416
+msgid "Claim listing rejected"
+msgstr ""
+
+#: geodir_claim_functions.php:421
+msgid "Claim Listing Rejected"
+msgstr ""
+
+#: geodir_claim_functions.php:429
+msgid ""
+"<p>Dear [#client_name#],<p><p>Your request to become the owner of the below "
+"listing has been REJECTED.</p><p>[#listing_link#]</p><p>If you feel this is "
+"a wrong decision please reply to this email with your reasons.</p><p>Thank "
+"you,<br /><br />[#site_name#].</p>"
+msgstr ""
+
+#: geodir_claim_functions.php:433
+msgid "Claim listing verification required"
+msgstr ""
+
+#: geodir_claim_functions.php:438
+msgid "Claim Listing Verification Required"
+msgstr ""
+
+#: geodir_claim_functions.php:446
+msgid ""
+"<p>Dear [#client_name#],<p><p>Your request to become the owner of the below "
+"listing needs to be verified.</p><p>[#listing_link#]</p><p><b>By clicking "
+"the VERIFY link below you are stating you are legally associated with this "
+"business and have the owners consent to edit the listing.</b></p><p><b>If "
+"you are not associated with this business and edit the listing with "
+"malicious intent you will be solely liable for any legal action or claims "
+"for damages.</b></p><p>[#approve_listing_link#]</p><p>Thank you,<br /><br /"
+">[#site_name_url#].</p>"
+msgstr ""
+
+#: geodir_claim_functions.php:652
+msgid "Verification link was sent to your email, verify to claim the listing."
+msgstr ""
+
+#: geodir_claim_functions.php:791
+#, php-format
+msgid "Claim Listing: %s"
+msgstr ""
+
+#: geodir_claim_functions.php:1157 geodir_claim_functions.php:1266
+#, php-format
+msgid ""
+"Email from GeoDirectory failed to send.\n"
+"Message type: %s\n"
+"Send time: %s\n"
+"To: %s\n"
+"Subject: %s\n"
+"\n"
+msgstr ""
+
+#: geodir_claim_functions.php:1328
+msgid "Select Package"
+msgstr ""
+
+#: geodir_claim_functions.php:1480
+msgid "Please login/signup to claim your listing."
+msgstr ""
+
+#: geodir_claim_hooks_actions.php:46
+msgid "Claim listing"
+msgstr ""
+
+#: geodir_claim_hooks_actions.php:99
+msgid "This field is required."
+msgstr ""
+
+#: geodir_claim_hooks_actions.php:100
+msgid "Please enter valid email address."
+msgstr ""
+
+#: geodir_claim_template_functions.php:493
+#: geodir_claim_template_functions.php:508
+msgid "Save changes"
+msgstr ""
+
+#: geodir_claim_template_tags.php:14
+msgid "Listing Claims <span id=\"\">"
+msgstr ""
+
+#: geodir_claim_template_tags.php:20
+msgid "Listing Claims"
+msgstr ""
+
+#: language.php:8
+#, php-format
+msgid ""
+"You must be logged in to verify your listing, please %s login</a> and then "
+"re-click the verify link in your email."
+msgstr ""
+
+#: language.php:10
+msgid "Auto verification has been disabled."
+msgstr ""
+
+#: language.php:12
+msgid "Verification code does not exist."
+msgstr ""
+
+#: language.php:14
+msgid "Verification code does not match user."
+msgstr ""
+
+#: language.php:16
+msgid "Listing Successfully verified, visit listing:"
+msgstr ""
+
+#: language.php:18
+msgid "Listing verification rejected."
+msgstr ""
+
+#: language.php:20
+msgid "Listing already verified."
+msgstr ""
+
+#: language.php:22
+msgid "Geo Directory Claim Listing Detail"
+msgstr ""
+
+#: language.php:24
+msgid "Listing Title"
+msgstr ""
+
+#: language.php:26
+msgid "User"
+msgstr ""
+
+#: language.php:28
+msgid "User Information"
+msgstr ""
+
+#: language.php:30
+msgid "Username"
+msgstr ""
+
+#: language.php:32
+msgid "Full Name"
+msgstr ""
+
+#: language.php:34
+msgid "Phone"
+msgstr ""
+
+#: language.php:36
+msgid "User Email"
+msgstr ""
+
+#: language.php:38
+msgid "Number"
+msgstr ""
+
+#: language.php:40
+msgid "Contact Number"
+msgstr ""
+
+#: language.php:42
+msgid "Position"
+msgstr ""
+
+#: language.php:44
+msgid "User Comments"
+msgstr ""
+
+#: language.php:46
+msgid "Status"
+msgstr ""
+
+#: language.php:48
+msgid "Details"
+msgstr ""
+
+#: language.php:50
+msgid "Action"
+msgstr ""
+
+#: language.php:52
+msgid "Claim Date"
+msgstr ""
+
+#: language.php:54
+msgid "User IP"
+msgstr ""
+
+#: language.php:56
+msgid "Author :"
+msgstr ""
+
+#: language.php:58
+msgid "Original Author"
+msgstr ""
+
+#: language.php:60
+msgid "Admin Comments"
+msgstr ""
+
+#: language.php:62
+msgid "Add comments about approval/rejection for future reference."
+msgstr ""
+
+#: language.php:64
+msgid "Add Comment"
+msgstr ""
+
+#: language.php:66
+msgid "Cancel"
+msgstr ""
+
+#: language.php:68
+msgid "Owner Verified Listing"
+msgstr ""
+
+#: language.php:70
+msgid "Business Owner?"
+msgstr ""
+
+#: language.php:72
+msgid "Request sent successfully"
+msgstr ""
+
+#: language.php:74
+msgid "What is the claim process?"
+msgstr ""
+
+#: language.php:76
+msgid "Hide claim process."
+msgstr ""
+
+#: language.php:78
+msgid "Claim Listing"
+msgstr ""
+
+#: language.php:80
+msgid ""
+"Fill out the form below, we will verify your claim and email you "
+"confirmation."
+msgstr ""
+
+#: language.php:82
+msgid "Hi i am the owner of this business and i would like to claim it..."
+msgstr ""
+
+#: language.php:84
+msgid "CLICK HERE TO VERIFY"
+msgstr ""
+
+#: language.php:86
+msgid "Renew Now"
+msgstr ""
+
+#: language.php:88
+msgid "Comments"
+msgstr ""
+
+#: language.php:90
+msgid "Send"
+msgstr ""
+
+#: language.php:96
+msgid "Is Claimed:"
+msgstr ""
+
+#: language.php:98
+msgid "Notifications saved successfully."
+msgstr ""
+
+#: language.php:100
+msgid "Manage Geo Directory Claims Listing"
+msgstr ""
+
+#: language.php:102
+msgid "Comments added successfully."
+msgstr ""
+
+#: language.php:104
+msgid "Claim approved successfully."
+msgstr ""
+
+#: language.php:106
+msgid "Claim rejected successfully."
+msgstr ""
+
+#: language.php:108
+msgid "Claim deleted successfully."
+msgstr ""
+
+#: language.php:110
+msgid "Approved"
+msgstr ""
+
+#: language.php:112
+msgid "Rejected"
+msgstr ""
+
+#: language.php:114
+msgid "No Decision"
+msgstr ""
+
+#: language.php:116
+msgid "Full Details"
+msgstr ""
+
+#: language.php:118
+msgid "Are you sure want to delete this claim?"
+msgstr ""
+
+#: language.php:120
+msgid "Are you sure want to approve this claim?"
+msgstr ""
+
+#: language.php:122
+msgid "Are you sure want to reject this claim?"
+msgstr ""
+
+#: language.php:124
+msgid "Are you sure want to undo this claim and restore original author?"
+msgstr ""
+
+#: language.php:126
+msgid "Claim listing options saved successfully."
+msgstr ""
+
+#: language.php:128
+msgid "Position in Business"
+msgstr ""
+
+#: language.php:130
+msgid "Business Owner/Associate?"
+msgstr ""
+
+#: language.php:132
+msgid "Please Declare if Owner/Associate"
+msgstr ""

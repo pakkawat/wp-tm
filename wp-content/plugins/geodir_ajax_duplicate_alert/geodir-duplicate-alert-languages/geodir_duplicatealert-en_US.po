@@ -1,0 +1,70 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory Duplicate Alert 1.1.8\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-19 11:45+0100\n"
+"PO-Revision-Date: 2017-04-19 11:45+0100\n"
+"Last-Translator: Stiofan <info@geotheme.com>\n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:76
+msgid ""
+"<span style=\"color:#FF0000\">There was an issue determining where "
+"GeoDirectory Plugin is installed and activated. Please install or activate "
+"GeoDirectory Plugin.</span>"
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:136
+#, php-format
+msgid ""
+"A %s with this field is already listed!<br/> Please make sure you are not "
+"adding a duplicate entry"
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:144 geodir_ajax_duplicate_alert.php:145
+msgid "Duplicate Alert"
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:166
+msgid "Your settings have been saved."
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:187
+msgid ""
+"Show alert when duplicate value is entered in selected field per selected "
+"post type(s) on new Listing page."
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:191
+msgid "S.No."
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:192
+msgid "Listing Type"
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:193
+msgid "Field Name"
+msgstr ""
+
+#: geodir_ajax_duplicate_alert.php:243
+msgid "Save changes"
+msgstr ""

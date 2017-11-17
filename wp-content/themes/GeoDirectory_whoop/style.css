@@ -1,0 +1,6179 @@
+/*
+Theme Name: Whoop
+Theme URI: http://wpgeodirectory.com/
+Author: GeoDirectory
+Author URI: http://wpgeodirectory.com/
+Description: This theme was built to be used with the GeoDirectory plugin . You should use a child theme.
+Version: 1.1.0
+License: GPLv2 or greater
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: left-sidebar, right-sidebar, one-column, two-columns, theme-options, custom-header, custom-background, fluid-layout, responsive-layout, accessibility-ready, translation-ready, microformats, rtl-language-support
+Update URL: https://wpgeodirectory.com
+Update ID: 65902
+*/
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+/**
+ * Correct `block` display not defined in IE 8/9.
+ */
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+    display: block;
+}
+/**
+ * Correct `inline-block` display not defined in IE 8/9.
+ */
+audio, canvas, video {
+    display: inline-block;
+}
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+/**
+ * Address `[hidden]` styling not present in IE 8/9.
+ * Hide the `template` element in IE, Safari, and Firefox < 22.
+ */
+[hidden], template {
+    display: none;
+}
+/* ==========================================================================
+   Base
+   ========================================================================== */
+/**
+ * 1. Set default font family to sans-serif.
+ * 2. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+html {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    /* 1 */
+    -ms-text-size-adjust: 100%;
+    /* 2 */
+    -webkit-text-size-adjust: 100%;
+    /* 2 */
+}
+/**
+ * Remove default margin.
+ */
+body {
+    margin: 0;
+}
+/* ==========================================================================
+   Links
+   ========================================================================== */
+/**
+ * Remove the gray background color from active links in IE 10.
+ */
+a {
+    background: transparent;
+}
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+a:focus {
+    outline: thin dotted;
+}
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+a:active, a:hover {
+    outline: 0;
+}
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+/**
+ * Address variable `h1` font-size and margin within `section` and `article`
+ * contexts in Firefox 4+, Safari 5, and Chrome.
+ */
+h1 {
+    /*font-size: 2em;*/
+    margin: 0.67em 0;
+}
+/**
+ * Address styling not present in IE 8/9, Safari 5, and Chrome.
+ */
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+/**
+ * Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome.
+ */
+b, strong, .strong {
+    font-weight: bold;
+}
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+dfn, em, .em {
+    font-style: italic;
+}
+/**
+ * Address differences between Firefox and other browsers.
+ */
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+/*
+ * proper formatting (http://blog.fontdeck.com/post/9037028497/hyphens)
+*/
+p {
+    -webkit-hyphens: auto;
+    -epub-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
+/*
+ * Addresses margins set differently in IE6/7.
+ */
+pre {
+    margin: 0;
+}
+/**
+ * Correct font family set oddly in Safari 5 and Chrome.
+ */
+code, kbd, pre, samp {
+    font-family: monospace, serif;
+    font-size: 1em;
+}
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+pre {
+    white-space: pre-wrap;
+}
+/**
+ * Set consistent quote types.
+ */
+q {
+    quotes: "\201C" "\201D" "\2018" "\2019";
+}
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+q:before, q:after {
+    content: none;
+}
+small, .small {
+    font-size: 75%;
+}
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+sup {
+    top: -0.5em;
+}
+sub {
+    bottom: -0.25em;
+}
+/* ==========================================================================
+  Lists
+========================================================================== */
+/*
+ * Addresses margins set differently in IE6/7.
+ */
+dl, menu, ol, ul {
+    margin: 1em 0;
+}
+dd {
+    margin: 0;
+}
+/*
+ * Addresses paddings set differently in IE6/7.
+ */
+menu {
+    padding: 0 0 0 40px;
+}
+ol, ul {
+    padding: 0;
+    list-style-type: none;
+}
+/*
+ * Corrects list images handled incorrectly in IE7.
+ */
+nav ul, nav ol {
+    list-style: none none;
+}
+/* ==========================================================================
+  Embedded content
+========================================================================== */
+/**
+ * Remove border when inside `a` element in IE 8/9.
+ */
+img {
+    border: 0;
+}
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+svg:not(:root) {
+    overflow: hidden;
+}
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+/**
+ * Address margin not present in IE 8/9 and Safari 5.
+ */
+figure {
+    margin: 0;
+}
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+/**
+ * Define consistent border, margin, and padding.
+ */
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+/**
+ * 1. Correct `color` not being inherited in IE 8/9.
+ * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+ */
+legend {
+    border: 0;
+    /* 1 */
+    padding: 0;
+    /* 2 */
+}
+/**
+ * 1. Correct font family not being inherited in all browsers.
+ * 2. Correct font size not being inherited in all browsers.
+ * 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome.
+ */
+button, input, select, textarea {
+    font-family: inherit;
+    /* 1 */
+    font-size: 100%;
+    /* 2 */
+    margin: 0;
+    /* 3 */
+}
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+button, input {
+    line-height: normal;
+}
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+button, select {
+    text-transform: none;
+}
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+button, html input[type="button"], input[type="reset"], input[type="submit"] {
+    -webkit-appearance: button;
+    /* 2 */
+    cursor: pointer;
+    /* 3 */
+}
+/**
+ * Re-set default cursor for disabled elements.
+ */
+button[disabled], html input[disabled] {
+    cursor: default;
+}
+/**
+ * 1. Address box sizing set to `content-box` in IE 8/9/10.
+ * 2. Remove excess padding in IE 8/9/10.
+ */
+input[type="checkbox"], input[type="radio"] {
+    box-sizing: border-box;
+    /* 1 */
+    padding: 0;
+    /* 2 */
+    margin-right: 5px;
+}
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+input[type="search"] {
+    -webkit-appearance: textfield;
+    /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    /* 2 */
+    box-sizing: content-box;
+}
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+button::-moz-focus-inner, input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+/**
+ * 1. Remove default vertical scrollbar in IE 8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+textarea {
+    overflow: auto;
+    /* 1 */
+    vertical-align: top;
+    /* 2 */
+}
+input:focus,
+textarea:focus {
+    outline: none;
+}
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+/**
+ * Remove most spacing between table cells.
+ */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.image-replacement, .ir {
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.clearfix, .cf, .comment-respond {
+    zoom: 1;
+}
+.clearfix:before, .clearfix:after, .cf:before, .comment-respond:before, .cf:after, .comment-respond:after {
+    content: "";
+    display: table;
+}
+.clearfix:after, .cf:after, .comment-respond:after {
+    clear: both;
+}
+/*
+use the best ampersand
+http://simplebits.com/notebook/2008/08/14/ampersands-2/
+*/
+span.amp {
+    font-family: Baskerville, 'Goudy Old Style', Palatino, 'Book Antiqua', serif !important;
+    font-style: italic;
+}
+/*********************
+FONT FACE (IN YOUR FACE)
+*********************/
+p {
+    /*-ms-word-break: break-all;
+	-ms-word-wrap: break-all;
+	word-break: break-word;
+	word-break: break-word;*/
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+    -webkit-hyphenate-before: 2;
+    -webkit-hyphenate-after: 3;
+    hyphenate-lines: 3;
+    -webkit-font-feature-settings: "liga", "dlig";
+    -moz-font-feature-settings: "liga=1, dlig=1";
+    -ms-font-feature-settings: "liga", "dlig";
+    -o-font-feature-settings: "liga", "dlig";
+    font-feature-settings: "liga", "dlig";
+}
+.gallery-caption {
+    color: white;
+    text-align: center;
+}
+span.bypostauthor {
+    border-left: 1px solid white;
+    color: white;
+    font-size: 0.5em;
+    margin-left: 0.6em;
+    padding-left: 0.5em;
+    vertical-align: middle;
+}
+/* ==========================================================================
+  GeoDirectory
+========================================================================== */
+.full #geodir_content {
+    float: left;
+    padding: 10px 10px 0;
+    width: 100%;
+}
+.geodir-breadcrumb ul li {
+    padding-bottom: 0;
+    padding-top: 10px;
+    margin-bottom: -10px;
+}
+.wrap, .geodir-common {
+    width: 1040px;
+    margin: 0 auto;
+}
+/*body.single div.clearfix:first-child, body.category div.clearfix:first-child, body.page div.clearfix:first-child {
+	max-width:1040px;
+	margin:0px auto;
+	float:none;
+	margin-left:auto;
+	margin-right:auto;
+}*/
+body.page .geodir_full_page div.clearfix:first-child {
+    max-width: 100%
+}
+.map_category ul.treeview {
+    margin: 0;
+}
+.map-places-listing.triggermap_fullscreen ul.place-list {
+    line-height: 0.9;
+}
+.geodir-login #geodir_content {
+    width: 100%;
+}
+.last-col {
+    float: right;
+    padding-right: 0;
+}
+.geodir_button {
+    padding: 2px 15px;
+}
+.geodir-common, .geodir_full_page {
+    margin: 0 auto;
+}
+.geodir-common {
+    margin-top: 20px;
+}
+/*{*/
+/*max-width:none;*/
+/*}*/
+.geodir_full_page .widget, .geodir_full_page .geodir-widget {
+    margin: 0 auto;
+    padding: 0;
+}
+.geodir_full_page .geodir_map_container {
+    margin: 0 auto;
+}
+.geodir_full_page .geodir-category-list-in {
+    margin-top: 0;
+}
+.geodir-breadcrumb, .geodir_full_page .geodir-search {
+    width: 1040px;
+    margin: 0 auto;
+    float: none;
+}
+h1, .term_description {
+    width: 100%;
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+h1 {
+    padding-bottom: 0;
+}
+.geodir_full_page .geodir-search input[type="text"] {
+    width: 38%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 1%;
+}
+.geodir-cat-list ul {
+    margin: 0;
+}
+.geodir-loc-bar {
+    margin: 0;
+    padding: 0;
+}
+.geodir-common .geodir-onethird:first-child {
+    margin-left: 0;
+}
+.geodir-breadcrumb {
+    padding: 0;
+    /*padding-bottom:*/
+}
+.geodir-breadcrumb ul {
+    margin-top: 0;
+}
+.geodir_full_page .geodir-search .geodir_submit_search,
+.geodir_full_page .geodir-search .showFilters {
+    font-size: 20px;
+    width: 22%;
+    height: 38px;
+    padding: 0;
+    margin-right: 0;
+    margin-left: 0;
+}
+.geodir_full_page .showFilters {
+    height: 38px;
+    line-height: 38px;
+}
+.geodir_full_page .geodir-loc-bar-in {
+    padding-left: 0;
+    padding-right: 0;
+}
+body.archive .geodir-common .geodir-onethird .geodir-content-content {
+    padding-left: 6px;
+    padding-top: 6px;
+}
+.geodir-post-img .geodir_thumbnail img {
+    max-height: 280px !important;
+}
+.geodir-onethird .geodir-content-content {
+    margin-left: 0;
+    margin-top: 0;
+}
+/*
+######################################################
+MOBILE NAVIGATION RIGHT
+######################################################
+*/
+#mobile-navigation-right input,
+#mobile-navigation-right select {
+    width: 100%;
+    margin: 5px;
+}
+/*
+######################################################
+PLACE DETAILS
+######################################################
+*/
+.geodir-sidebar-wrap .geodir-company_info:first-child {
+    margin-top: -1px;
+}
+.geodir-company_info {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+#geodir_content {
+    overflow: hidden;
+}
+#gd-sidebar-wrapper {
+    overflow: visible;
+}
+#geodir_content {
+    width: 67%;
+    padding: 10px 10px 0;
+    float: left;
+}
+#gd-sidebar-wrapper {
+    width: 30%;
+    margin-left: 3%;
+    float: left;
+}
+#gd-sidebar-wrapper {
+    padding-top: 0;
+}
+#gd-sidebar-wrapper.geodir-sidebar-left {
+    margin-left: 0;
+    margin-right: 3%;
+}
+/*
+######################################################
+POSTS AND PAGES
+######################################################
+*/
+
+/* entry content */
+.entry-content {
+    /* at this larger size, we can start to align images */
+}
+.entry-content .alignleft, .entry-content img.alignleft {
+    margin-right: 1.5em;
+    display: inline;
+    float: left;
+}
+.entry-content .alignright, .entry-content img.alignright {
+    margin-left: 1.5em;
+    display: inline;
+    float: right;
+}
+.entry-content .aligncenter, .entry-content img.aligncenter {
+    margin-right: auto;
+    margin-left: auto;
+    display: block;
+    clear: both;
+}
+/*
+######################################################
+LOGIN PAGE
+######################################################
+*/
+.login_form_l h4, .registration_form_r h4 {
+    margin: 0;
+}
+/*
+######################################################
+FOOTER
+######################################################
+*/
+.footer a {
+    text-decoration: none;
+}
+.footer a:hover {
+    text-decoration: underline;
+}
+.footer hr {
+    border: 0;
+    border-bottom: 1px solid #444;
+    background: #444;
+}
+.footer nav {
+    float: right;
+    padding-top: 3px;
+}
+.f-col-1 {
+    float: left;
+    width: 100%;
+}
+.f-col-2 {
+    float: left;
+    width: 50%;
+}
+.f-col-3 {
+    float: left;
+    width: 33.33%;
+}
+.f-col-4 {
+    float: left;
+    width: 25%;
+}
+/*
+######################################################
+POPUP FORMS
+######################################################
+*/
+#simplemodal-container input[type="text"] {
+    height: 30px;
+    margin-bottom: 5px;
+}
+#simplemodal-container .row {
+    margin-bottom: 0;
+}
+#simplemodal-container .row textarea {
+    height: 75px;
+    min-height: inherit;
+}
+#simplemodal-container .button {
+    margin-left: 0;
+}
+#simplemodal-container .row input, #simplemodal-container .row textarea {
+    width: 245px;
+}
+/*
+######################################################
+GEODIRECTORY ADMIN BAR
+######################################################
+*/
+.geodirf-ab {
+    background-color: #222;
+    color: #fff;
+    height: 31px;
+}
+.geodirf-ab .widget-title {
+    display: none;
+}
+.geodirf-ab-wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+}
+.geodirf-ab-right, .geodirf-ab-right .geodir_advance_search_widget {
+    float: right;
+}
+.geodirf-ab-left, .geodirf-ab-left .geodir_advance_search_widget {
+    float: left;
+}
+.geodirf-ab-right .geodir-widget ul.blogroll li {
+    float: right;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border: none;
+    padding-left: 8px;
+}
+.geodirf-ab-right .geodir-widget ul.blogroll li a {
+    text-decoration: none;
+    color: #fff;
+}
+.geodirf-ab #loginform1 .form_row {
+    display: none;
+}
+.geodirf-ab #loginform1 .form_row.clearfix {
+    display: block;
+}
+.geodirf-ab #loginform1 .form_row.clearfix input {
+    line-height: 25px;
+    height: 25px;
+    margin-bottom: 0;
+}
+.geodirf-ab-right .geodir-widget ul.blogroll {
+    margin: 0;
+}
+.geodirf-ab .widget {
+    margin: 0;
+    padding: 0;
+}
+.geodirf-ab .geodir_advance_search_widget {
+    width: 100%
+}
+.geodirf-ab .geodir_advance_search_widget input[type="text"],
+.header-right-area .geodir_advance_search_widget input[type="text"] {
+    float: left;
+    margin-right: 1%;
+    background: #fff;
+    border: 1px solid #ccc;
+}
+.geodirf-ab .geodir_advance_search_widget input[type="text"] {
+    width: 36%;
+    line-height: 25px;
+    height: 25px;
+    margin-bottom: 0;
+}
+.geodirf-ab .geodir-loc-bar-in {
+    background: none;
+    border: none;
+    padding: 3px;
+}
+.geodirf-ab .geodir_advance_search_widget input[type="button"] {
+    height: 25px;
+    line-height: 25px;
+}
+.gdf_welcome_login {
+    margin: 0;
+    padding: 3px 0;
+}
+.gdf_welcome_login li {
+    float: left;
+    margin-left: 4px;
+}
+.geodirf-ab .el-icon-search-alt {
+    display: none;
+}
+.geodirf-ab .geodir_advance_search_widget:hover #listing_search {
+    display: block;
+}
+.mobile-left, .mobile-right {
+    display: none;
+    font-size: 25px;
+    overflow: hidden;
+    text-decoration: none;
+}
+.mobile-left {
+    float: left;
+    margin: 10px 0 0 10px
+}
+.mobile-right {
+    float: right;
+    margin: 10px 10px 0 0
+}
+#mobile-navigation-right {
+    display: none;
+}
+#mobile-navigation-right input[type="text"], #mobile-navigation-right input[type="password"] {
+    background-color: #ffffff;
+}
+/*
+######################################################
+HEADER RIGHT WIDGET AREA
+######################################################
+*/
+.header-right-area .gdf_welcome_login_wrap {
+    width: 100%;
+    float: left;
+}
+.header-right-area .gdf_welcome_login {
+    float: right;
+    padding-right: 10px;
+}
+/*********************
+  GENERAL STYLES
+  *********************/
+
+/*********************
+  HEADER STYLES
+  *********************/
+.site-logo {
+    float: left;
+    max-width: 18%;
+    margin-right: 2%;
+}
+.header-right-area {
+    float: left;
+    -webkit-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    background: transparent;
+    width: 65%;
+}
+.header-right-area .widget {
+    margin: 0;
+    padding: 0;
+}
+.header-right-area .geodir_advance_search_widget,
+.header-right-area .geodir-search {
+    width: 100%;
+    margin-top: 10px;
+}
+.header-right-area .geodir_advance_search_widget input[type="text"] {
+    width: 25%;
+    line-height: 36px;
+    height: 36px;
+}
+.header-right-area .geodir-loc-bar,
+.header-right-area .geodir-loc-bar-in {
+    background: none;
+    border: none;
+}
+.header-right-area select {
+    height: 36px;
+}
+/*********************
+  NAVIGATION STYLES
+  *********************/
+
+header nav {
+    float: left;
+    width: 100%;
+}
+.nav {
+    border: 0; /* end .menu ul li */
+    /* highlight current page */
+    /* end current highlighters */
+}
+.nav ul {
+    margin-top: 0;
+}
+.nav li {
+    float: left;
+    position: relative;
+    /*
+      plan your menus and drop-downs wisely.
+      */
+    /* showing sub-menus */
+}
+.nav li a {
+    border-bottom: 0;
+    /*
+        you can use hover styles here even though this size
+        has the possibility of being a mobile device.
+        */
+}
+.nav li a:hover, .nav li a:focus {
+    color: white;
+    text-decoration: underline;
+}
+.nav li ul.sub-menu, .nav li ul.children,
+.nav li ul.sub-menu li ul.sub-menu {
+    /*border: 1px solid #ccc;*/
+    border: 1px solid;
+    border-top-width: 0;
+    position: absolute;
+    overflow: hidden;
+    visibility: hidden;
+    z-index: 8999;
+}
+.nav li ul.sub-menu, .nav li ul.children {
+    margin-top: 0;
+    transition: visibility 0.1s linear;
+    /* highlight sub-menu current page */
+}
+/* ######################################
+########## SUB SUB MENU SUPPORT #########
+######################################## */
+.nav li ul.sub-menu li ul.sub-menu {
+    margin-left: 180px;
+    margin-top: -48px;
+    /* highlight sub-menu current page */
+}
+.nav li ul.sub-menu li:hover ul {
+    top: auto;
+    overflow: visible;
+    visibility: visible;
+}
+.nav li ul.sub-menu li ul.sub-menu li a, .nav li ul.children li ul.children li a {
+    /*padding-left: 10px;
+	border-right: 0;
+	display: block;
+	width: 180px;*/
+    border-bottom: 1px solid #ccc;
+}
+.nav li ul.sub-menu li ul.sub-menu li:last-child a, .nav li ul.children li ul.children li:last-child a {
+    border-bottom: 0;
+}
+/* ######################################
+########## SUB SUB MENU SUPPORT END #########
+######################################## */
+.nav li ul.sub-menu li, .nav li ul.children li {
+    /*
+          if you need to go deeper, go nuts
+          just remember deeper menus suck
+          for usability. k, bai.
+          */
+}
+.nav li ul.sub-menu li a, .nav li ul.children li a {
+    padding-left: 10px;
+    border-right: 0;
+    display: block;
+    width: 180px;
+    border-bottom: 1px solid #ccc;
+}
+.nav li ul.sub-menu li:last-child a, .nav li ul.children li:last-child a {
+    border-bottom: 0;
+}
+.nav li:hover ul {
+    top: auto;
+    overflow: visible;
+    visibility: visible;
+}
+.top-nav .sub-menu {
+    /*background-color:#444;*/
+}
+.footer-nav .sub-menu {
+    display: none;
+}
+.nav li.gd-edge ul {
+    right: 0;
+}
+.nav li.gd-edge ul.sub-menu li ul.sub-menu {
+    margin-left: 0;
+    margin-right: 180px;
+}
+/* end .nav */
+/*********************
+  SIDEBARS & ASIDES
+  *********************/
+
+.geodir-sidebar-wrap .widget .widget-title {
+    border-bottom: 2px solid #444;
+    margin-bottom: 0.75em;
+}
+.widget {
+    padding: 0 10px;
+    margin: 2.2em 0;
+}
+.widget ul > li {
+    margin-bottom: 0.75em;
+    /* deep nesting */
+}
+.widget ul li ul {
+    margin-top: 0.75em;
+    padding-left: 1em;
+}
+/*********************
+IMPORTING MODULES
+Modules are reusable blocks or elements we use throughout the project.
+We can break them up as much as we want or just keep them all in one.
+I mean, you can do whatever you want. The world is your oyster. Unless
+you hate oysters, then the world is your peanut butter & jelly sandwich.
+*********************/
+/******************************************************************
+Site Name:
+Author:
+
+Stylesheet: Alert Styles
+
+If you want to use these alerts in your design, you can. If not,
+you can just remove this stylesheet.
+
+******************************************************************/
+.alert-help, .alert-info, .alert-error, .alert-success {
+    margin: 10px;
+    padding: 5px 18px;
+    border: 1px solid;
+}
+.alert-help {
+    border-color: #e8dc59;
+    background: #ebe16f;
+}
+.alert-info {
+    border-color: #bfe4f4;
+    background: #d5edf8;
+}
+.alert-error {
+    border-color: #f8cdce;
+    background: #fbe3e4;
+}
+.alert-success {
+    border-color: #deeaae;
+    background: #e6efc2;
+}
+/*********************
+BUTTON DEFAULTS
+We're gonna use a placeholder selector here
+so we can use common styles. We then use this
+to load up the defaults in all our buttons.
+
+Here's a quick video to show how it works:
+http://www.youtube.com/watch?v=hwdVpKiJzac
+
+*********************/
+.geodir_button, .geodir_submit_search, .blue-btn, .comment-reply-link, #submit, button, input[type="button"], input[type="submit"], #simplemodal-container .button, .showFilters {
+    height: 35px;
+    display: inline-block;
+    position: relative;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    line-height: 34px;
+    font-weight: normal;
+    padding: 0 24px;
+    border-radius: 4px;
+    border: 0;
+    cursor: pointer;
+    -webkit-transition: background-color 0.14s ease-in-out;
+    transition: background-color 0.14s ease-in-out;
+    background-image: none;
+}
+.blue-btn:hover, .comment-reply-link:hover, #submit:hover, .blue-btn:focus, .comment-reply-link:focus, #submit:focus, .showFilters:hover {
+    color: white;
+    text-decoration: none;
+    background-image: none;
+}
+.blue-btn:active, .comment-reply-link:active, #submit:active {
+    top: 1px;
+}
+/*
+An example button.
+You can use this example if you want. Just replace all the variables
+and it will create a button dependant on those variables.
+*/
+.geodir_button, .geodir_submit_search, .blue-btn, .comment-reply-link, #submit, button, input[type="button"], input[type="submit"], #simplemodal-container .button, .showFilters {
+    /*background-color: #f47a20;*/
+}
+.geodir_button:hover, .geodir_submit_search:hover, .blue-btn:hover, .comment-reply-link:hover, #submit:hover, .blue-btn:focus, .comment-reply-link:focus, #submit:focus, button:focus, input[type="button"]:focus, input[type="submit"]:focus, #simplemodal-container .button:focus, .showFilters:focus {
+    /*background-color: #faa51a;*/
+}
+.geodir_button:active, .geodir_submit_search:active, .blue-btn:active, .comment-reply-link:active, #submit:active, button:active, input[type="button"]:active, input[type="submit"]:active, #simplemodal-container .button:active, .showFilters:active {
+    /*background-color: #faa51a;*/
+}
+.geodir_button:hover, .geodir_submit_search:hover, .blue-btn:hover, .comment-reply-link:hover, #submit:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover, #simplemodal-container .button:hover, .showFilters:hover {
+    /*background-color: #faa51a;*/
+}
+.geodir_button {
+    font-size: 14px;
+}
+/*********************
+INPUTS
+*********************/
+input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], select, textarea, .field {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 12px;
+    margin-bottom: 14px;
+    font-size: 1em;
+    color: #5c6b80;
+    border-radius: 3px;
+    vertical-align: middle;
+    box-shadow: none;
+    border: 0;
+    width: 100%;
+    max-width: 400px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #eaedf2;
+    -webkit-transition: background-color 0.24s ease-in-out;
+    transition: background-color 0.24s ease-in-out;
+}
+input[type="text"]:focus, input[type="text"]:active, input[type="password"]:focus, input[type="password"]:active, input[type="datetime"]:focus, input[type="datetime"]:active, input[type="datetime-local"]:focus, input[type="datetime-local"]:active, input[type="date"]:focus, input[type="date"]:active, input[type="month"]:focus, input[type="month"]:active, input[type="time"]:focus, input[type="time"]:active, input[type="week"]:focus, input[type="week"]:active, input[type="number"]:focus, input[type="number"]:active, input[type="email"]:focus, input[type="email"]:active, input[type="url"]:focus, input[type="url"]:active, input[type="search"]:focus, input[type="search"]:active, input[type="tel"]:focus, input[type="tel"]:active, input[type="color"]:focus, input[type="color"]:active, select:focus, select:active, textarea:focus, textarea:active, .field:focus, .field:active {
+    background-color: #f7f8fa;
+}
+input[type="text"].error, input[type="text"].is-invalid, input[type="password"].error, input[type="password"].is-invalid, input[type="datetime"].error, input[type="datetime"].is-invalid, input[type="datetime-local"].error, input[type="datetime-local"].is-invalid, input[type="date"].error, input[type="date"].is-invalid, input[type="month"].error, input[type="month"].is-invalid, input[type="time"].error, input[type="time"].is-invalid, input[type="week"].error, input[type="week"].is-invalid, input[type="number"].error, input[type="number"].is-invalid, input[type="email"].error, input[type="email"].is-invalid, input[type="url"].error, input[type="url"].is-invalid, input[type="search"].error, input[type="search"].is-invalid, input[type="tel"].error, input[type="tel"].is-invalid, input[type="color"].error, input[type="color"].is-invalid, select.error, select.is-invalid, textarea.error, textarea.is-invalid, .field.error, .field.is-invalid {
+    /*color: #fbe3e4;*/
+    border-color: #fbe3e4;
+    background: #fbe3e4 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo2NDM0NDREQkYwNEIxMUUyOTI4REZGQTEzMzA2MDcyNiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2NDM0NDREQ0YwNEIxMUUyOTI4REZGQTEzMzA2MDcyNiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQ3ODRGRkE2RjA0QTExRTI5MjhERkZBMTMzMDYwNzI2IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjY0MzQ0NERBRjA0QjExRTI5MjhERkZBMTMzMDYwNzI2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+U8iT5wAAAedJREFUeNqk1U9I02Ecx/HtV3aIFAc1hcRDUoGXRAq0oNLA2CrsEFmHbikZu0iQYIFGYAiegkCpLipBxPpDEBMUzB0EhSG2LhG7hMR2GviPgUTvB57Bw8P3+U23B16HPX8+e/b8nt93wezZSMCnhXETF3AcB5BDCnH8Dq98ExcGHcFn8Ah3cdDni+fxnPDv9oAnTB7CKu6VCFXtChZy56LxUjt+jfuB8toSOth9wd7xWAWhqrUjYR/FRTwWJm+iIPT/w7bQf5ljiZnBg45dtKFX6H+LU8gIY8OEV6vgTkStwXWE8BPTGDHGPqNPz2mCfSOOYkA99TvCt1bhGPL68zMcwmncMuape10jrI+q4BbHi/FLn31S9z2x5tRhTc+1W506ipM+T3oRD4X+8+qtc4SqFvL0z/Fr14S+Szjis8bz9Lvvaq8cwS/wwGfdlqfPSWqTiFlX77o13u9Ym1PBs8JAytpRoy44X9Ft9E/gvbA+rYKn8NcaaMVc8UHgBw4b9/iqUQZ6hOAJFbyDcUflmsEX4a6+wTtHGfhAIUqa1U29Zc2BytouThD8x6xuN5CtMPi2CrXLZkZf/HyZoRFCP7n+QVR4PV7uI/AjGghN7OU/r1ilnqILtfpNC+o6vIFljBKYlhb/F2AAgaBsWR5wRiIAAAAASUVORK5CYII=) no-repeat 99% center;
+    outline-color: #fbe3e4;
+}
+input[type="text"].success, input[type="text"].is-valid, input[type="password"].success, input[type="password"].is-valid, input[type="datetime"].success, input[type="datetime"].is-valid, input[type="datetime-local"].success, input[type="datetime-local"].is-valid, input[type="date"].success, input[type="date"].is-valid, input[type="month"].success, input[type="month"].is-valid, input[type="time"].success, input[type="time"].is-valid, input[type="week"].success, input[type="week"].is-valid, input[type="number"].success, input[type="number"].is-valid, input[type="email"].success, input[type="email"].is-valid, input[type="url"].success, input[type="url"].is-valid, input[type="search"].success, input[type="search"].is-valid, input[type="tel"].success, input[type="tel"].is-valid, input[type="color"].success, input[type="color"].is-valid, select.success, select.is-valid, textarea.success, textarea.is-valid, .field.success, .field.is-valid {
+    color: #e6efc2;
+    border-color: #e6efc2;
+    background: white url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo2NDM0NDRERkYwNEIxMUUyOTI4REZGQTEzMzA2MDcyNiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2NDM0NDRFMEYwNEIxMUUyOTI4REZGQTEzMzA2MDcyNiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjY0MzQ0NERERjA0QjExRTI5MjhERkZBMTMzMDYwNzI2IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjY0MzQ0NERFRjA0QjExRTI5MjhERkZBMTMzMDYwNzI2Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+7olkTQAAAfhJREFUeNqklU9oE0EUhzdroWjw0tBeWlDxkEaIp55TsCU9VKIgCrHBelA8CQ1Kr1WPbZrQ3gqtQqvGqxpQc2jBk6BIIaAGD4qNCKURpDSKiPi98gLDsJt//uBjsztvfnk7895sIPAw6/joGMThFJyAXn2+A+9gA57/TaY/eU0OeBgfhGm4DiGnsb7DAszxBz/NAdcKjMJLuNWCqagHbsscN5+L+hmH4QkMOe1L5jzFfNA2PgT34ajTuY7AGuZB0/hmh5m+gS0r8xv1zRvg+gGCHZiOwnF4DP3iB3sQkYxPd2C6CWfhB9Xwlus5+K1j4jXuaq3a+gM1H9OPcAa+7q9lPidZJqHbiIm7Wg22rsEI7FrPSzAMX/T+ADyAKSsu7Fr1KplehLvwCs5DvfBf65p+MypqRbO1FXK9utH4/QKuaqYTsG3E3INJv00Q46px3+XxanJ/Ute2/vqP4FKDza2KcdljIKdnhS0xXYULTaqmLMZFn8FFSFtvt6x70ExFCS5oUXspq2ssa7oEl1swFa+CGFdgtkHgPDyDKy02zyxNU6lXRUZb1EuHYayNNs+Yh5B0WQo+/8fpJnNTZFuzz2OpjoQ2QruSOQlMy35fEGmEGMxY9e1brxobw7TkWA1h6xfckUPb+JhGoE/Hpfvew7qUld/H9J8AAwDpw3WYrxcZ3QAAAABJRU5ErkJggg==) no-repeat 99% center;
+    outline-color: #e6efc2;
+}
+input[type="text"][disabled], input[type="text"].is-disabled, input[type="password"][disabled], input[type="password"].is-disabled, input[type="datetime"][disabled], input[type="datetime"].is-disabled, input[type="datetime-local"][disabled], input[type="datetime-local"].is-disabled, input[type="date"][disabled], input[type="date"].is-disabled, input[type="month"][disabled], input[type="month"].is-disabled, input[type="time"][disabled], input[type="time"].is-disabled, input[type="week"][disabled], input[type="week"].is-disabled, input[type="number"][disabled], input[type="number"].is-disabled, input[type="email"][disabled], input[type="email"].is-disabled, input[type="url"][disabled], input[type="url"].is-disabled, input[type="search"][disabled], input[type="search"].is-disabled, input[type="tel"][disabled], input[type="tel"].is-disabled, input[type="color"][disabled], input[type="color"].is-disabled, select[disabled], select.is-disabled, textarea[disabled], textarea.is-disabled, .field[disabled], .field.is-disabled {
+    cursor: not-allowed;
+    border-color: #cfcfcf;
+    opacity: 0.6;
+}
+input[type="text"][disabled]:focus, input[type="text"][disabled]:active, input[type="text"].is-disabled:focus, input[type="text"].is-disabled:active, input[type="password"][disabled]:focus, input[type="password"][disabled]:active, input[type="password"].is-disabled:focus, input[type="password"].is-disabled:active, input[type="datetime"][disabled]:focus, input[type="datetime"][disabled]:active, input[type="datetime"].is-disabled:focus, input[type="datetime"].is-disabled:active, input[type="datetime-local"][disabled]:focus, input[type="datetime-local"][disabled]:active, input[type="datetime-local"].is-disabled:focus, input[type="datetime-local"].is-disabled:active, input[type="date"][disabled]:focus, input[type="date"][disabled]:active, input[type="date"].is-disabled:focus, input[type="date"].is-disabled:active, input[type="month"][disabled]:focus, input[type="month"][disabled]:active, input[type="month"].is-disabled:focus, input[type="month"].is-disabled:active, input[type="time"][disabled]:focus, input[type="time"][disabled]:active, input[type="time"].is-disabled:focus, input[type="time"].is-disabled:active, input[type="week"][disabled]:focus, input[type="week"][disabled]:active, input[type="week"].is-disabled:focus, input[type="week"].is-disabled:active, input[type="number"][disabled]:focus, input[type="number"][disabled]:active, input[type="number"].is-disabled:focus, input[type="number"].is-disabled:active, input[type="email"][disabled]:focus, input[type="email"][disabled]:active, input[type="email"].is-disabled:focus, input[type="email"].is-disabled:active, input[type="url"][disabled]:focus, input[type="url"][disabled]:active, input[type="url"].is-disabled:focus, input[type="url"].is-disabled:active, input[type="search"][disabled]:focus, input[type="search"][disabled]:active, input[type="search"].is-disabled:focus, input[type="search"].is-disabled:active, input[type="tel"][disabled]:focus, input[type="tel"][disabled]:active, input[type="tel"].is-disabled:focus, input[type="tel"].is-disabled:active, input[type="color"][disabled]:focus, input[type="color"][disabled]:active, input[type="color"].is-disabled:focus, input[type="color"].is-disabled:active, select[disabled]:focus, select[disabled]:active, select.is-disabled:focus, select.is-disabled:active, textarea[disabled]:focus, textarea[disabled]:active, textarea.is-disabled:focus, textarea.is-disabled:active, .field[disabled]:focus, .field[disabled]:active, .field.is-disabled:focus, .field.is-disabled:active {
+    background-color: #d5edf8;
+}
+textarea {
+    max-width: 100%;
+    min-height: 120px;
+    line-height: 1.5em;
+}
+/*********************
+BASE (MOBILE) SIZE
+This are the mobile styles. It's what people see on their phones. If
+you set a great foundation, you won't need to add too many styles in
+the other stylesheets. Remember, keep it light: Speed is Important.
+*********************/
+
+/*********************
+GENERAL STYLES
+*********************/
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    /*
+	font-size: 100%;
+	line-height: 1.5;
+	color: #5c6b80;
+	background-color: #eaedf2;*/
+    -webkit-font-smoothing: antialiased;
+}
+/*********************
+LAYOUT & GRID STYLES
+*********************/
+
+/*********************
+LINK STYLES
+*********************/
+a, a:visited {
+    /*color: #f01d4f;*//* on hover */
+    /* on click */
+    /* mobile tap color */
+}
+a:hover, a:focus, a:visited:hover, a:visited:focus {
+    /*color: #d10e3c;*/
+}
+a:link, a:visited:link {
+    /*
+    this highlights links on iPhones/iPads.
+    so it basically works like the :hover selector
+    for mobile devices.
+    */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.3);
+}
+/******************************************************************
+H1, H2, H3, H4, H5 STYLES
+******************************************************************/
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
+    text-rendering: optimizelegibility;
+    font-weight: 500;
+    /*
+  if you're going to use webfonts, be sure to check your weights
+  http://css-tricks.com/watch-your-font-weight/
+  */
+    /* removing text decoration from all headline links */
+}
+h1 a, .h1 a, h2 a, .h2 a, h3 a, .h3 a, h4 a, .h4 a, h5 a, .h5 a {
+    text-decoration: none;
+}
+h1, .h1 {
+    /*font-size: 2.5em;
+	line-height: 1.333em;*/
+}
+h2, .h2 {
+    /*font-size: 1.75em;
+	line-height: 1.4em;*/
+    margin-bottom: 0.375em;
+}
+h3, .h3 {
+    /*font-size: 1.125em;*/
+}
+h4, .h4 {
+    font-size: 1.1em;
+    font-weight: 700;
+}
+h5, .h5 {
+    font-size: 0.846em;
+    letter-spacing: 2px;
+}
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h3.entry-title a {
+    font-weight: bold;
+    color: #e34f43;
+    margin: 0 0 6px;
+}
+/*********************
+HEADER STYLES
+*********************/
+.header {
+    /*background-color: #323944;*/
+}
+#logo {
+    margin: 0.75em 0;
+}
+#logo a {
+    color: white;
+}
+/*********************
+NAVIGATION STYLES
+*********************/
+/*
+all navs have a .nav class applied via
+the wp_menu function; this is so we can
+easily write one group of styles for
+the navs on the site so our css is cleaner
+and more scalable.
+*/
+.nav {
+    border-bottom: 0;
+    margin: 0; /* end .menu li */
+    /* highlight current page */
+    /* end current highlighters */
+}
+.nav li {
+}
+.nav li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 0.75em;
+}
+.nav li ul.sub-menu li a, .nav li ul.children li a,
+.nav li ul.sub-menu li a:hover, .nav li ul.children li a:hover {
+    padding-left: 30px;
+}
+/* end .nav */
+/*********************
+POSTS & CONTENT STYLES
+*********************/
+#content {
+    margin-top: 1.5em;
+}
+.geodir-onethird, #geodir_content, #gd-sidebar-wrapper {
+    /*background-color: white;*/
+    border-radius: 3px;
+    margin-bottom: 1.5em;
+    border: 1px solid #cccccc;
+}
+.hentry header {
+    border-bottom: 1px solid #f8f9fa;
+    padding: 1.5em;
+}
+.hentry footer {
+    padding: 1.5em;
+    border-top: 1px solid #f8f9fa;
+}
+.hentry footer p {
+    margin: 0;
+}
+/* end .hentry */
+.single-title, .page-title, .entry-title {
+    margin: 0;
+}
+/* want to style individual post classes? Booya! */
+/* post by id (i.e. post-3) */
+/* general post style */
+/* general article on a page style */
+/* general style on an attatchment */
+/* sticky post style */
+/* hentry class */
+/* style by category (i.e. category-videos) */
+/* style by tag (i.e. tag-news) */
+/* post meta */
+.byline {
+    color: #9fa6b4;
+    font-style: italic;
+    margin: 0;
+}
+/* entry content */
+.entry-content {
+    padding: 1.5em 1.5em 0;
+    /*
+  image alignment on a screen this size may be
+  a bit difficult. It's set to start aligning
+  and floating images at the next breakpoint,
+  but it's up to you. Feel free to change it up.
+  */
+}
+.entry-content p {
+    margin: 0 0 1.5em;
+}
+.entry-content table {
+    width: 100%;
+    border: 1px solid #eaedf2;
+    margin-bottom: 1.5em;
+}
+.entry-content table caption {
+    margin: 0 0 7px;
+    font-size: 0.75em;
+    color: #9fa6b4;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.entry-content tr {
+    border-bottom: 1px solid #eaedf2;
+}
+.entry-content tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+.entry-content td {
+    padding: 7px;
+    border-right: 1px solid #eaedf2;
+}
+.entry-content td:last-child {
+    border-right: 0;
+}
+.entry-content th {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eaedf2;
+    border-right: 1px solid #eaedf2;
+}
+.entry-content th:last-child {
+    border-right: 0;
+}
+.entry-content blockquote {
+    margin: 0 0 1.5em 0.75em;
+    padding: 0 0 0 0.75em;
+    border-left: 3px solid #2980b9;
+    font-style: italic;
+    color: #9fa6b4;
+}
+.entry-content dd {
+    margin-left: 0;
+    font-size: 0.9em;
+    color: #787878;
+    margin-bottom: 1.5em;
+}
+.entry-content img {
+    margin: 0 0 1.5em 0;
+    max-width: 100%;
+    height: auto;
+}
+.entry-content .size-auto, .entry-content .size-full, .entry-content .size-large, .entry-content .size-medium, .entry-content .size-thumbnail {
+    max-width: 100%;
+    height: auto;
+}
+.entry-content pre {
+    background: #323944;
+    color: #f8f9fa;
+    font-size: 0.9em;
+    padding: 1.5em;
+    margin: 0 0 1.5em;
+    border-radius: 3px;
+}
+/* end .entry-content */
+.wp-caption {
+    max-width: 100%;
+    background: #eee;
+    padding: 5px;
+    /* images inside wp-caption */
+}
+.wp-caption img {
+    max-width: 100%;
+    margin-bottom: 0;
+    width: 100%;
+}
+.wp-caption p.wp-caption-text {
+    font-size: 0.85em;
+    margin: 4px 0 7px;
+    text-align: center;
+}
+/* end .wp-caption */
+/* image gallery styles */
+/* end .gallery */
+/* gallery caption styles */
+.tags {
+    margin: 0;
+}
+/******************************************************************
+PAGE NAVI STYLES
+******************************************************************/
+.pagination, .wp-prev-next {
+    margin: 1.5em 0;
+}
+.pagination {
+    text-align: center;
+}
+.pagination ul {
+    display: inline-block;
+    background-color: white;
+    white-space: nowrap;
+    padding: 0;
+    clear: both;
+    border-radius: 3px;
+}
+.pagination li {
+    padding: 0;
+    margin: 0;
+    float: left;
+    display: inline;
+    overflow: hidden;
+    border-right: 1px solid #eaedf2;
+}
+.pagination a, .pagination span {
+    margin: 0;
+    text-decoration: none;
+    line-height: 1em;
+    font-size: 1em;
+    font-weight: normal;
+    padding: 0.75em;
+    min-width: 1em;
+    display: block;
+    color: #2980b9;
+}
+.pagination a:hover, .pagination a:focus, .pagination span:hover, .pagination span:focus {
+    background-color: #2980b9;
+    color: white;
+}
+.pagination .current {
+    cursor: default;
+    color: #5c6b80;
+}
+.pagination .current:hover, .pagination .current:focus {
+    background-color: white;
+    color: #5c6b80;
+}
+/* end .geodirf_page_navi */
+/* fallback previous & next links */
+.wp-prev-next .prev-link {
+    float: left;
+}
+.wp-prev-next .next-link {
+    float: right;
+}
+/* end .wp-prev-next */
+/******************************************************************
+COMMENT STYLES
+******************************************************************/
+/* h3 comment title */
+#comments-title {
+    padding: 0.75em;
+    margin: 0;
+    border-top: 1px solid #f8f9fa;
+    /* number of comments span */
+}
+.commentlist {
+    margin: 0;
+    list-style-type: none;
+}
+.comment {
+    position: relative;
+    clear: both;
+    overflow: hidden;
+    padding: 1.5em;
+    border-bottom: 1px solid #f8f9fa; /* vcard */
+    /* end .commentlist .vcard */
+    /* end children */
+    /* general comment classes */
+}
+.comment .comment-author {
+    padding: 7px;
+    border: 0;
+}
+.comment .vcard {
+    margin-left: 50px;
+}
+.comment .vcard cite.fn {
+    font-weight: 700;
+    font-style: normal;
+}
+.comment .vcard time {
+    display: block;
+    font-size: 0.9em;
+    font-style: italic;
+}
+.comment .vcard time a {
+    color: #9fa6b4;
+    text-decoration: none;
+}
+.comment .vcard time a:hover {
+    text-decoration: underline;
+}
+.comment .vcard .avatar {
+    position: absolute;
+    left: 16px;
+    border-radius: 50%;
+}
+.comment:last-child {
+    margin-bottom: 0;
+}
+.comment .children {
+    margin: 0; /* variations */
+    /* change number for different depth */
+}
+.comment[class*=depth-] {
+    margin-top: 1.1em;
+}
+.comment.depth-1 {
+    margin-left: 0;
+    margin-top: 0;
+}
+.comment:not(.depth-1) {
+    margin-top: 0;
+    margin-left: 7px;
+    padding: 7px;
+}
+.comment.odd {
+    background-color: white;
+}
+.comment.even {
+    background: #f8f9fa;
+}
+/* comment meta */
+/* comment content */
+.comment_content p {
+    margin: 0.7335em 0 1.5em;
+    font-size: 1em;
+    line-height: 1.5em;
+}
+/* end .commentlist .comment_content */
+/* comment reply link */
+.comment-reply-link {
+    font-size: 0.9em;
+    float: right;
+}
+/* end .commentlist .comment-reply-link */
+/* edit comment link */
+.comment-edit-link {
+    font-style: italic;
+    margin: 0 7px;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+/******************************************************************
+COMMENT FORM STYLES
+******************************************************************/
+.comment-respond {
+    padding: 1.5em;
+    border-top: 1px solid #f8f9fa;
+}
+#reply-title {
+    margin: 0;
+}
+.logged-in-as {
+    color: #9fa6b4;
+    font-style: italic;
+    margin: 0;
+}
+.logged-in-as a {
+    color: #5c6b80;
+}
+.comment-form-comment {
+    margin: 1.5em 0 0.75em;
+}
+.form-allowed-tags {
+    padding: 1.5em;
+    background-color: #f8f9fa;
+    font-size: 0.9em;
+}
+/* comment submit button */
+#submit {
+    float: right;
+    font-size: 1em;
+}
+/* comment form title */
+#comment-form-title {
+    margin: 0 0 1.1em;
+}
+/* cancel comment reply link */
+/* logged in comments */
+/* allowed tags */
+#allowed_tags {
+    margin: 1.5em 10px 0.7335em 0;
+}
+/* no comments */
+.nocomments {
+    margin: 0 20px 1.1em;
+}
+/*********************
+SIDEBARS & ASIDES
+*********************/
+.widget ul li {
+    /* deep nesting */
+}
+.no-widgets {
+    background-color: white;
+    padding: 1.5em;
+    text-align: center;
+    border: 1px solid #cccccc;
+    border-radius: 2px;
+    margin-bottom: 1.5em;
+}
+#geodir_content .geodir_list_heading {
+    margin-top: -11px;
+}
+.geodir_list_heading {
+    margin-left: -10px;
+    margin-right: -10px;
+    padding: 0 10px;
+    background: none repeat scroll 0 0 #F7F7F7;
+    border-top: 1px #D3D0D0 solid;
+    border-bottom: 1px #D3D0D0 solid;
+    margin-bottom: 5px;
+}
+.geodir_list_heading h3 {
+    margin: 8px 0;
+    font-size: 16px;
+
+}
+.widget .geodir_list_heading h3 {
+    border-bottom: none;
+    margin-bottom: 8px;
+}
+.geodir_list_heading a {
+    font-size: 13px;
+}
+.ageodir_content .geodir-widget {
+    padding: 0 10px;
+    margin-top: -1px; /* This is to stop double border at the top*/
+}
+.geodir-widget {
+    margin-top: -1px; /* This is to stop double border at the top*/
+}
+#geodir_content .geodir_popular_post_view {
+    padding: 0;
+}
+/*********************
+FOOTER STYLES
+*********************/
+.footer {
+    clear: both;
+    /*background-color: #323944;
+	color: #f8f9fa;*/
+}
+/*
+#################################################
+STANDARD GDF OPTIONS STYLES
+#################################################
+*/
+header nav {
+    -webkit-border-top-left-radius: 2px;
+    -webkit-border-top-right-radius: 2px;
+    -moz-border-radius-topleft: 2px;
+    -moz-border-radius-topright: 2px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+header nav ul li:first-child a {
+    padding-left: 0;
+}
+@media only screen and (min-width: 1040px) {
+    .wrap, .geodir-common, .geodir-breadcrumb, #geodir_wrapper .geodir_full_page .geodir-search, #geodir_wrapper h1 {
+        width: 1040px;
+    }
+}
+.site-logo {
+    margin: 0 20px 0 30px;
+}
+h1.site-title a, h1.site-title a:hover {
+    color: #FFFFFF;
+    font-size: 40px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    line-height: 32px;
+}
+h2.site-description {
+    color: #FFFFFF;
+    font-size: 28px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    line-height: 22px;
+}
+.header {
+    background-color: #323944;
+}
+header nav .nav li a, header nav .nav li a:hover {
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+}
+.top-nav .sub-menu {
+    background-color: #323944;
+}
+.nav li ul.sub-menu,
+.nav li ul.children, .nav li ul.sub-menu li a, .nav li ul.sub-menu li ul.sub-menu li a, .nav li ul.children li a {
+    border-color: #ccc;
+}
+body {
+    background-color: #eaedf2;
+}
+.geodir-onethird, #geodir_content {
+    background-color: #FFFFFF;
+}
+.geodir-content-right, .geodir-content-left, .gd-third-left, .gd-third-right, #gd-sidebar-wrapper {
+    background-color: #FFFFFF;
+}
+.geodir_button, .geodir_submit_search, .blue-btn, .comment-reply-link, #submit, button, input[type="button"], input[type="submit"], #simplemodal-container .button, #geodir_wrapper #showFilters {
+    background-color: #f47a20;
+}
+.geodir_button:hover, .geodir_submit_search:hover, .blue-btn:hover, .comment-reply-link:hover, #submit:hover, .blue-btn:focus, .comment-reply-link:focus, #submit:focus, button:focus, input[type="button"]:focus, input[type="submit"]:focus, #simplemodal-container .button:focus, .geodir_button:active, .geodir_submit_search:active, .blue-btn:active, .comment-reply-link:active, #submit:active, button:active, input[type="button"]:active, input[type="submit"]:active, #simplemodal-container .button:active, .geodir_button:hover, .geodir_submit_search:hover, .blue-btn:hover, .comment-reply-link:hover, #submit:hover, button:hover, input[type="button"]:hover, input[type="submit"]:hover, #simplemodal-container .button:hover, #geodir_wrapper #showFilters:hover, #geodir_wrapper #showFilters:focus, #geodir_wrapper #showFilters:active {
+    background-color: #faa51a;
+}
+body, #geodir_wrapper .geodir-common p, .entry-content p, .hreview-aggregate span {
+    color: #757575;
+    font-size: 14px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    line-height: 22px;
+}
+a, .geodir_link_span, .geodir-more-contant li a span.geodir_link_span, #geodir_wrapper #geodir-category-list a span.geodir_link_span {
+    color: #f01d4f;
+}
+a:hover {
+    color: #d10e3c;
+}
+a:active {
+    color: #d10e3c;
+}
+a:visited {
+    color: #f01d4f;
+}
+h1 {
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 21px;
+}
+h2 {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 22px;
+}
+h3, #simplemodal-container h3 {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+}
+.footer {
+    background-color: #323944;
+}
+.footer, .footer a, .footer a:focus, .footer a:hover, .footer .nav li a, .footer .nav li a:focus, .footer .nav li a:hover {
+    color: #FFFFFF;
+}
+/* this rule stops the submenu items apearing behind main menu items if the menu is on two lines */
+header nav ul li:nth-child(2) {
+    z-index: 1499;
+}
+header nav ul li:nth-child(3) {
+    z-index: 1498;
+}
+header nav ul li:nth-child(4) {
+    z-index: 1497;
+}
+header nav ul li:nth-child(5) {
+    z-index: 1496;
+}
+header nav ul li:nth-child(6) {
+    z-index: 1495;
+}
+header nav ul li:nth-child(7) {
+    z-index: 1494;
+}
+header nav ul li:nth-child(8) {
+    z-index: 1493;
+}
+header nav ul li:nth-child(9) {
+    z-index: 1492;
+}
+header nav ul li:nth-child(10) {
+    z-index: 1491;
+}
+header nav ul li:nth-child(11) {
+    z-index: 1490;
+}
+header nav ul li:nth-child(12) {
+    z-index: 1489;
+}
+header nav ul li:nth-child(13) {
+    z-index: 1488;
+}
+header nav ul li:nth-child(14) {
+    z-index: 1487;
+}
+header nav ul li:nth-child(15) {
+    z-index: 1486;
+}
+header nav ul li:nth-child(16) {
+    z-index: 1485;
+}
+/*
+#################################################
+ADVANCED SEARCH FILTERS
+#################################################
+*/
+
+@media only screen and (min-width: 1040px) {
+    .geodir_advance_search .geodir_full_page .geodir-search input[type="text"] {
+        width: 33%;
+    }
+    .geodir_advance_search .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 15.5%;
+        font-size: 16px;
+    }
+    .geodir_advance_search .geodir_full_page .showFilters,
+    .geodir_advance_search.geodir_custom_posts .geodir_full_page .showFilters {
+        width: 13%;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+        margin-left: 1%;
+        font-size: 16px;
+    }
+
+}
+/*
+#################################################
+CUSTOM POST TYPES
+#################################################
+*/
+@media only screen and (min-width: 768px) {
+    .geodir_custom_posts .geodir_full_page .geodir-search input[type="text"] {
+        width: 33%;
+    }
+    .geodir_custom_posts .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 15.5%;
+        font-size: 16px;
+    }
+    .geodir_custom_posts .showFilters {
+        height: 38px;
+    }
+    .geodir_custom_posts .geodir-search select {
+        width: 15.5%;
+        margin-left: 0;
+        margin-right: 1%;
+    }
+    .geodir_custom_posts .geodir-content-right .geodir-search select {
+        width: 100%;
+        margin: 5px;
+    }
+    .geodir_custom_posts .geodir-content-left .geodir-search select {
+        width: 100%;
+        margin: 5px;
+    }
+    .whoop-account {
+        margin-right: 30px;
+    }
+}
+/*
+#################################################
+ADVANCED SEARCH FILTERS && CUSTOM POST TYPES
+#################################################
+*/
+@media only screen and (min-width: 1040px) {
+    .geodir_advance_search.geodir_custom_posts .geodir_full_page .geodir-search input[type="text"] {
+        width: 27.5%;
+    }
+    .geodir_advance_search.geodir_custom_posts .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 15.5%;
+        font-size: 16px;
+    }
+    .geodir_advance_search.geodir_custom_posts .geodir_full_page .geodir-search select {
+        width: 10%;
+        margin-left: 0;
+        margin-right: 1%;
+    }
+}
+/*
+#################################################
+LOCATION MANAGER ADDON
+#################################################
+*/
+ul li.gd-location-switcher a {
+    background-position: -1px 15px;
+    padding-left: 15px;
+}
+#mm-mobile-navigation-left ul li.gd-location-switcher a {
+    background-position: 0 11px;
+}
+#mm-mobile-navigation-left ul li.gd-location-switcher a:first-child {
+    background-image: none;
+}
+#mm-mobile-navigation-left dd a {
+    width: 100%;
+    padding: 7px;
+    float: left;
+    margin: 0 0 8px;
+}
+#mm-mobile-navigation-left dd {
+    width: 33%;
+}
+#mm-mobile-navigation-left .geodir-chosen-container .chosen-results li.active-result {
+    color: #444;
+}
+#mm-mobile-navigation-left .geodir-chosen-container .chosen-results li.highlighted {
+    color: #FFF;
+}
+/* LISTING GRID WIDTHS
+.geodir_category_list_view li.gridview_onefifth{ width: -webkit-calc(20% - 2.5px);width: -moz-calc(20% - 2.5px);width: calc(20% - 2.5px);}
+
+.geodir_category_list_view li.gridview_onefourth{ width: -webkit-calc(25% - 2.5px);width: -moz-calc(25% - 2.5px);width: calc(25% - 2.5px);}
+
+.geodir_category_list_view li.gridview_onethird{ width: -webkit-calc(33.3% - 2px);width: -moz-calc(33.3% - 2px);width: calc(33.3% - 2px);}
+
+.geodir_category_list_view li.gridview_onehalf{ width: -webkit-calc(50% - 2px);width: -moz-calc(50% - 2px);width: calc(50% - 2px);}
+*/
+
+/*
+#################################################
+Place Detail Page
+#################################################
+*/
+.geodir-big-header {
+    padding: 10px;
+}
+.geodir-big-header-title {
+    margin-bottom: 7px;
+}
+.geodir-big-header-rc {
+    text-decoration: none;
+    font-size: 14px;
+}
+.geodir-big-header-ratings {
+    overflow: hidden;
+    width: 300px;
+    float: left;
+}
+.geodir-big-header-ratings .geodir-rating,
+.geodir-big-header-ratings .geodir-big-header-rc {
+    float: left;
+    margin-right: 7px;
+}
+.geodir-big-header-ratings .geodir-big-header-rc {
+    font-weight: normal;
+    color: #555;
+}
+.geodir-big-header-cats {
+    display: block;
+    clear: both;
+}
+.geodir-big-header-cats a {
+    display: inline-block;
+    margin-right: 5px;
+    text-decoration: none;
+}
+.geodir-big-header-buttons {
+    float: right;
+    position: relative;
+}
+.geodir-big-header-buttons a:visited,
+.geodir-big-header-buttons a:active {
+    color: #fff;
+}
+.geodir-listing-map-inner-div {
+    width: 30%;
+    font-size: 14px;
+}
+.geodir-listing-slider-div {
+    width: 69%;
+}
+.geodir-listing-map-box-div {
+    padding: 5px;
+    background: #FFFFFF;
+    border: 1px solid #cccccc;
+}
+.geodir-listing-map-box-div div#sticky_map_detail_page_map_canvas {
+    margin-bottom: 0;
+}
+.geodir-listing-map-box-div input {
+    display: none;
+}
+.geodir-listing-map-box-div img {
+    display: block;
+    max-width: 100%;
+}
+.geodir-listing-map-box-div a {
+    text-decoration: none;
+}
+.geodir-listing-map-div {
+    display: block;
+}
+#geodir_carousel_whoop {
+    position: relative;
+    width: 660px;
+    height: 220px;
+}
+.whoop-img-track {
+    position: relative;
+    width: 660px;
+    height: 220px;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+.whoop-img-track .whoop-photo, .whoop-img-track:hover .whoop-photo {
+    z-index: 1000;
+    display: block;
+    position: absolute;
+    margin: -15px;
+    width: 250px;
+    height: 250px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+    -webkit-transition-property: -webkit-transform, box-shadow;
+    transition-property: transform, box-shadow;
+    -webkit-transform: scale(0.88) translateZ(0);
+    -moz-transform: scale(0.88) translateZ(0);
+    -ms-transform: scale(0.88) translateZ(0);
+    transform: scale(0.88) translateZ(0);
+}
+.whoop-img-track .whoop-photo {
+    display: block;
+}
+.whoop-img-track .whoop-photo-1 {
+    left: 0;
+}
+.whoop-img-track .whoop-photo-2 {
+    left: 220px
+}
+.whoop-img-track .whoop-photo-3 {
+    left: 440px
+}
+@media only screen and (min-width: 1009px) {
+    .whoop-img-track .whoop-photo-2, .whoop-img-track:hover .whoop-photo:hover {
+        z-index: 1001;
+        -webkit-box-shadow: 0 0 25px -3px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 25px -3px rgba(0, 0, 0, 0.5);
+        -webkit-transform: translate3d(0,0,0);
+        -moz-transform: translate3d(0,0,0);
+        -ms-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+    }
+}
+.whoop-img-track .whoop-photo:before {
+    z-index: -1;
+    content: "...";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-right: 10px;
+    font-size: 50px;
+    font-family: monospace;
+    letter-spacing: -15px;
+    text-align: center;
+    line-height: 230px;
+    background: #ededea;
+    color: white;
+}
+.whoop-show-all-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.1));
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0.1));
+    font-size: 16px;
+    text-align: center;
+    text-shadow: 1px 1px 1px black;
+}
+.whoop-show-all-overlay i {
+    display: block;
+    margin: 95px auto 6px;
+    font-size: 20px;
+}
+a.whoop-show-all-overlay,
+a.whoop-show-all-overlay:visited,
+a.whoop-show-all-overlay:active,
+a.whoop-show-all-overlay:hover {
+    color: white;
+}
+.geodir-listing-map-inner-div,
+.geodir-listing-slider-div {
+    display: table-cell;
+    vertical-align: middle;
+}
+.whoop-account-details {
+    z-index: 1001;
+    display: none;
+}
+#comments .comments-title {
+    margin-bottom: 10px;
+}
+.geodir_category_list_view.whoop-view li .geodir-addinfo {
+    width: auto;
+    float: left;
+}
+.geodir_category_list_view.whoop-view h3 {
+    margin-bottom: 7px;
+}
+.geodir_category_list_view.whoop-view .geodir-entry-meta {
+    overflow: hidden;
+}
+#geodir_content .geodir_category_list_view.whoop-view .geodir-addinfo,
+.geodir_category_list_view.whoop-view .geodir-big-header-ratings {
+    width: auto;
+}
+.geodir_category_list_view.whoop-view .geodir-whoop-address {
+    overflow: hidden;
+    width: 49%;
+    float: right;
+}
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
+    width: 65%;
+}
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-entry-content {
+    width: 49%;
+    float: left;
+}
+.geodir_category_list_view.whoop-view li .geodir-category-listing {
+    overflow: hidden;
+}
+.geodir-whoop-listing-review {
+    margin-top: 15px;
+}
+.geodir-whoop-listing-review div {
+    margin-left: 40px;
+    line-height: 18px;
+    height: 36px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.geodir-whoop-listing-review img {
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
+    border-radius: 4px;
+}
+.geodir_category_list_view.whoop-view li .geodir-addinfo span {
+    clear: both;
+    padding-bottom: 0;
+}
+.geodir-gridview .geodir-whoop-address,
+.geodir-gridview .geodir-whoop-listing-review {
+    display: none;
+}
+.geodir-gridview .geodir-big-header-rc {
+    display: block;
+    clear: both;
+}
+.geodir_category_list_view.whoop-view li.geodir-gridview h3,
+.gdbp-listings-page .geodir_category_list_view li.geodir-gridview h3,
+.geodir_category_list_view li.geodir-gridview h3 {
+    margin: 10px 0 7px;
+}
+.geodir_category_list_view.whoop-view li.geodir-gridview .geodir-addinfo {
+    margin-left: 0;
+}
+.geodir_category_list_view.whoop-view li.geodir-gridview .geodir-content .geodir-entry-content {
+    display: block;
+}
+#mobile-navigation-left ul {
+    margin: 5px 0 10px 0;
+}
+#mobile-navigation-left ul li {
+    display: inline-block;
+}
+/*#mobile-navigation-left ul li a,*/
+a.whoop-login-btn,
+header nav .nav li a,
+header nav .nav li a:hover {
+    display: block;
+    padding: 0 8px;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #f5f5f1;
+}
+#mobile-navigation-left ul li a:hover,
+a.whoop-login-btn:hover {
+    background: #D7473B;
+    -webkit-box-shadow: inset 0 1px 0 #c33f01, 0 1px 0 #c33f01;
+    box-shadow: inset 0 1px 0 #c33f01, 0 1px 0 #c33f01;
+}
+.header-right-area .geodir_advance_search_widget input[type="text"],
+.header-right-area .geodir_advance_search_widget select {
+    background: rgba(250, 249, 246, 0.95);
+    height: 30px;
+    padding: 5px 4px;
+    box-sizing: border-box;
+    line-height: 20px;
+}
+.header-right-area .geodir_submit_search,
+.header-right-area .showFilters{
+    border: 1px solid #B64425;
+    background: #e34f43;
+    border-radius: 3px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    line-height: 18px;
+    margin: 5px;
+    height: 30px;
+    /*padding: 5px 10px 1px;*/
+}
+.geodir-common, .geodir-breadcrumb {
+    width: auto !important;
+}
+#geodir_wrapper {
+    padding: 15px 30px 30px;
+    border: 1px solid #ccccc8;
+    border-top: none;
+    background: white;
+    width: 1040px;
+    margin: 0 auto;
+}
+.geodir-onethird, #geodir_content, #gd-sidebar-wrapper {
+    border: none;
+}
+.header {
+    /*border-bottom: 1px solid #e44e44;*/
+    /*-webkit-box-shadow: 0 -17px 40px -20px #e44e00 inset;*/
+    /*-moz-box-shadow: 0 -17px 40px -20px #e44e00 inset;*/
+    /*box-shadow: 0 -17px 40px -20px #e44e44 inset;*/
+    z-index: 1000;
+}
+.geodir_list_heading {
+    background: none;
+    border: none;
+}
+h3, .geodir_list_heading h3 {
+    font-size: 16px;
+    color: #e34f43;
+}
+.geodir-sidebar-wrap .widget .widget-title {
+    border: none;
+}
+a, a:visited, a:active, a:hover {
+    color: #3b65a7;
+    text-decoration: none;
+    outline: 0;
+}
+a:focus {
+    outline: 0;
+}
+body, #geodir_wrapper .geodir-common p, .entry-content p, .hreview-aggregate span {
+    color: #333;
+}
+#breadcrumbs {
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.geodir-breadcrumb ul li {
+    margin-bottom: 0;
+}
+.geodir-tags {
+    float: left;
+}
+#geodir_content {
+    padding: 10px 0;
+    /*border-right: 1px solid #e5e5e1;*/
+}
+.archive .entry-header h1,
+.search .entry-header h1 {
+    color: #333;
+    font-size: 21px;
+}
+.whoop-account {
+    float: right;
+    margin-top: 20px;
+    position: relative;
+}
+.whoop-account .whoop-account-dd-link img,
+.whoop-account .whoop-account-dd-link img {
+    float: left;
+    height: 28px;
+    width: 28px;
+    border-right: 1px solid #7b0000;
+}
+.whoop-account .whoop-account-dd-link img {
+    border-radius: 100px;
+    vertical-align: middle;
+}
+.whoop-account a.whoop-account-dd-link {
+    display: inline-block;
+    color: #fff;
+}
+.whoop-account a i {
+    margin-left: 5px;
+}
+/*
+#################################################
+Whoop Button styles
+#################################################
+*/
+.whoop-btn,
+.whoop-btn-group .geodir-addtofav a,
+.geodir_button,
+
+.blue-btn,
+.comment-reply-link,
+#submit, button,
+input[type="button"],
+input[type="submit"],
+#simplemodal-container .button,
+#geodir_wrapper #showFilters,
+#buddypress button,
+#buddypress a.button,
+#buddypress input[type=submit],
+#buddypress input[type=button],
+#buddypress input[type=reset],
+#buddypress ul.button-nav li a,
+#buddypress div.generic-button a,
+#buddypress .comment-reply-link,
+a.bp-title-button {
+    cursor: pointer;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 7px 16px;
+    border: 1px solid;
+    border-color: #cdcdcd;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.28571em;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    background: #f8f8f8;
+    background: -webkit-linear-gradient(white,
+    #eee);
+    background: linear-gradient(white, #eee);
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 0 -2px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 1px white;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 0 -2px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 1px white;
+    text-shadow: none;
+}
+.whoop-btn-primary,
+.geodir_button,
+.geodir_submit_search,
+.showFilters,
+.blue-btn,
+.comment-reply-link,
+#submit, button,
+input[type="button"],
+input[type="submit"],
+#simplemodal-container .button,
+#geodir_wrapper #showFilters,
+#members-dir-search #members_search_submit,
+#buddypress input[type=submit]#aw-whats-new-submit,
+#buddypress input[type=submit]#profile-group-edit-submit,
+#buddypress button.comp-submit-btn {
+    color: white;
+    border: none;
+    background: #e34f43 none;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 -1px 0 #760400;
+}
+.geodir_button:hover,
+.geodir_submit_search:hover,
+.blue-btn:hover,
+.comment-reply-link:hover,
+#submit:hover,
+.blue-btn:focus,
+.comment-reply-link:focus,
+#submit:focus,
+button:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+#simplemodal-container .button:focus,
+.geodir_button:active,
+.geodir_submit_search:active,
+.blue-btn:active,
+.comment-reply-link:active,
+#submit:active,
+button:active,
+input[type="button"]:active,
+input[type="submit"]:active,
+#simplemodal-container .button:active,
+.geodir_button:hover,
+.geodir_submit_search:hover,
+.blue-btn:hover,
+.comment-reply-link:hover,
+#submit:hover,
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+#simplemodal-container .button:hover,
+#geodir_wrapper #showFilters:hover,
+#geodir_wrapper #showFilters:focus,
+#geodir_wrapper #showFilters:active {
+    background-color: #dc2f21;
+}
+a.whoop-btn-primary:hover, a.whoop-btn-primary:visited {
+    color: white;
+}
+a.whoop-btn-primary {
+    text-decoration: none;
+}
+.whoop-btn-small,
+.whoop-btn-group .geodir-addtofav a,
+#buddypress div.generic-button a,
+#members-dir-search input[type="submit"],
+#buddypress input[type=submit]#messages_search_submit,
+#bbp-search-form input[type="submit"],
+#buddypress input[type=submit]#reviews_search_submit {
+    padding: 5px 8px;
+    font-size: 12px;
+    line-height: 1.5em;
+    height: auto;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.whoop-btn-group {
+    display: table;
+}
+.whoop-btn-group .whoop-btn:first-child {
+    border-radius: 3px 0 0 3px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 1px -1px 0 0 #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 1px -1px 0 0 #fff;
+}
+.whoop-btn-group .whoop-btn,
+.whoop-btn-group .geodir-addtofav a {
+    position: relative;
+    float: left;
+    border-radius: 0;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 0 -1px 0 0 #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 0 -1px 0 0 #fff;
+}
+.whoop-btn-group .whoop-btn:last-child,
+.whoop-btn-group .geodir-addtofav a {
+    border-radius: 0 3px 3px 0;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset -1px -1px 0 0 #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset -1px -1px 0 0 #fff;
+}
+.whoop-btn-group .whoop-btn + .whoop-btn {
+    margin-left: -1px;
+}
+.whoop-write-rev-btn {
+    float: left;
+    padding-left: 12px;
+    margin: 0 12px 0 0;
+}
+.whoop-btn-group a:hover,
+.whoop-btn-group a:active,
+.whoop-btn-group a:visited {
+    color: #333;
+}
+.whoop-btn-disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+/*
+#################################################
+Reviews
+#################################################
+*/
+#reviewsTab .comments-area .comment-author,
+.whoop-event-comment .comments-area .comment-author,
+#reviewsTab .comments-area .comment-content,
+.whoop-event-comment .comments-area .comment-content,
+#bbpress-forums .bbp-replies div.bbp-reply-author,
+#bbpress-forums .bbp-replies div.bbp-reply-content,
+.whoop-forum-cats,
+.gd-list-item-author,
+.inline-layout > li {
+    float: left;
+    padding: 0 15px;
+    min-height: 1px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+}
+#reviewsTab .comments-area .comment-author,
+.whoop-event-comment .comments-area .comment-author {
+    width: 33.33333%;
+}
+#reviewsTab .comments-area .comment-content,
+.whoop-event-comment .comments-area .comment-content {
+    width: 66.66667%;
+}
+#comments.comments-area {
+    border-top: none;
+}
+.comment.even, #comments .gdreview_section {
+    background: transparent;
+    padding: 0;
+}
+.comment {
+    border-bottom: none;
+    clear: none;
+}
+.single .comment .vcard .avatar {
+    border-radius: 4px;
+    margin-right: 9px;
+}
+#reviewsTab ol.commentlist li,
+.whoop-event-comment ol.commentlist li {
+    margin: 0;
+    padding: 18px 0 17px;
+    border-bottom: 1px solid #e5e5e1;
+}
+.comment:not(.depth-1) {
+    padding: 0;
+}
+#reviewsTab .commentlist .children,
+.whoop-event-comment .commentlist .children {
+    margin-left: 0;
+}
+#reviewsTab .commentlist .children li,
+.whoop-event-comment .commentlist .children li {
+    border-bottom: none;
+}
+.whoop-review-rating p,
+.whoop-event-comment .comment-content p {
+    display: inline-block;
+    float: left;
+    margin-left: 5px;
+    margin-bottom: 0 !important;
+    padding-top: 0;
+}
+.whoop-event-comment .comment-content p {
+    margin-top: 0;
+}
+#reviewsTab .comments-area .comment-content .whoop-review-rating p span {
+    color: #555;
+    font-weight: normal;
+}
+#reviewsTab ol.commentlist li:last-child {
+    border-bottom: none;
+}
+.whoop-review-rating .geodir-rating {
+    display: inline-block;
+    float: left;
+}
+.comment .description {
+    clear: both;
+}
+.whoop-title {
+    color: #333;
+    font-size: 30px;
+    line-height: normal;
+}
+.whoop-dd-menu-with-arrow {
+    border-radius: 3px;
+    margin-top: 10px;
+}
+.whoop-dd-menu {
+    display: none;
+    position: absolute;
+    z-index: 111;
+    right: 0;
+    padding: 12px;
+    min-width: 217px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.whoop-dd-menu-arrow {
+    position: relative;
+    top: -12px;
+}
+.whoop-dd-menu-arrow:before {
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    border-width: 11px;
+    margin-left: -11px;
+}
+.whoop-dd-menu-arrow:after, .whoop-dd-menu-arrow:before,
+.whoop-next-content:before,
+.whoop-next-content:after {
+    border: solid transparent;
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.whoop-dd-menu-arrow:after, .whoop-dd-menu-arrow:before {
+    bottom: 100%;
+    right: 8px;
+    content: "";
+}
+.whoop-dd-menu-arrow:after {
+    border-bottom-color: white;
+    border-width: 10px;
+    margin-left: -10px;
+}
+.whoop-photo-box img {
+    border-radius: 4px;
+}
+.whoop-user-name a {
+    font-size: 14px;
+    line-height: 1.28571em;
+    font-weight: bold;
+}
+.whoop-account-info,
+ul.geodir_recent_reviews li {
+    position: relative;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.whoop-account-info {
+    font-size: 12px;
+    line-height: 1.5em;
+}
+.whoop-media-avatar {
+    border-right-width: 9px;
+}
+.whoop-account-info > .whoop-media-avatar {
+    border-right: 9px solid transparent;
+    border-left: none;
+}
+.whoop-media-info {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.whoop-user-info {
+    margin: 0;
+}
+.whoop-dd-menu-group + .whoop-dd-menu-group {
+    margin: 12px 0 0;
+    border-top: 1px solid #e5e5e1;
+    padding-top: 11px;
+}
+.whoop-dd-menu-link a {
+    display: block;
+    word-wrap: break-word;
+}
+.geodir_whoop_biz_photos_wrap {
+    margin-top: 10px;
+    width: 100%;
+    clear: both;
+}
+.geodir_whoop_biz_photos {
+    border-bottom: 1px solid #e5e5e1;
+    overflow: hidden;
+}
+.geodir_whoop_biz_photos .whoop-biz-photo {
+    width: 131px;
+    height: 175px;
+    margin: 0 5px 0 0;
+    overflow: hidden;
+    float: left;
+    font-size: 10px;
+}
+.geodir_whoop_biz_photos .whoop-biz-photo-wrap {
+    overflow: hidden;
+}
+.whoop-biz-photo-box {
+    border: 7px solid #fff;
+    margin: 0 10px 0 5px;
+    float: left;
+}
+.whoop-biz-photo-box img {
+    outline: none;
+    border-radius: 4px;
+}
+.whoop-biz-photo.selected .whoop-biz-photo-box {
+    border: 7px solid #fff7c9;
+}
+.geodir_whoop_biz_photo_selected-frame {
+    width: 648px;
+    height: 410px;
+    margin-left: 9px;
+    table-layout: fixed;
+    text-align: center;
+    display: table;
+    position: relative;
+}
+.geodir_whoop_biz_photo_selected-frame .biz-photo-inner {
+    display: table-cell !important;
+    vertical-align: middle !important;
+}
+.geodir_whoop_biz_photo_selected-frame img {
+    max-height: 410px;
+    max-width: 100%;
+}
+.geodir_whoop_biz_photo_selected-info {
+    float: right;
+    width: 275px;
+    padding-top: 10px;
+    height: auto;
+    position: relative;
+}
+.geodir_whoop_biz_photo_selected {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-top: -1px;
+}
+h2.geodir-biz-header-title {
+    font-size: 21px;
+    color: #333;
+    margin: 0;
+    font-weight: normal;
+}
+.geodir-biz-header-wrap {
+    display: table;
+    width: 100%;
+    padding-bottom: 17px;
+    margin-bottom: 11px;
+    border-bottom: 1px solid #e5e5e1;
+}
+.whoop-add-button-wrap {
+    display: table-cell;
+    padding-left: 15px;
+    text-align: right;
+    white-space: nowrap;
+}
+.whoop-biz-nav-wrap {
+    margin-top: 8px;
+    position: relative;
+    height: 51px;
+    overflow: hidden;
+}
+.whoop-biz-nav-links {
+    width: 234px;
+    height: 100%;
+    float: left;
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-bottom: none;
+}
+.whoop-biz-nav-links a,
+.whoop-biz-nav-links .whoop-media-nav-count {
+    position: relative;
+    top: 14px;
+    vertical-align: baseline;
+}
+#geodir_wrapper .location_list_heading {
+    background: none;
+    border: none;
+}
+#geodir_wrapper .geodir_location_listing .location_list_heading h3 {
+    font-size: 16px;
+}
+.geodir-category-list-in {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+.geodir_reviewer_image {
+    width: 60px;
+    border-right: 12px solid transparent;
+    margin: 0;
+    box-sizing: content-box;
+}
+.geodir_reviewer_image img {
+    border-radius: 4px;
+}
+.widget {
+    padding: 0;
+}
+.geodir-company_info {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+.geodir-company_info .geodir_more_info {
+    border-bottom: 1px dashed #eee;
+}
+ul.geodir_recent_reviews li {
+    padding-top: 0;
+}
+.entry-content img.wp-smiley {
+    margin: 0;
+}
+.geodir-loc-bar-in {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+.geodir-loc-bar {
+    border: none;
+}
+.widget .geodir-search {
+    margin-right: 0;
+}
+@media only screen and (min-width: 1040px) {
+    .geodir_custom_posts .geodir-content-right .widget .geodir-search select,
+    .widget .geodir-search input[type="text"] {
+        margin: 5px 0;
+    }
+}
+.header-right-area .widget .geodir-search input[type="text"] {
+    margin-right: 1%;
+}
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+select,
+textarea,
+.field,
+#buddypress .standard-form textarea,
+#buddypress .standard-form input[type=text],
+#buddypress .standard-form input[type=text],
+#buddypress .standard-form input[type=color],
+#buddypress .standard-form input[type=date],
+#buddypress .standard-form input[type=datetime],
+#buddypress .standard-form input[type=datetime-local],
+#buddypress .standard-form input[type=email],
+#buddypress .standard-form input[type=month],
+#buddypress .standard-form input[type=number],
+#buddypress .standard-form input[type=range],
+#buddypress .standard-form input[type=search],
+#buddypress .standard-form input[type=tel],
+#buddypress .standard-form input[type=time],
+#buddypress .standard-form input[type=url],
+#buddypress .standard-form input[type=week],
+#buddypress .standard-form select,
+#buddypress .standard-form input[type=password],
+#buddypress .dir-search input[type=search],
+#buddypress .dir-search input[type=text],
+#buddypress .groups-members-search input[type=search],
+#buddypress .groups-members-search input[type=text] {
+    display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px;
+    background: #fafafa;
+    background: rgba(250, 250, 249, 0.9);
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    line-height: 1.28571em;
+    margin: 0 0 9px;
+    height: auto;
+}
+.geodir_form_row {
+    padding: 0;
+}
+.geodir-search select,
+.geodir-search input[type="text"] {
+    background: #fafafa;
+    background: rgba(250, 250, 249, 0.9);
+}
+.gdf_welcome_login_wrap {
+    clear: both;
+    overflow: hidden;
+}
+.sidebar section.widget,
+.sidebar .gdf_welcome_login_wrap {
+    margin-bottom: 18px;
+    border-bottom: 1px solid #e5e5e1;
+    padding-bottom: 17px;
+    overflow: hidden;
+}
+.sidebar section.widget.geodir_loginbox {
+    overflow: visible;
+}
+.widget {
+    margin: 0;
+}
+ul.geodir_recent_reviews {
+    margin: 0;
+}
+ul.geodir_recent_reviews li {
+    border-bottom: none;
+    padding: 0;
+}
+.geodir_reviewer_content p {
+    margin: 0;
+}
+.geodir-loginbox-list li {
+    border-bottom: none;
+}
+.geodir-company_info p {
+    padding: 5px 0;
+    margin: 5px 0;
+    border-bottom: 1px dashed #eee;
+}
+.bp-user #geodir_content,
+.error404 #geodir_content {
+    width: 100%;
+}
+.page.listing-preview #geodir_content {
+    width: 67%;
+}
+.whoop-sharing-buttons {
+    margin-top: 10px;
+}
+#buddypress div.pagination .pagination-links span,
+#buddypress div.pagination .pagination-links a {
+    float: left;
+    padding: 0;
+}
+#members-dir-search form,
+.message-search {
+    width: 300px;
+}
+#members-dir-search #members_search,
+.message-search #messages_search {
+    float: left;
+    width: 60%;
+    height: 30px;
+}
+#members-dir-search #members_search_submit,
+.message-search #messages_search_submit {
+    float: right;
+    width: 37%;
+}
+#buddypress div.dir-search {
+    margin: -70px 0 0 0;
+}
+#whats-new-options {
+    height: 75px !important;
+}
+#buddypress form#whats-new-form textarea {
+    width: 100%;
+}
+#buddypress a.button {
+    font-weight: normal;
+    font-size: 13px;
+}
+#buddypress div.message-search {
+    margin: 0;
+}
+#buddypress #item-nav div.item-list-tabs ul li {
+    padding: 0 0 0 10px;
+    margin: 0 2px 0 0;
+    font-size: 11px;
+    float: left;
+    background: #e5e5e1;
+    border-radius: 5px 5px 0 0;
+}
+#buddypress #item-nav div.item-list-tabs ul li a {
+    display: block;
+    float: left;
+    color: #3b65a7;
+    padding: 4px 10px 4px 0;
+    outline: 0;
+}
+#buddypress #item-nav div.item-list-tabs ul li.selected a,
+#buddypress #item-nav div.item-list-tabs ul li.current a {
+    background-color: transparent;
+    color: #fff;
+}
+#buddypress #item-nav div.item-list-tabs ul li.selected,
+#buddypress #item-nav div.item-list-tabs ul li.current {
+    background-color: #3b65a7;
+}
+#buddypress #item-nav div.item-list-tabs ul li a span {
+    background: #FCF5F5;
+}
+#buddypress #item-nav div.item-list-tabs ul {
+    overflow: hidden;
+}
+.whoop-member-title {
+    margin: 0 0 15px;
+    background: #f5f5f1;
+    border: 1px solid #ccccc8;
+    position: relative;
+    top: -1px;
+}
+.whoop-member-title h1 {
+    margin: 5px 10px;
+    font-weight: bold;
+    color: #e34f43;
+    font-size: 17px;
+}
+#item-header-avatar img {
+    border-radius: 4px;
+}
+body {
+    background-color: #f5f5f1;
+}
+.footer {
+    background-color: transparent;
+}
+.footer #widget-footer {
+    margin: 36px auto 0;
+    border-bottom: 1px solid #DDDEDA;
+}
+.footer hr {
+    border-bottom: none;
+}
+.footer .copyright {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    margin: 18px 0;
+}
+.footer .footer-nav {
+    font-size: 12px;
+    color: #555;
+}
+.footer-links-active .copyright {
+    display: inline-block;
+}
+.footer,
+.footer a,
+.footer a:focus,
+.footer a:hover,
+.footer .nav li a,
+.footer .nav li a:focus,
+.footer .nav li a:hover {
+    color: #3b65a7;
+}
+#widget-footer ul li {
+    margin-bottom: 6px;
+}
+.whoop-member-item-wrap #item-header {
+    width: 25%;
+    float: left;
+}
+.whoop-member-item-wrap #item-body {
+    width: 74%;
+    float: left;
+}
+body.profile.public .whoop-member-item-wrap #item-body {
+    width: 49%;
+}
+.whoop-member-item-wrap #gd-sidebar-wrapper {
+    width: 25%;
+    float: right;
+    margin: 0;
+}
+.gdbp-wrapper-reviews,
+.whoop-member-profile-reviews {
+    margin-top: 0;
+    clear: both;
+}
+.gdbp-wrapper-reviews .geodir_thumbnail,
+.whoop-member-profile-reviews .geodir_thumbnail,
+.whoop-next-avatar .geodir_thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    float: left;
+}
+.gdbp-wrapper-reviews .comment .vcard,
+.whoop-member-profile-reviews .comment .vcard {
+    margin-left: 0;
+    overflow: hidden;
+}
+.gdbp-wrapper-reviews li.comment,
+.whoop-member-profile-reviews li.comment {
+    padding: 18px 0;
+}
+.gdbp-wrapper-reviews .commentlist > li,
+.whoop-member-profile-reviews > li {
+    margin: 0 !important;
+    border-bottom: 1px solid #e5e5e1;
+    padding: 18px 0 17px;
+}
+.gdbp-wrapper-reviews header > a,
+.whoop-member-profile-reviews header > a {
+    display: block;
+    overflow: hidden;
+    width: 60px;
+    float: left;
+    margin-right: 10px;
+}
+.gdbp-wrapper-reviews .whoop-member-post-metas,
+.whoop-member-profile-reviews .whoop-member-post-metas {
+    float: left;
+    display: block;
+    width: auto;
+}
+.gdbp-wrapper-reviews .whoop-member-post-metas a,
+.whoop-member-profile-reviews .whoop-member-post-metas a {
+    font-weight: bold;
+}
+#buddypress #item-body {
+    border-left: 1px solid #e5e5e1;
+    padding: 0 15px;
+}
+#buddypress ul#members-list li,
+.widget_bp_whoop_friends_widget ul#members-list ,
+.widget_bp_whoop_friends_widget ul.ayi-list-users li {
+    float: left;
+    border-bottom: none;
+    margin: 5px;
+    padding: 0;
+}
+#buddypress ul#members-list li,
+.widget_bp_whoop_friends_widget ul#members-list li {
+    width: 120px;
+}
+.widget_bp_whoop_friends_widget ul.item-list li img.avatar {
+    float: left;
+    margin: 0 10px 0 0;
+}
+.widget_bp_whoop_friends_widget ul.item-list {
+    width: 100%;
+    list-style: none;
+    clear: both;
+    margin: 0;
+    padding: 0;
+}
+#members-list li .item,
+#members-list li .action {
+    clear: both;
+}
+#buddypress ul#members-list li div.action {
+    position: static;
+    text-align: left;
+}
+#members-list .item-avatar img {
+    border-radius: 4px;
+}
+.whoop-friend-review-count span {
+    display: block;
+    color: #ed5100;
+}
+#buddypress div.pagination .pag-count {
+    font-weight: bold;
+    color: #333;
+    font-size: 12px;
+    margin-right: 10px;
+}
+#buddypress ul.item-list {
+    border-top: none;
+}
+#buddypress .pagination a,
+#buddypress .pagination span {
+    line-height: inherit;
+}
+#buddypress div.pagination .pagination-links {
+    float: left;
+    border-left: 1px solid #999;
+}
+#buddypress div.pagination {
+    line-height: 12px;
+}
+#buddypress div.pagination .pagination-links span.whoop-pagination-text {
+    color: #333;
+    margin-left: 10px;
+}
+#buddypress div.pagination .pagination-links span.whoop-pagination-text:hover {
+    background-color: transparent;
+    color: #333;
+}
+#buddypress div.pagination .pagination-links span.current {
+    font-weight: bold;
+    color: #333;
+}
+#buddypress .pagination span:hover,
+#buddypress .pagination a:hover {
+    background-color: transparent;
+    color: inherit;
+}
+.whoop-member-profile-info {
+    clear: both;
+    font-size: 10px;
+}
+.whoop-member-profile-info span {
+    width: 100%;
+    display: block;
+}
+.whoop-member-profile-info i {
+    color: #ed5100;
+}
+#buddypress div#item-header h2.user-nicename {
+    font-size: 20px;
+}
+p.field-visibility-settings-toggle {
+    margin-bottom: 0;
+}
+#buddypress .standard-form input[type="text"],
+#buddypress .standard-form input[type="password"],
+#buddypress .standard-form input[type="datetime"],
+#buddypress .standard-form input[type="datetime-local"],
+#buddypress .standard-form input[type="date"],
+#buddypress .standard-form input[type="month"],
+#buddypress .standard-form input[type="time"],
+#buddypress .standard-form input[type="week"],
+#buddypress .standard-form input[type="number"],
+#buddypress .standard-form input[type="email"],
+#buddypress .standard-form input[type="url"],
+#buddypress .standard-form input[type="search"],
+#buddypress .standard-form input[type="tel"],
+#buddypress .standard-form input[type="color"],
+#buddypress .standard-form select,
+#buddypress .standard-form textarea,
+#buddypress .standard-form .field {
+    max-width: 100% !important;
+    color: #333;
+}
+.whoop-profile-fields span {
+    color: #333;
+    font-weight: bold;
+    font-size: 13px;
+}
+#geodir_wrapper .geodir-common .whoop-profile-fields p {
+    margin-bottom: 15px;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 13px;
+}
+#item-body table th {
+    padding: 7px;
+}
+.entry-content .friend-tab img {
+    margin-bottom: 0;
+    margin-right: 5px;
+}
+#geodir_wrapper .geodir-common p.whoop-check-friendship {
+    color: #333;
+    font-size: 12px;
+    line-height: 11px;
+    float: right;
+    margin: 9px 15px 0 0;
+    display: inline-block;
+    width: 45%;
+    text-align: right;
+}
+#geodir_wrapper .geodir-common p.whoop-check-friendship i {
+    color: #7BBFC5;
+}
+.whoop-member-title {
+    overflow: hidden;
+}
+.whoop-member-title h1 {
+    width: 45% !important;
+    float: left;
+}
+#buddypress div.item-list-tabs#subnav {
+    font-size: 12px;
+    line-height: 18px;
+}
+#buddypress div.item-list-tabs#subnav ul li {
+    padding: 0 6px;
+    cursor: pointer;
+}
+#buddypress div.item-list-tabs ul li.selected,
+#buddypress div.item-list-tabs ul li.current,
+.whoop-tabs ul li.current {
+    cursor: default;
+    border-radius: 3px;
+    background: #efefed;
+    -webkit-box-shadow: inset 0 1px 0 rgba(40, 40, 21, 0.18);
+    box-shadow: inset 0 1px 0 rgba(40, 40, 21, 0.18);
+}
+#buddypress div.item-list-tabs ul li.selected a,
+#buddypress div.item-list-tabs ul li.current a {
+    background-color: transparent;
+    color: #333;
+    opacity: 1;
+}
+#buddypress div.item-list-tabs ul li a {
+    padding: 0;
+}
+#geodir_wrapper {
+    max-width: 1040px;
+    width: 100%;
+}
+#buddypress #item-header div.generic-button.friendship-button,
+#buddypress #item-header div.generic-button#send-private-message,
+#buddypress div#item-header div.generic-button {
+    margin: 0;
+    float: none;
+}
+#buddypress #item-header #item-buttons a,
+#members-order-select select,
+#groups-order-select select,
+#activity-filter-select select {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #3b65a7;
+}
+#buddypress #item-header #item-buttons a {
+    padding: 0;
+    margin: 2px;
+    font-weight: normal;
+}
+#buddypress #item-header #item-buttons a:hover {
+    text-decoration: underline;
+}
+#buddypress div#item-header div#item-header-content {
+    float: none;
+    clear: both;
+}
+#buddypress #item-header #item-buttons {
+    background: #fffae8;
+    clear: both;
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: normal;
+}
+#buddypress #item-header #item-buttons i {
+    color: #E2794A;
+}
+#buddypress #item-header #item-buttons i.fa-plus-square {
+    color: #83B54B;
+}
+.whoop-member-profile-info {
+    margin-bottom: 10px;
+}
+#whoop_no_reviews {
+    width: 90%;
+    margin: 20px auto;
+    clear: both;
+    overflow: hidden;
+}
+#geodir_wrapper #whoop_no_reviews p {
+    padding-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+#whoop_no_reviews i {
+    font-size: 50px;
+    -ms-transform: rotate(-15deg); /* IE 9 */
+    -webkit-transform: rotate(-15deg); /* Chrome, Safari, Opera */
+    transform: rotate(-15deg);
+    position: relative;
+    top: 10px;
+}
+#buddypress div#message.updated p {
+    background: #52ad15;
+    border-color: #467712;
+    color: white;
+    border-radius: 7px;
+}
+.entry-content #buddypress img {
+    margin-bottom: 0;
+}
+#buddypress #subnav {
+    border-bottom: 1px solid #e5e5e1;
+    padding-bottom: 12px;
+}
+#item-buttons .generic-button {
+    padding: 0 5px;
+}
+
+body.compliments #buddypress div.item-list-tabs#subnav,
+body.bookmarks #buddypress div.item-list-tabs#subnav {
+    display: none;
+    border-bottom: 0;
+}
+.whoop-tab-title {
+    margin: 0 0 6px;
+    line-height: 16px;
+    font-size: 14px;
+}
+.whoop-title-and-count {
+    padding-bottom: 12px;
+}
+#geodir_wrapper .whoop-title-and-count p {
+    font-size: 12px;
+    line-height: 14px;
+    margin-bottom: 0;
+}
+.whoop-dd-menu-link i {
+    color: #333;
+    font-size: 16px;
+    margin-right: 5px;
+}
+.whoop-bold a {
+    font-weight: bold;
+    line-height: 24px;
+}
+.user-account-stats {
+    margin: 0;
+}
+.user-account-stats .whoop-friend-count,
+.user-account-stats .whoop-review-count {
+    color: #333;
+    display: inline-block;
+    margin-right: 6px;
+}
+.user-account-stats i,
+.user-account-stats-c i {
+    color: #ed5100;
+}
+#buddypress .widget_bp_whoop_friends_widget ul#members-list li {
+    width: 100px;
+}
+body.profile.public #buddypress #item-body {
+    border-right: 1px solid #e5e5e1;
+}
+.fsize12 {
+    font-size: 12px;
+    line-height: 16px;
+}
+.whoop-review-header .whoop-title-and-count {
+    width: 35%;
+    float: left;
+}
+.whoop-review-header .message-search {
+    width: 64%;
+    float: right;
+}
+.whoop-review-header {
+    overflow: hidden;
+    border-bottom: 1px solid #e5e5e1;
+}
+.review-search #reviews_search {
+    float: left;
+    width: 60%;
+    height: 30px;
+}
+.review-search #reviews_search_submit {
+    float: right;
+    width: 37%;
+}
+#buddypress div.review-search {
+    margin: 0;
+    float: right;
+    max-width: 300px;
+}
+.whoop-bookmark-count {
+    font-weight: bold;
+    padding: 5px;
+    background: #eee;
+    border-top: 1px solid #ccccc8;
+    font-size: 12px;
+    line-height: 15px;
+    clear: both;
+}
+.whoop-bookmark-header {
+    position: relative;
+    clear: both;
+    border-bottom: 1px solid #e5e5e1;
+    line-height: 25px;
+    zoom: 1;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.whoop-bookmark-header h3 {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+.whoop-bookmark-label {
+    font-size: 10px;
+    color: #333;
+}
+.whoop-bookmark-privacy-settings {
+    float: left;
+    margin-left: 15px;
+    padding-top: 2px;
+    margin-bottom: -2px;
+    line-height: 12px;
+}
+#buddypress input.whoopinputlink,
+#buddypress input.whoopinputlink:hover,
+#buddypress input.whoopinputlink:visited,
+#buddypress input.whoopinputlink:active,
+#buddypress input.whoopinputlink:link {
+    cursor: pointer;
+    color: #3b65a7;
+    background: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    font-size: 10px;
+    line-height: normal;
+    height: auto;
+}
+#buddypress div.pagination .pagination-links a.prev {
+    margin-left: 5px;
+}
+.whoop-no-friends {
+    text-align: center;
+    padding-top: 30px;
+}
+#geodir_wrapper .whoop-no-friends p {
+    font-size: 12px;
+}
+.whoop-no-friends p i {
+    font-size: 30px;
+    color: #7BBFC5;
+}
+.widget_bp_whoop_friends_widget h3 a {
+    color: #e34f43;
+}
+.whoop-no-bm i {
+    color: #4F7FB7;
+    margin-right: 15px;
+    top: 15px !important;
+}
+.whoop-no-bm p {
+    padding-top: 0 !important;
+}
+.whoop-no-rev-wrap {
+    overflow: hidden;
+    clear: both;
+    border-bottom: 1px solid #e5e5e1;
+}
+body.friends #buddypress #subnav {
+    border-bottom: 0;
+}
+#buddypress #members-directory-form div.item-list-tabs ul li a,
+#buddypress #members-directory-form div.item-list-tabs ul li span {
+    padding: 5px 10px;
+}
+.widget_bp_whoop_ra_widget .time-since,
+.widget_bp_whoop_eu_widget .time-since {
+    padding-left: 15px;
+    white-space: nowrap;
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.5em;
+    color: #999;
+    float: right;
+}
+.widget_bp_whoop_ra_widget ul.geodir_recent_reviews li {
+    margin: 0;
+    border-bottom: 1px solid #e5e5e1;
+    padding: 18px 0 17px;
+}
+.whoop-r-activity-inner .comment-content span {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #666;
+    padding-top: 3px;
+    font-weight: normal;
+    line-height: 22px;
+    display: inline-block;
+    margin-left: 5px;
+}
+.whoop-r-activity-inner .comment:not(.depth-1) {
+    margin-left: 0;
+}
+.whoop-r-activity-title {
+    margin-bottom: 2px;
+}
+.widget_bp_whoop_ra_widget h3 {
+    display: inline-block;
+    float: left;
+    margin: 5px 0;
+}
+.widget_bp_whoop_ra_widget #buddypress {
+    display: inline-block;
+    float: right;
+}
+.widget_bp_whoop_ra_widget .geodir_recent_reviews {
+    clear: both;
+}
+.widget_bp_whoop_ra_widget #buddypress #subnav {
+    border-bottom: none;
+}
+.widget_bp_whoop_ra_widget #buddypress div.item-list-tabs#subnav {
+    margin-bottom: 0;
+}
+.whoop_ra_widget_header {
+    overflow: hidden;
+    border-bottom: 1px solid #e5e5e1;
+}
+.widget_bp_whoop_ra_widget .widget-error,
+.widget_popular_events .widget-error {
+    text-align: center;
+    padding: 35px 0;
+    border-bottom: 1px solid #e5e5e1;
+}
+#geodir_wrapper p#whoop_recent_activity_loading {
+    display: none;
+    text-align: center;
+}
+p#whoop_recent_activity_loading,
+a.whoop-load-more {
+    display: block;
+    text-align: center;
+    background: #f5f5f1;
+    font-weight: bold;
+    padding: 9px 0;
+    font-size: 12px !important;
+    line-height: 1.5em !important;
+    margin: 0;
+}
+a.whoop-load-more:hover {
+    text-decoration: underline;
+}
+a.whoop-load-more span {
+    display: block;
+}
+.whoop-more-btn {
+    color: #333 !important;
+    font-size: 12px !important;
+}
+.whoop-bm-count-no {
+    display: inline-block;
+    margin-right: 5px;
+}
+.whoop-member-profile-bookmarks .comment-meta {
+    display: inline-block;
+    width: 44%;
+    padding-right: 4%;
+    float: left;
+}
+.whoop-member-profile-bookmarks .comment-content {
+    display: inline-block;
+    width: 52%;
+    float: left;
+    font-size: 12px;
+}
+.whoop-member-profile-bookmarks .geodir-whoop-listing-review div {
+    line-height: 16px;
+    height: 80px;
+    margin-left: 27px;
+}
+.whoop-member-profile-bookmarks .whoop-bm-address {
+    font-size: 12px;
+    line-height: 16px;
+}
+.whoop-boomark-post-rating .geodir-big-header-rc {
+    font-weight: normal;
+    font-size: 11px;
+    color: #999;
+}
+.whoop-boomark-post-rating .geodir-rating {
+    width: 100px !important;
+}
+a.whoop-account-dd-link {
+    border: 1px solid #B64425;
+    background-image: -webkit-linear-gradient(#ff4f43 4%, #e34f43 5%, #c84f43 100%);
+    background-image: linear-gradient(#ff4f43 4%, #e34f43 5%, #c84f43 100%);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1.5em;
+    cursor: pointer;
+}
+.whoop-account .whoop-account-dd-link img {
+    border-radius: 2px 0 0 2px;
+}
+.whoop-account .whoop-account-dd-link i {
+    float: right;
+    margin: 9px 5px;
+    height: 4px;
+}
+.site-logo.whoop-menu-active {
+    margin-top: 15px;
+}
+.header {
+    background: #ed6d62;
+}
+.widget_bp_whoop_userinfo_widget .whoop-userinfo-widget-top {
+    padding: 8px;
+    background: #f5f5f1;
+    border: 1px solid #e5e5e1;
+    border-radius: 5px 5px 5px 5px;
+}
+.whoop-userinfo-widget-top .whoop-user-info {
+    float: right;
+    width: 63%;
+}
+.whoop-userinfo-widget-top .user-account-stats {
+    float: left;
+    width: 50px;
+}
+.widget_bp_whoop_userinfo_widget ul li {
+    margin-bottom: 0;
+}
+.whoop-btn-group .geodir-addtofav-icon i {
+    color: #333;
+    text-shadow: none;
+}
+.whoop-btn-group .geodir-removetofav-icon i {
+    color: #ed6d62;
+    text-shadow: none;
+}
+.geodir_full_page .geodir-search {
+    width: auto !important;
+}
+.geodir_full_page .geodir-search input[type="text"],
+.geodir_full_page .geodir-search select {
+    margin: 0 !important;
+    margin-right: 1% !important;
+    height: 38px !important;
+}
+.whoop-write-rev-btn {
+    line-height: 20px;
+}
+.geodir-big-header-buttons .whoop-btn-group {
+    margin-top: 4px;
+    float: left;
+}
+.whoop-btn-group .geodir-addtofav a {
+    margin-left: -1px;
+}
+.whoop_event_details dl {
+    margin: 20px 0;
+}
+.whoop_event_details dt {
+    width: 100px;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: top;
+}
+.whoop_event_details dd {
+    display: inline-block;
+}
+#geodir_wrapper .whoop_event_details dd p {
+    margin-left: 0;
+    margin-right: 0;
+}
+.inline-layout > li {
+    width: 50%;
+    padding: 0 3px;
+    margin: 3px 0;
+    min-height: 0;
+}
+.whoop-btn-full {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+}
+.whoop-event-photos {
+    max-width: 250px;
+    float: right;
+    margin-left: 20px;
+}
+.whoop-event-photo-inner {
+    margin-bottom: 10px;
+}
+.whoop-event-photo-inner img {
+    border-radius: 4px;
+}
+.widget_bp_whoop_friends_widget ul.ayi-list-users li {
+    width: 54px;
+}
+.event-content-avatar-inner .geodir_thumbnail {
+    width: 90px;
+    height: 90px;
+    border-radius: 4px;
+}
+.whoop-events-content > li {
+    margin: 0;
+    border-bottom: 1px solid #e5e5e1;
+    padding: 18px 0 17px;
+    overflow: hidden;
+}
+.whoop-events-content > li:last-child {
+    border-bottom: none;
+}
+.event-content-avatar {
+    border-right: 12px solid transparent;
+    float: left;
+    width: 15%;
+}
+.event-content-body {
+    float: left;
+    width: 85%;
+}
+.event-title {
+    width: 78%;
+    float: left;
+}
+.event-title a {
+    font-weight: bold;
+}
+.event-address {
+    font-size: 12px;
+    line-height: 1.4em;
+}
+.event-author {
+    width: 22%;
+    float: right;
+}
+.event-submitted-by {
+    width: 70%;
+    float: left;
+    text-align: right;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 16px;
+}
+.event-submitted-by a {
+    font-weight: bold;
+}
+.event-submitted-by-avatar {
+    width: 30%;
+    float: right;
+    border-left: 6px solid transparent;
+    text-align: right;
+}
+.event-submitted-by-avatar img {
+    border-radius: 4px;
+}
+.event-content-body-bottom {
+    display: table;
+    width: 100%;
+}
+.event-interested {
+    display: table-cell;
+    text-align: right;
+    vertical-align: bottom;
+    font-size: 12px;
+    line-height: 1.5em;
+    color: #999;
+    font-weight: normal;
+}
+.whoop-tabs {
+    font-size: 12px;
+    line-height: 18px;
+}
+.whoop-tabs ul {
+    margin: 5px 0 0;
+}
+.whoop-tabs ul li {
+    padding: 0 6px;
+    cursor: pointer;
+    float: left;
+    margin: 0;
+    list-style: none;
+}
+.whoop-tabs ul li a {
+    padding: 0;
+    display: block;
+    text-decoration: none;
+}
+.whoop-tabs ul li.current a {
+    background-color: transparent;
+    color: #333;
+    opacity: 1;
+    font-weight: bold;
+}
+.whoop-event-header-wrap h3 {
+    display: inline-block;
+    float: left;
+    margin: 5px 0;
+}
+.whoop-tabs {
+    display: inline-block;
+    float: right;
+}
+.whoop-event-header-wrap .whoop-title-and-count {
+    width: 100%;
+    float: none;
+    overflow: hidden;
+}
+.whoop-no-events {
+    text-align: center;
+    padding-top: 20px;
+}
+.whoop-no-events i {
+    font-size: 30px;
+}
+.whoop-event-photo-inner img {
+    max-width: 100%;
+}
+.add-list-error {
+    color: #D70000 !important;
+    clear: both;
+}
+#geodir_wrapper p.ayi-noone {
+    margin: 10px;
+    color: #aaa;
+}
+.whoop_pe_widget_header h3 {
+    display: inline-block;
+    margin: 5px 0;
+}
+.whoop_pe_widget_header a.whoop-btn {
+    display: inline-block;
+    float: right;
+}
+.whoop_pe_widget_header {
+    margin-top: 10px;
+    border-bottom: 1px solid #e5e5e1;
+    padding-bottom: 10px;
+    clear: both;
+}
+.widget_bp_whoop_eu_widget .geodir_recent_reviews {
+    margin: 1em 0;
+}
+.efilter {
+    font-size: 12px;
+    overflow: hidden;
+    display: block;
+    float: none;
+    margin-top: 5px;
+}
+.efilter ul {
+    margin: 0;
+}
+.efilter li {
+    display: inline;
+}
+.efilter li a {
+    padding: 0 5px;
+}
+.efilter li:first-child {
+    padding: 0;
+}
+.whoop_event_details dd.eve-dates {
+    max-width: 200px;
+}
+.eve-submitted-by-avatar {
+    float: left;
+    margin-right: 5px;
+}
+.eve-submitted-by-avatar img {
+    border-radius: 4px;
+}
+.eve-user-name {
+    font-size: 14px;
+    margin-right: 10px;
+}
+.smaller {
+    font-size: 11px;
+}
+dt.eve-desc {
+    width: auto;
+}
+.eve-desc {
+    margin-right: 5px;
+    padding-bottom: 3px;
+    clear: left;
+}
+.whoop_event_details dd.eve-desc {
+    display: block;
+}
+.whoop-hovercard {
+    font-size: 14px;
+    width: 350px;
+}
+.whoop-hovercard .whoop-hovercard-inner {
+    overflow: hidden;
+    padding: 12px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background: #fff;
+    -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.whoop-bm-address {
+    clear: both;
+}
+.whoop-hovercard .geodir-big-header-rc {
+    font-weight: normal;
+    font-size: 14px;
+    color: #333;
+}
+a.hovercard-title,
+a.whoop-next-title-link {
+    font-weight: bold;
+}
+.whoop-next-content {
+    background: #fdf5d6;
+    border: 1px solid #fc0;
+    padding: 12px;
+    border-radius: 5px;
+    margin-left: 85px;
+    position: relative;
+}
+.whoop-next-content:before,
+.whoop-next-content:after {
+    right: 100%;
+    content: " ";
+}
+.whoop-next-content:after {
+    border-right-color: #fdf5d6;
+    border-width: 10px;
+    top: 19px
+}
+.whoop-next-content:before {
+    border-right-color: #fc0;
+    border-width: 11px;
+    top: 18px;
+}
+.whoop-next-content .comment-respond {
+    padding: 0;
+    border-top: none;
+}
+.whoop-next-content .comment-form-comment {
+    margin-top: 0;
+}
+.whoop-next-content .comment-form-comment textarea {
+    min-height: 36px;
+    height: 36px;
+}
+.whoop-next-content .gd_rating {
+    margin: 7px 0;
+}
+.whoop-next-content .form-allowed-tags,
+.whoop-next-content .form-submit {
+    display: none;
+}
+.widget_next_review h3 {
+    margin-top: 0;
+}
+#geodir_content .bestof-tabs-on-left section.widget.geodir_bestof_widget {
+    padding: 0;
+}
+i.fa-bookmark,
+.geodir-authorlink i {
+    margin-right: 5px;
+    color: #999;
+}
+.geodir-authorlink a {
+    display: block;
+    clear: both;
+    text-transform: capitalize;
+}
+/*#geodir_content .geodir_category_list_view li .geodir-addinfo {*/
+    /*width: 21%;*/
+/*}*/
+
+.whoop-rev-next-nav .fa-cog{
+    font-size: 18px;
+    color: #FD9663;
+}
+.whoop-rev-next-nav {
+    position: absolute;
+    top: 30px;
+    right: 12px;
+    z-index: 999;
+}
+.whoop-rev-next-nav ul {
+    overflow: hidden;
+    margin: 0;
+}
+.whoop-rev-next-nav li {
+    border-radius: 4px;
+    background-color: #FD9663;
+    float: left;
+    margin: 0 2px;
+    height: 16px;
+    position: relative;
+}
+.whoop-rev-next-nav li a {
+    padding: 0 5px;
+}
+.whoop-rev-next-nav li i {
+    color: #fff;
+    position: relative;
+    top: -3px;
+}
+.widget .whoop-rev-next-nav li {
+    margin-bottom: 0;
+}
+.whoop-next-slides {
+    position: relative;
+}
+.flex-direction-nav {
+    display: none;
+}
+#gd-sidebar-wrapper .event-content-avatar {
+    width: 25%;
+}
+#gd-sidebar-wrapper .event-author,
+#gd-sidebar-wrapper .efilter,
+#gd-sidebar-wrapper .event-address,
+#gd-sidebar-wrapper .whoop_pe_browse_btn {
+    display: none;
+}
+#gd-sidebar-wrapper .event-content-body {
+    width: 75%;
+}
+#gd-sidebar-wrapper .event-date {
+    font-size: 12px;
+    line-height: 1.5em;
+}
+#gd-sidebar-wrapper .event-interested {
+    text-align: left;
+}
+#gd-sidebar-wrapper .event-content-avatar-inner .geodir_thumbnail {
+    height: 60px;
+    width: 60px;
+}
+#gd-sidebar-wrapper .whoop-events-content > li {
+    padding: 0;
+    border-bottom: none;
+    margin: 10px 0;
+}
+#gd-sidebar-wrapper .whoop-events-content {
+    margin-top: 0;
+}
+#gd-sidebar-wrapper .whoop_pe_widget_header {
+    margin-top: 0;
+    border-bottom: none;
+}
+#gd-sidebar-wrapper .whoop_pe_widget_header h3 {
+    margin: 0;
+    display: block;
+}
+.widget_next_review h3 {
+    margin-bottom: 0;
+}
+#geodir_content h3 {
+    font-size: 21px;
+}
+/*forum*/
+.whoop-forum-cats,
+.gd-list-item-author {
+    width: 25%;
+}
+.whoop-forum-cats-search-and-new,
+.whoop-forum-cats-list-inner {
+    border: 1px solid #ccccc8;
+    margin: 0;
+}
+.whoop-forum-cats-search-and-new {
+    border-radius: 5px 5px 0 0;
+    border-bottom: none;
+}
+.whoop-forum-cats-list-inner {
+    border-radius: 0 0 5px 5px;
+}
+.whoop-forum-cats-list-inner li + li a {
+    border-top: 1px solid #e5e5e1;
+}
+.whoop-forum-cats-list-inner {
+    border-top: 1px solid #ccccc8;
+    background: #f5f5f1;
+}
+.whoop-forum-cats-list-inner a {
+    display: block;
+    padding: 8px 11px;
+    text-decoration: none;
+    color: #333;
+}
+.forum-cat-last-updated,
+.tiny-span-text {
+    font-size: 12px;
+    line-height: 1.5em;
+    color: #999;
+    font-weight: normal;
+}
+.whoop-forum-cats-search-and-new {
+    padding: 11px;
+}
+.hr-line {
+    border: none;
+    border-top: 1px solid #ccccc8;
+    text-align: center;
+    margin: 12px 0;
+    padding: 0;
+}
+.whoop-forum-cats-search form {
+    display: table;
+    width: 100%;
+}
+.whoop-forum-search-input {
+    width: 84%;
+    float: left;
+    padding-right: 5px;
+}
+.whoop-forum-search-btn-wrap {
+    width: 20%;
+    float: right;
+}
+.whoop-forum-search-btn {
+    white-space: nowrap;
+    padding: 7px;
+    height: 28px;
+    line-height: 11px;
+    float: right;
+}
+.whoop-forum-search-wrap {
+    width: 100%;
+    overflow: hidden;
+}
+.whoop-btn:focus {
+    outline: none;
+}
+#bbp-search-form input[type="submit"] {
+    position: relative;
+    top: -4px;
+}
+.whoop-forum-search-input input {
+    margin-bottom: 0;
+}
+.whoop-forum-cats-list-inner a.active {
+    background: #3b65a7;
+    color: white;
+}
+.whoop-forum-cats-list-inner a.active .forum-cat-last-updated {
+    color: #ffffff;
+}
+.bbpress h1.page-title {
+    font-size: 21px;
+    line-height: 1.28571em;
+    color: #e34f43;
+    margin-bottom: 6px;
+}
+.whoop-bbpress #geodir_content {
+    padding: 0 15px;
+    width: 75%;
+}
+.bbpress .article-header,
+.bbpress .entry-content {
+    padding: 0;
+}
+.site-logo.site-logo-text {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+h1.site-title a, h1.site-title a:hover {
+    font-size: 30px;
+}
+#geodir_content h3.whoop-tab-title,
+#geodir_content .widget_bp_whoop_friends_widget h3 {
+    font-size: 14px;
+}
+.whoop-r-activity-title img.avatar {
+    height: 15px;
+    width: 15px;
+    margin-right: 3px;
+    border-radius: 4px;
+    position: relative;
+    bottom: -2px;
+}
+#bbpress-forums fieldset.bbp-form {
+    border: none;
+    padding: 0;
+    margin-bottom: 10px;
+}
+h3.whoop-new-forum-topic {
+    margin: 5px 0;
+}
+#members-order-select,
+#groups-order-select {
+    width: 170px;
+}
+#activity-filter-select {
+    width: 200px;
+}
+#members-order-select label,
+#groups-order-select label,
+#activity-filter-select label {
+    display: inline-block;
+    position: relative;
+    top: -3px;
+}
+#members-order-select select,
+#groups-order-select select,
+#activity-filter-select select {
+    display: inline-block;
+    font-size: 12px;
+}
+#buddypress div.item-list-tabs ul li#members-order-select select,
+#buddypress div.item-list-tabs ul li#groups-order-select select {
+    max-width: 100px;
+}
+#buddypress div.item-list-tabs ul li#activity-filter-select select {
+    max-width: 130px;
+}
+#members-order-select select:focus,
+#members-order-select select:active,
+#groups-order-select select:focus,
+#groups-order-select select:active,
+#activity-filter-select select:focus,
+#activity-filter-select select:active {
+    outline: 0;
+}
+#buddypress div.item-list-tabs#subnav ul li.last {
+    margin-top: 0;
+}
+#gd-sidebar-wrapper .event-title {
+    width: 100%;
+    line-height: 14px;
+}
+#gd-sidebar-wrapper .event-title a {
+    font-size: 12px;
+}
+.user-account-stats-c, #reviewsTab ol.commentlist .user-account-stats-c li {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+.user-account-stats-c li {
+    font-size: 12px;
+    line-height: 18px;
+}
+ul.user-account-stats-c {
+    margin-top: 5px;
+}
+.bbp-replies .comment-author cite {
+    color: inherit;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    line-height: 20px;
+    margin: 0 0 0 12%;
+    display: block;
+}
+.bbp-replies .comment-author img {
+    position: relative;
+    float: left;
+    padding: 0;
+    line-height: 0;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+#bbpress-forums .bbp-replies div.bbp-reply-author img.avatar {
+    margin: 0 9px 1.5em 0;
+    float: left;
+}
+#bbpress-forums .bbp-replies div.bbp-reply-author {
+    text-align: left;
+    width: 33.33333%;
+}
+#bbpress-forums .bbp-replies div.bbp-reply-content {
+    width: 66.66667%;
+}
+.bbp-replies li.bbp-body div.hentry {
+    margin: 0;
+    border-bottom: 1px solid #e5e5e1;
+    padding: 18px 0 17px;
+}
+#bbpress-forums .bbp-replies div.odd {
+    background-color: transparent;
+}
+#bbpress-forums ul.bbp-replies {
+    border-right: none;
+    border-left: none;
+}
+#geodir_content .widget_bp_whoop_friends_widget h3 {
+    margin: 0 0 6px;
+}
+#geodir_wrapper h1 {
+    width: auto;
+}
+#buddypress #bbpress-forums h2 {
+    font-size: 14px;
+    color: #e34f43;
+    margin: 0 0 6px;
+}
+.whoop-signup-btns {
+    text-align: center;
+    margin: 0;
+}
+.whoop-signup-btns a {
+    color: #fff;
+}
+.whoop-signup-btn {
+    border: 1px solid #B64425;
+    background: #e34f43;
+    background-image: -webkit-linear-gradient(#ff4f43 4%, #e34f43 5%, #c84f43 100%);
+    background-image: linear-gradient(#ff4f43 4%, #e34f43 5%, #c84f43 100%);
+}
+a.whoop-signup-btn {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 6px;
+}
+.widget_today_in_talk img.avatar {
+    border-radius: 4px;
+}
+.widget_today_in_talk li {
+    overflow: hidden;
+}
+#gd-sidebar-wrapper .widget_today_in_talk .event-title a {
+    font-size: 14px;
+    line-height: 20px;
+}
+a.whoop-btn:hover, a.whoop-btn:visited {
+    color: #333;
+}
+.whoop_ra_widget_header h3 {
+    margin: 0 0 10px;
+}
+#geodir_wrapper .widget_bp_whoop_eu_widget p {
+    font-size: 12px;
+}
+.widget_bp_whoop_eu_widget ul.geodir_recent_reviews li {
+    min-height: 40px;
+}
+.widget_bp_whoop_eu_widget .geodir_reviewer_image {
+    width: 40px;
+}
+.widget_bp_whoop_eu_widget .geodir_reviewer_content {
+    width: 92%;
+}
+a.whoop-btn-primary:hover, a.whoop-btn-primary:visited {
+    color: #fff;
+}
+.p2p-create-connections {
+    font-size: 13px;
+    line-height: 18px;
+}
+.entry-content .p2p-create-connections td {
+    padding: 0;
+}
+.add-items-to-list {
+    width: 50%;
+    float: left;
+}
+.add-items-to-list ul.whoop-listSortable {
+    width: 99%;
+    overflow: hidden;
+    min-height: 355px;
+    border: solid 1px #cccccc;
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    float: left;
+    margin: 1%;
+}
+#whoop-listSortable-left {
+    margin-left: 0;
+}
+#whoop-listSortable-right {
+    margin-right: 0;
+}
+ul.whoop-listSortable li {
+    border-top: 1px solid #eaedf2;
+    border-bottom: 1px solid #eaedf2;
+    background-color: #F9F9F9;
+    border-spacing: 0;
+    padding: 5px 6px;
+    cursor: move;
+}
+#geodir_content .add-items-to-list h4 {
+    font-size: 12px;
+    margin: 0 0 8px;
+    display: inline-block;
+}
+#geodir_content .add-items-to-list button {
+    display: inline-block;
+    float: right;
+}
+.whoop-no-lists p {
+    vertical-align: top;
+}
+.whoop-no-lists i {
+    margin-right: 20px;
+}
+body.lists div.item-list-tabs#subnav {
+    display: none !important;
+}
+.gd-list-item-comments img {
+    border-radius: 4px;
+}
+.gd-list-post-thumb {
+    float: left;
+    margin-right: 5px;
+}
+.gd-list-item-comments li {
+    clear: both;
+    overflow: hidden;
+    padding: 0 0 10px 0;
+    line-height: 14px;
+}
+.gd-list-item-comments li em {
+    font-size: 11px;
+    font-style: normal;
+}
+.gd-list-item-comments li a {
+    font-size: 12px;
+    font-weight: bold;
+}
+li.gd-list-item-wrap h3 a {
+    color: #e34f43;
+}
+.whoop-gd-list-content {
+    width: 100%;
+    overflow: hidden;
+}
+.whoop-gd-list-content > li {
+    width: 50%;
+    float: left;
+    min-height: 250px;
+    padding: 10px;
+}
+.widget_fresh_lists li {
+    overflow: hidden;
+    clear: both;
+}
+#geodir_content.whoop-full-width {
+    width: 100% !important;
+}
+.gd-list-view-btn {
+    float: right;
+}
+.whoop-wid-link-more {
+    font-size: 12px;
+}
+#geodir-bestof-places .geodir-addinfo {
+    font-size: 11px;
+}
+a.mobile-left, a.mobile-right {
+    color: #fff;
+}
+#reviewsTab.whoop-event-comment .comments-area .comment-author {
+    padding-left: 0;
+}
+#reviewsTab.whoop-event-comment .comments-area .comment-content {
+    padding-right: 0;
+}
+.whoop-event-comment .comment-respond {
+    padding-left: 0;
+    padding-right: 0;
+}
+#gd-sidebar-wrapper {
+    width: 30%;
+    margin-left: 1.5%;
+    float: left;
+    padding-left: 1.5%;
+    border-left: 1px solid #e5e5e1;
+}
+.sidebar section.widget:last-child {
+    border-bottom: none;
+}
+a.see-all-lists {
+    float: right;
+}
+.entry-content .whoop-list-desc {
+    clear: both;
+    border-top: 1px solid #e5e5e1;
+    padding-top: 10px;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+.gdbp-wrapper-reviews .comment,
+.whoop-member-profile-reviews .comment {
+    margin: 0;
+}
+.gdbp-wrapper-reviews .comment .vcard,
+.whoop-member-profile-reviews .comment .vcard {
+    padding: 0;
+}
+#buddypress div.pagination .pag-count {
+    margin-left: 0;
+}
+.whoop-r-activity-body .comment {
+    clear: both;
+}
+#bbpress-forums div.bbp-search-form {
+    margin-top: 10px;
+}
+.geodir_category_list_view li {
+    border-bottom: 1px solid #e5e5e1;
+}
+.geodir_category_list_view li.geodir-listview:last-child {
+    border-bottom: none;
+}
+#geodir-bestof-places .geodir_category_list_view li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.geodir-big-header-ratings span.geodir-category,
+.geodir-big-header-ratings span.geodir-tags {
+    clear: both;
+    display: block;
+    float: none;
+}
+.bbp-pagination {
+    margin: 10px 0;
+}
+.gd-list-item-author {
+    text-align: left;
+}
+.gd-list-item-author img.avatar {
+    margin: 0 9px 1.5em 0;
+    float: left;
+    border: none;
+    max-width: 80px;
+    padding: 0;
+    border-radius: 4px;
+}
+.geodir_whoop_biz_photo_selected-info .gd-list-item-author {
+    width: 100%;
+    padding: 0;
+}
+.whoop_photo_caption {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.2em;
+    color: #333;
+    margin: 0;
+    clear: both;
+}
+.whoop_photo_timestamp {
+    font-size: 12px;
+    line-height: 1.5em;
+    color: #999;
+    margin: 4px 0 10px 0;
+    clear: both;
+}
+.gd-list-item-author cite {
+    font-style: normal;
+}
+.whoop-biz-p-caption p {
+    clear: both;
+    overflow: hidden;
+    line-height: 15px;
+    margin: 0 10px 0 5px;
+    border-left: 7px solid #fff;
+    border-right: 7px solid #fff;
+}
+/* make the image squared */
+.geodir_category_list_view li.geodir-listview .geodir-post-img {height: 135px;width: 135px;}
+#geodir-bestof-places .geodir_category_list_view li.geodir-listview .geodir-post-img {height: auto;width: 100px;}
+/* make the content area wider */
+.geodir-listview li.geodir-listview .geodir-content {margin: 0;width: 75% !important;}
+/* make title area narrow  */
+.geodir-listview .geodir-entry-header {overflow: hidden;}
+#geodir_content .geodir_category_list_view h3 {font-size: 18px; display: block;}
+/* make address area narrow  and float none */
+.geodir_category_list_view.geodir-listview .geodir-whoop-address {float: none;width: 45%;}
+
+/*********************
+PRINT STYLESHEET
+Feel free to customize this. Remember to add things that won't make
+sense to print at the bottom. Things like nav, ads, and forms should
+be set to display none.
+*********************/
+@media print {
+
+    * {
+        background: transparent !important;
+        color: black !important;
+        text-shadow: none !important;
+        filter: none !important;
+        -ms-filter: none !important;
+    }
+    a, a:visited {
+        color: #444 !important;
+        text-decoration: underline;
+    }
+    a:after, a:visited:after {
+        content: " (" attr(href) ")";
+    }
+    a abbr[title]:after, a:visited abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+    .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+        content: "";
+    }
+    pre, blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+    thead {
+        display: table-header-group;
+    }
+    tr, img {
+        page-break-inside: avoid;
+    }
+    img {
+        max-width: 100% !important;
+    }
+    @page {
+        margin: 0.5cm;
+    }
+    p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+    }
+    h2, h3 {
+        page-break-after: avoid;
+    }
+    .sidebar, .page-navigation, .wp-prev-next, .respond-form, nav {
+        display: none;
+    }
+}
+/*
+#################################################
+GEODIRECTORY MEDIA QUERIES
+#################################################
+*/
+
+@media only screen and (max-width: 1040px) {
+    .geodir_category_grid_view li.gridview_onethird,
+    .geodir_category_grid_view li.gridview_onehalf,
+    .geodir_category_grid_view li.gridview_onefifth {
+        width: -webkit-calc(50% - 14px);
+        width: -moz-calc(50% - 14px);
+        width: calc(50% - 14px);
+    }
+    #gd-sidebar-wrapper .geodir_category_grid_view li.gridview_onehalf,
+    .geodir-content-left .geodir_category_grid_view li.gridview_onehalf,
+    .geodir-content-right .geodir_category_grid_view li.gridview_onehalf {
+        width: -webkit-calc(50% - 14px);
+        width: -moz-calc(50% - 14px);
+        width: calc(50% - 14px);
+    }
+    #gd-sidebar-wrapper .likethis {
+        width: auto;
+    }
+    .stick_trigger_container .geodir_map_container,
+    .stick_trigger_container .geodir_map_container .map_background .main_map_wrapper,
+    .stick_trigger_container .geodir_map_container .map_background .main_map_wrapper .geodir_marker_cluster,
+    .stick_trigger_container .geodir_map_container .map_background .main_map_wrapper .loading_div {
+        width: 100% !important;
+    }
+    .geodir_category_grid_view li span.geodir-rating {
+        padding-left: 0;
+    }
+    dl.geodir-tab-head dd {
+        width: 100%;
+    }
+    dl.geodir-tab-head {
+        margin: 0;
+        display: table;
+        width: 100%;
+        border-right: 1px solid #e1e1e1;
+    }
+    .geodir-breadcrumb {
+        width: 100%;
+    }
+    h1, .geodir-breadcrumb, .geodir_full_page .geodir-search {
+        width: 100%;
+    }
+    .wrap, .geodir-common {
+        width: 96%
+    }
+    /*
+#################################################
+ADVANCED SEARCH FILTERS
+#################################################
+*/
+    .geodir_advance_search .geodir_full_page .geodir-search input[type="text"],
+    .geodir_advance_search .showFilters,
+    .geodir_advance_search .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 49%;
+    }
+    .geodir_advance_search .geodir_full_page .showFilters {
+        width: 49%;
+        text-align: center;
+        margin-right: 1%;
+    }
+    .geodir_advance_search .geodir_full_page .geodir-search .geodir_submit_search {
+        margin-right: 1%;
+    }
+    /*
+#################################################
+CUSTOM POST TYPES
+#################################################
+*/
+    /*.geodir_custom_posts .geodir-search select {*/
+    /*width: 100%;*/
+    /*margin-left: 0px;*/
+    /*margin-right: 0;*/
+    /*max-width: 100%;*/
+    /*}*/
+    /*
+#################################################
+ADVANCED SEARCH FILTERS && CUSTOM POST TYPES
+#################################################
+*/
+    .geodir_advance_search.geodir_custom_posts .showFilters {
+        width: 99%;
+        margin-left: 0;
+    }
+    .header-right-area {
+        width: 60%;
+    }
+}
+@media only screen and (max-width: 860px) {
+    #geodir_content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .geodir-cat-list ul li {
+        width: auto;
+    }
+    #gd-sidebar-wrapper .geodir_category_grid_view li.gridview_onehalf,
+    .geodir-content-left .geodir_category_grid_view li.gridview_onehalf,
+    .geodir-content-right .geodir_category_grid_view li.gridview_onehalf {
+        width: 95%;
+    }
+    .geodir_category_grid_view li.gridview_onefourth {
+        width: -webkit-calc(50% - 14px);
+        width: -moz-calc(50% - 14px);
+        width: calc(50% - 14px);
+    }
+    .geodir_category_list_view li .geodir-content {
+        width: 43%;
+    }
+    .geodir_category_list_view li.geodir-listview .geodir-post-img,
+    .geodir_category_list_view li.geodir-listview .geodir-content,
+    .geodir_category_list_view.whoop-view li.geodir-listview .geodir-content,
+    #geodir_content .geodir_category_list_view li.geodir-listview .geodir-addinfo {
+        width: 100%;
+    }
+    .widget .geodir_thumbnail,
+    .geodir-content-content .geodir_thumbnail {
+        height: auto !important;
+    }
+    .geodir_category_grid_view li span.geodir-rating {
+        padding-left: 4px;
+    }
+    .footer nav {
+        float: none;
+    }
+    .f-col-4 {
+        width: 50%;
+    }
+}
+@media only screen and (max-width: 660px) {
+    .geodir_category_grid_view li.gridview_onethird,
+    .geodir_category_grid_view li.gridview_onehalf,
+    .geodir_category_grid_view li.gridview_onefourth,
+    .geodir_category_grid_view li.gridview_onefifth,
+    .geodir-content-right .geodir_category_grid_view li.gridview_onehalf {
+        width: -webkit-calc(50% - 4px);
+        width: -moz-calc(50% - 4px);
+        width: calc(50% - 4px);
+    }
+    #gd-sidebar-wrapper {
+        width: 100%;
+    }
+    .geodir-onethird {
+        float: none;
+        width: auto !important;
+    }
+    #geodir_content {
+        width: auto !important;
+        float: none;
+        min-width: 100%;
+    }
+    .geodir_category_grid_view, .geodir_category_grid_view li {
+        margin-left: 0;
+    }
+    .geodir_full_page .geodir-search input[type="text"] {
+        width: 33%;
+    }
+    .f-col-4, .f-col-3, .f-col-2 {
+        width: 100%;
+    }
+    .geodir-onethird {
+        margin-left: 0;
+    }
+    #gd-sidebar-wrapper {
+        width: 100%;
+        margin-left: 0;
+    }
+
+}
+@media only screen and (max-width: 1008px) {
+    .whoop-forum-cats {
+        width: 100%;
+        clear: both;
+        margin-bottom: 20px;
+        padding: 0;
+    }
+    .single-topic .whoop-forum-cats {
+        display: none;
+    }
+    .bbpress #geodir_content {
+        width: auto !important;
+        float: none;
+        min-width: 100%;
+    }
+    .geodir-listing-map-inner-div, .geodir-listing-slider-div {
+        display: block;
+    }
+    .geodir-listing-map-inner-div {
+        width: 250px;
+        margin: 0 auto 50px;
+    }
+    .geodir-big-header-buttons {
+        clear: both;
+        float: left;
+    }
+
+}
+@media only screen and (max-width: 960px) {
+    .whoop-next-avatar .geodir_thumbnail {
+        height: 60px !important;
+    }
+    .geodir-listview li .geodir-post-img {height: auto;width: 100%;}
+    .geodir-listview li.geodir-listview .geodir-content {margin: 0;width: 100% !important;}
+    .geodir-listview .geodir-entry-header {width: 100%;float:none; margin-top: 10px;}
+    #geodir_content .geodir-listview h3.geodir-entry-title {float: none;font-size: 18px;}
+    .geodir_category_list_view.geodir-listview li.geodir-listview .geodir-entry-content,
+    .geodir_category_list_view.geodir-listview .geodir-whoop-address {
+        width: 50%;
+        float: left;
+    }
+    .geodir_category_list_view.geodir-listview .geodir-entry-meta {
+        width: 100%;
+    }
+    .geodir_category_list_view li .geodir-post-img .geodir_thumbnail {
+        min-width: 96%;
+        max-width: 96%;
+        margin: 2%;
+    }
+}
+@media only screen and (max-width: 767px) {
+    .header-right-area,
+    .header-right-area .geodir_advance_search_widget {
+        width: 100%;
+    }
+    .header-right-area .geodir_advance_search_widget input[type="text"] {
+        width: 44%;
+        margin-left: 0;
+        margin-right: 1%;
+    }
+    .header-right-area .geodir_advance_search_widget button {
+        margin-left: 0;
+        margin-right: 0;
+        float: right;
+    }
+    .site-logo {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        text-align: center;
+    }
+    .whoop-account {
+        margin-top: 10px;
+        position: absolute;
+        right: 10px;
+    }
+    .geodirf-ab {
+        display: none;
+    }
+    #mobile-navigation-left {
+        display: none;
+    }
+    .mobile-left, .mobile-right {
+        display: block;
+    }
+    .f-col-3 {
+        width: 50%;
+    }
+    #mm-mobile-navigation-left li {
+        width: 100%;
+    }
+    #mobile-navigation-right.mm-opened {
+        display: block;
+    }
+    .geodir_custom_posts .geodir_full_page .geodir-search input[type="text"] {
+        width: 49%;
+    }
+    .geodir_custom_posts .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 49%;
+    }
+    .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 25%;
+    }
+    .geodir_full_page .geodir-search input[type="text"] {
+        width: 35%;
+    }
+    .geodir_custom_posts .showFilters {
+        width: 49%;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+        margin-left: 1%;
+    }
+}
+@media only screen and (max-width: 1000px) {
+    .geodir_whoop_biz_photo_selected-frame {
+        width: auto;
+        height: auto;
+        margin-left: 0;
+    }
+    .geodir_whoop_biz_photo_selected-frame img {
+        padding: 8px;
+    }
+    .geodir_whoop_biz_photo_selected-info {
+        padding-left: 20px;
+    }
+    .geodir_whoop_biz_photos .whoop-biz-photo {
+        margin: 0 3px 0 0;
+    }
+    .geodir_category_list_view.whoop-view .geodir-whoop-address {
+        margin-top: 10px;
+    }
+}
+@media only screen and (max-width: 700px) {
+    .whoop-img-track .whoop-photo, .whoop-img-track:hover .whoop-photo {
+        position: relative;
+        left: 0;
+        margin: 0 auto;
+    }
+    #geodir_carousel_whoop, .whoop-img-track {
+        width: 100%;
+        text-align: center;
+        height: auto !important;
+    }
+    .geodir-listing-map-inner-div, .geodir-listing-slider-div {
+        display: block;
+        width: 100%;
+    }
+}
+@media only screen and (max-width: 660px) {
+    .whoop-event-photos {
+        float: left;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+    }
+    a.mobile-right {
+        display: none !important;
+    }
+    .header-right-area {
+        margin-bottom: 10px;
+    }
+    #gd-sidebar-wrapper .event-content-avatar-inner .geodir_thumbnail {
+        height: 60px !important;
+        width: 60px !important;
+    }
+    .whoop-bbpress #geodir_content {
+        padding: 0;
+    }
+    #bbpress-forums .bbp-replies div.bbp-reply-author,
+    #bbpress-forums .bbp-replies div.bbp-reply-content {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    #bbpress-forums div.bbp-reply-author img.avatar {
+        position: relative;
+        top: 0;
+        width: 60px;
+    }
+    .footer {
+        padding: 0 20px;
+    }
+    nav .footer-nav li a {
+        padding: 0;
+        font-size: 14px;
+    }
+    nav .footer-nav li {
+        margin-bottom: 6px;
+        line-height: 22px;
+    }
+    #gd-sidebar-wrapper {
+        border-left: none;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    .no-widgets {
+        width: 100%;
+    }
+    .widget_bp_whoop_ra_widget #buddypress {
+        display: inline-block;
+        float: left;
+    }
+    .widget_bp_whoop_ra_widget .time-since, .widget_bp_whoop_eu_widget .time-since {
+        float: none;
+        display: block;
+        text-align: left;
+        padding-left: 0;
+    }
+    #geodir_content .geodir_category_list_view li .geodir-addinfo {
+        width: 100%;
+    }
+    .geodir-big-header-buttons {
+        float: left;
+    }
+    a.whoop-write-rev-btn {
+        margin-bottom: 15px;
+    }
+    .geodir-big-header-buttons .whoop-btn-group {
+        clear: both;
+    }
+    .geodir-listing-map-box-div img {
+        width: 100%;
+    }
+    .geodir_whoop_biz_photo_selected-frame {
+        width: 100%;
+        height: auto;
+        margin-left: 0;
+        display: block;
+    }
+    .geodir_whoop_biz_photo_selected-info {
+        height: auto;
+        display: block;
+        padding: 0;
+    }
+    .geodir_whoop_biz_photo_selected-frame .biz-photo-inner {
+        display: block !important;
+    }
+    .whoop-biz-photo-box img {
+        width: 80px !important;
+        height: 80px !important;
+    }
+    .geodir_whoop_biz_photos .whoop-biz-photo {
+        width: 100px;
+        height: 115px;
+    }
+    .geodir_category_list_view.whoop-view li.geodir-listview .geodir-entry-content,
+    .geodir_category_list_view.whoop-view .geodir-whoop-address {
+        width: 100%;
+        float: none;
+    }
+    .geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
+        width: 100%;
+    }
+    .widget_popular_events .event-content-body,
+    .whoop-events-content .event-content-body {
+        width: 100%;
+    }
+    .widget_popular_events .event-title,
+    .whoop-events-content .event-title {
+        width: 60%;
+    }
+    .widget_popular_events .event-author,
+    .whoop-events-content .event-author {
+        width: 40%;
+    }
+    .whoop-member-item-wrap #item-header,
+    .whoop-member-item-wrap #item-body,
+    .whoop-member-item-wrap #gd-sidebar-wrapper {
+        width: 100%;
+        float: none;
+    }
+    body.profile.public .whoop-member-item-wrap #item-body {
+        width: 100%;
+    }
+    body.profile.public #buddypress #item-body,
+    #buddypress #item-body {
+        border: none;
+        padding: 0;
+    }
+    .widget_bp_whoop_friends_widget #members-list {
+        overflow: hidden;
+        clear: both;
+    }
+    #buddypress #item-nav div.item-list-tabs ul li {
+        margin: 0 2px 2px 0;
+        border-radius: 0;
+    }
+    #buddypress div.item-list-tabs ul li.selected, #buddypress div.item-list-tabs ul li.current {
+        border-radius: 0;
+    }
+    .whoop-gd-list-content > li {
+        width: 100%;
+        float: none;
+        min-height: 1px;
+    }
+    #buddypress #subnav div.message-search {
+        margin-top: 10px;
+        float: left;
+    }
+    .whoop-member-profile-bookmarks .comment-meta,
+    .whoop-member-profile-bookmarks .comment-content {
+        display: block;
+        width: 100%;
+        float: none;
+    }
+    .whoop-member-profile-bookmarks .geodir-whoop-listing-review div {
+        height: auto;
+    }
+    #buddypress ul#members-list li, .widget_bp_whoop_friends_widget ul#members-list li {
+        width: 95px;
+    }
+    .bestof-tabs-on-left .gd-bestof-tabs {
+        float: none;
+        width: 100%;
+    }
+    .bestof-tabs-on-left #geodir-bestof-places, .bestof-tabs-on-left #geodir-bestof-loading {
+        margin-left: 0;
+    }
+    .bestof-tabs-on-left .geo-bestof-contentwrap {
+        border-left: 1px #e1e1e1 solid;
+    }
+    .geo-bestof-contentwrap li .geodir-post-img {
+        border: none;
+    }
+    .map_category {
+        min-width: 200px;
+    }
+    .geodir_whoop_biz_photo_selected-info {
+        width: 100%;
+        padding-left: 10px;
+    }
+    .geodir_whoop_biz_photo_selected-info img {
+        margin-bottom: 5px !important;
+    }
+    .whoop-biz-nav-links {
+        width: 170px;
+        padding-left: 15px;
+        text-align: left;
+    }
+}
+@media only screen and (min-width: 661px) and (max-width: 1000px) {
+    #gd-sidebar-wrapper .event-content-avatar,
+    .geodir_recent_reviews .geodir_reviewer_image {
+        display: none;
+    }
+    .geodir_reviewer_content,
+    #gd-sidebar-wrapper .event-content-body,
+    .whoop-userinfo-widget-top .user-account-stats,
+    .whoop-userinfo-widget-top .whoop-user-info {
+        float: none;
+        width: 100%;
+    }
+}
+@media only screen and (max-width: 767px) {
+    .header-right-area .geodir_advance_search_widget input[type="text"] {
+        width: 34%;
+    }
+}
+@media only screen and (max-width: 700px) {
+    .header-right-area .geodir_advance_search_widget input[type="text"] {
+        width: 32%;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .header-right-area .geodir_advance_search_widget input[type="text"] {
+        width: 29%;
+    }
+}
+@media only screen and (max-width: 480px) {
+    .geodir_form_row label {
+        float: none;
+        width: auto;
+        display: block;
+    }
+    .geodir_form_row .geodir_textfield, .geodir_textarea {
+        float: none;
+        width: 100%;
+        display: block;
+        margin-top: 10px;
+    }
+    .geodir_message_note {
+        padding-left: 0;
+    }
+    .geodir_category_list_view li .geodir-content, .geodir_category_list_view li .geodir-post-img, .geodir_category_list_view li .geodir-addinfo {
+        float: none;
+        width: 100%;
+        margin: 10px 0;
+    }
+    .geodir_form_row .geodir_textfield,
+    .geodir_textarea,
+    .geodir_form_row select {
+        width: 100%;
+    }
+    #gd_placecategory {
+        width: 100% !important;
+    }
+    .geodir_form_row .event-single-dateto-inner {
+        width: 100%;
+        float: none;
+    }
+    .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 96%;
+        margin-left: 2%;
+    }
+    .geodir_full_page .geodir-search .showFilters {
+        width: 96%;
+        margin-left: 2%;
+    }
+    .geodir_full_page .geodir-search input[type="text"] {
+        width: 96%;
+        margin-left: 2%;
+    }
+    .footer .nav li {
+        width: 100%;
+    }
+    .header-right-area .geodir_advance_search_widget input[type="text"] {
+        width: 100%;
+    }
+    .header-right-area .geodir_advance_search_widget input[type="button"] {
+        width: 100%;
+    }
+    .geodir-search select {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    #geodir_wrapper .geodir-search select,
+    #geodir_wrapper .geodir-search input,
+    #geodir_wrapper .geodir-search button {
+        margin: 5px 0 !important;
+    }
+    .map_category label {
+        display: none;
+    }
+    .map_category input[type="checkbox"] {
+        /* Double-sized Checkboxes */
+        -ms-transform: scale(2); /* IE */
+        -moz-transform: scale(2); /* FF */
+        /* -webkit-transform: scale(2);  Safari and Chrome */
+        -o-transform: scale(2); /* Opera */
+        padding: 10px;
+        margin-right: 8px;
+    }
+    .map_category .main_list img {
+        height: 20px;
+        width: auto;
+    }
+    .map_category .main_list li {
+        padding-top: 3px;
+    }
+    /*
+#################################################
+ADVANCED SEARCH FILTERS
+#################################################
+*/
+    .geodir_advance_search .geodir_full_page .geodir-search input[type="text"],
+    .geodir_advance_search .geodir_full_page .geodir-search .showFilters,
+    .geodir_advance_search .geodir_full_page .geodir-search .geodir_submit_search {
+        width: 96%;
+        margin-left: 2%;
+        float: none;
+    }
+    .geodir_advance_search .geodir_full_page .geodir-search .geodir_submit_search {
+        margin-right: 1%;
+    }
+    /*
+#################################################
+CUSTOM POST TYPES
+#################################################
+*/
+    .geodir_custom_posts .geodir_full_page .geodir-search input[type="text"],
+    .geodir_custom_posts .geodir_full_page .geodir-search .showFilters,
+    .geodir_custom_posts .geodir_full_page .geodir-search .geodir_submit_search,
+    .geodir_custom_posts .geodir_full_page .geodir-search select {
+        width: 96%;
+        margin-left: 2%;
+        float: none;
+    }
+    /*
+#################################################
+ADVANCED SEARCH FILTERS && CUSTOM POST TYPES
+#################################################
+*/
+    .geodir_advance_search.geodir_custom_posts .showFilters {
+        width: 96%;
+        margin-left: 2%;
+        float: none;
+    }
+
+    .geodir_category_list_view.whoop-view li.geodir-listview .geodir-entry-content,
+    .geodir_category_list_view.whoop-view .geodir-whoop-address {
+        width: 100%;
+        float: none;
+        clear: both;
+        margin-bottom: 10px;
+    }
+    .geodir-big-header-ratings {
+        width: auto !important;
+    }
+    #geodir_content .geodir-listview h3.geodir-entry-title {
+        margin-bottom: 3px;
+    }
+    .geodir_category_list_view li.geodir-listview .geodir-addinfo {
+        margin-top: 0;
+    }
+}
+@media only screen and (max-width: 420px) {
+    .geodir-search input[type="text"],
+    .geodir-search select,
+    .geodir-search input[type="button"] {
+        width: 100%;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+}
+@media only screen and (max-width: 320px) {
+    .geodir_category_grid_view li.gridview_onethird, .geodir_category_grid_view li.gridview_onefifth, .geodir_category_grid_view li.gridview_onehalf, .geodir_category_grid_view li.gridview_onefourth {
+        max-width: inherit;
+        width: 100%;
+    }
+    .geodir-content-right .geodir_category_grid_view li.gridview_onehalf {
+        width: 100%;
+    }
+    .map_category {
+        padding: 5px;
+    }
+}
+
+html.mm-opened body {
+    overflow: hidden;
+}
+
+.header-right-area  .geodir-filter-container{
+    position: absolute;
+    text-align: left;
+    z-index: 5001;
+    background: #eee;
+    width: 100%;
+}
+
+.fa-compass {
+    opacity: 0.5;
+}
+.geodir-search input[type="button"].geodir_submit_search
+{
+    margin: 0;
+}
+.geodir-search input[type="button"].showFilters
+{
+    margin: 0 5px 0 0;
+}
+.geodir_submit_search
+{
+    font-family: FontAwesome, 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+}
+
+.customize_filter-in {
+    margin-top: 10px;
+    background: none;
+    padding: 0;
+    border: none;
+    color: #333;
+}
+.customize_filter-in .geodir-filter-cat {
+    width: 200px;
+    float: left;
+}
+.geodir-filter-cat ul {
+    margin-top: 0;
+}
+.geodir-filter-cat span {
+    font-weight: bold;
+    color: #333;
+}
+.geodir-filter-cat ul li {
+    border-bottom: none;
+    margin-bottom: 3px;
+    padding: 0;
+}
+.geodir-filter-cat input[type="checkbox"],
+.geodir-filter-cat input[type="radio"] {
+    margin-right: 3px;
+}
+.whoop-hover-content {
+    display: none;
+    clear: both;
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: bold;
+}
+#reviewsTab .whoop-hover-content ul,
+#reviewsTab .whoop-hover-content ul li {
+    margin: 0;
+    padding: 0;
+}
+#reviewsTab .whoop-hover-content ul li {
+    padding: 4px 0;
+}
+#reviewsTab .whoop-hover-content ul li i {
+    padding-right: 6px;
+}
+header.comment-meta:hover .whoop-hover-content {
+    display: block;
+}
+.whoop-ajax-share-ul {
+    margin: 0;
+    overflow: hidden;
+}
+.whoop-fb-btn {
+    text-shadow: 0 -1px 0 #364e8f;
+    border-color: #3c4d82;
+    background: #4a64ab;
+    background: -webkit-linear-gradient(#4a64ab, #3e5697);
+    background: linear-gradient(#4a64ab, #3e5697);
+}
+.whoop-tweet-btn {
+    text-shadow: 0 -1px 0 #0070a5;
+    border-color: #008fd1;
+    background: #00aced;
+    background: -webkit-linear-gradient(#00aced, #0091d5);
+    background: linear-gradient(#00aced, #0091d5);
+}
+.whoop-ajax-share-ul i {
+    font-size: 20px;
+    position: relative;
+    top: 3px;
+    padding-right: 5px;
+}
+.whoop-ajax-share-ul li:first-child {
+    padding-left: 0;
+}
+.whoop-ajax-share-ul li:last-child {
+    padding-right: 0;
+}
+.whoop-share-link {
+    margin-top: 10px;
+    position: relative;
+}
+.whoop-share-link i {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+.whoop-share-link input {
+    padding-left: 25px;
+}
+.hr-line legend {
+    padding: 0 15px;
+    margin: 0 auto;
+    color: #555;
+}
+.whoop-ajax-share-form label {
+    display: inline-block;
+    font-weight: bold;
+    margin: 0 0 6px;
+}
+.whoop-hover-content #item-buttons .generic-button {
+    padding: 0;
+}
+/*tag-it*/
+ul.tagit {
+    padding: 1px 5px;
+    overflow: auto;
+    margin-left: inherit; /* usually we don't want the regular ul margins. */
+    margin-right: inherit;
+}
+ul.tagit li {
+    display: block;
+    float: left;
+    margin: 2px 5px 2px 0;
+}
+ul.tagit li.tagit-choice {
+    position: relative;
+    line-height: inherit;
+}
+input.tagit-hidden-field {
+    display: none;
+}
+ul.tagit li.tagit-choice-read-only {
+    padding: .2em .5em .2em .5em;
+}
+
+ul.tagit li.tagit-choice-editable {
+    padding: .2em 18px .2em .5em;
+}
+
+ul.tagit li.tagit-new {
+    padding: .25em 4px .25em 0;
+}
+
+ul.tagit li.tagit-choice a.tagit-label {
+    cursor: pointer;
+    text-decoration: none;
+}
+ul.tagit li.tagit-choice .tagit-close {
+    cursor: pointer;
+    position: absolute;
+    right: .1em;
+    top: 50%;
+    margin-top: -8px;
+    line-height: 17px;
+}
+
+/* used for some custom themes that don't need image icons */
+ul.tagit li.tagit-choice .tagit-close .text-icon {
+    display: none;
+}
+
+ul.tagit li.tagit-choice input {
+    display: block;
+    float: left;
+    margin: 2px 5px 2px 0;
+}
+ul.tagit input[type="text"] {
+    -moz-box-sizing:    border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing:         border-box;
+
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: inherit;
+    background-color: inherit;
+    outline: none;
+}
+#name-or-email .ui-state-default,
+#name-or-email .ui-widget-content .ui-state-default,
+#name-or-email .ui-widget-header .ui-state-default {
+    box-sizing: border-box;
+    padding-top: 0;
+    padding-bottom: 0;
+    vertical-align: middle;
+    border: 1px solid #ccccc8;
+    background: #e5e5e1;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 1px rgba(255,255,255,0.9);
+    box-shadow: 0 1px rgba(255,255,255,0.9);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+}
+.geodir-removetofav-icon i {
+    color: #ed6d62;
+}
+.geodir_RatingAverage {
+    background-color: #ed695d;}
+
+.jStar,
+ul.geodir-tabs-content li ul.rate-area-list li:not(.active),
+ul.rate-area-list li:not(.active) { background: rgba(0, 0, 0, 0.1) url("library/images/whoop-star2.png") repeat-x scroll 0 0 !important;}
+
+ul.geodir-tabs-content li ul.rate-area-list li.gd-multirating-star {
+    margin: 0;
+}
+
+.gd-rating-box-in-left .gd-rate-category {
+    margin-top: 10px;
+}
+.entry-content p.logged-in-as {
+    margin-bottom: 0;
+}
+.jRatingAverage {
+    background-color: #ed695d;}
+
+.geodir-rating .geodir_Star img {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+.geodir-listview .geodir-content h2 {
+    color: #333;
+    font-size: 12px;
+    line-height: 17px;
+    margin-bottom: 0;
+    padding: 5px 0;
+}
+.geodir-single-post .commentlist {
+    padding: 1.5em;
+}
+.geodir-single-post .comment .vcard .avatar {
+    left:0;
+}
+.geodir_full_page .geodir_map_container {
+    margin-bottom: 15px;
+}
+.header-right-area.header-right-no-widget {
+    margin-top: 20px;
+}
+i.whoop-cat-i {
+    color: #999;
+    text-shadow: 0 0 2px #969696;
+    margin-right: 5px;
+}
+#post-not-found .search {
+    padding: 0 1.5em 0;
+}
+.gdbp-wrapper-reviews .whoop-review-rating,
+.whoop-member-profile-reviews .whoop-review-rating {
+    margin-top: 3px;
+}
+.buddypress #gd-sidebar-wrapper {
+    border-left: none;
+}
+
+/* GD business hours */
+#hoursTable {
+    width: 100%;
+}
+#hoursTable td {
+    padding: 5px;
+}
+#hoursTable td input[type="text"] {
+    margin-bottom: 0;
+}
+#hoursTable td {
+    border-bottom-width: 1px !important;
+    border-color: #ccc !important;
+}
+#hoursTable td input[type="text"] {
+    display: inline;
+    width: 90%;
+}
+/*location manager*/
+.top-nav .sub-menu {
+    background-color: #ed6d62;
+}
+.nav li ul.sub-menu, .nav li ul.children, .nav li ul.sub-menu li ul.sub-menu {
+    border: 1px solid #DA5A34;
+    border-top-style: none;
+}
+#menu-item-gd-location-switcher .geodir_location_tab_container dd.geodir_location_tabs a {
+    background: #fafafa;
+    background: rgba(250, 249, 246, 0.95);
+    padding: 2px 5px;
+}
+#menu-item-gd-location-switcher .geodir_location_tab_container dd.geodir_location_tabs a:hover {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+#menu-item-gd-location-switcher .geodir_location_sugestion .geodir-chosen-container {
+    background: #fafafa;
+    background: rgba(250, 249, 246, 0.95);
+}
+#mobile-navigation-left a.chosen-single:hover {
+    background: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+#mobile-navigation-left .geodir-chosen-container .chosen-results li.highlighted {
+    background-color: #ed6d62;
+    background-image: none;
+}
+.nav li ul.sub-menu li a {
+    border-color: #DA5A34;
+}
+#mobile-navigation-left .nav li ul.sub-menu li a:hover {
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.geodir-search .snear.near-city, .gd-small-city,
+.geodir-search .snear.near-country, .gd-small-country,
+.geodir-search .snear.near-region, .gd-small-region {
+    background: #fafafa;
+    background: rgba(250, 250, 249, 0.9);
+    color: #5c6b80;
+}
+.header-right-area .geodir-search .snear.near-city {
+    color: #5c6b80;
+}
+.advmap_nofound {
+    height: auto;
+}
+
+.gdbp-wrapper-reviews #comments span,
+.whoop-member-profile-reviews #comments span {
+    font-size: 12px !important;
+    font-weight: normal !important;
+    color: #333 !important;
+}
+
+.hentry #item-body header {
+    padding: 0;
+    border-bottom: none;
+}
+.hentry #item-body footer {
+    padding: 0;
+    border-top: none;
+}
+.gdbp-listings-page .geodir_category_list_view li {
+    border-bottom: 1px solid #e5e5e1 !important;
+}
+
+.gdbp-listings-page .geodir_category_list_view li .geodir-addinfo a.geodir-pcomments, .gdbp-listings-page .geodir_category_list_view li .geodir-addinfo span {
+    line-height: 20px !important;
+}
+.gdbp-listings-page .geodir_category_list_view .geodir-gridview .geodir-addinfo {
+    width: auto !important;
+    float: left;
+}
+#geodir_content.gdbp-wrapper-reviews {
+    border-top: 1px solid #e5e5e1;
+    margin-top:10px;
+    padding-top: 10px !important;
+}
+.hentry #related_listingTab header,
+.hentry #related_listingTab footer {
+     border: 0;
+     padding: 0;
+}
+ul.geodir-tabs-content #related_listingTab li {
+    padding-top: 0;
+}
+/*multiratings*/
+#reviews-wrap #comments .comment_overall {
+    margin: 7px 0 6px 0;
+}
+.comments_review_likeunlike {
+    float: left;
+    margin-left: 5px;
+}
+.comments_likeunlike {
+    padding: 2px 5px 5px 5px;
+}
+.comments_review_likeunlike img {
+    margin: 0;
+}
+.gd_ratings_module_box h4 {
+    color: #333;
+    font-weight: normal;
+    font-size: 14px;
+}
+.gd_ratings_module_box {
+    float: right;
+    width: 50%;
+}
+.gd-rating-overall-rating {
+    float: left;
+    width: 50%;
+}
+#comments.comments-area {
+    clear: both;
+}
+.gd-rating-overall-rating .geodir-rating {
+    margin-top: 6px;
+}
+.geodir-reviewrating-commenttext .whoop-review-rating {
+    display: none;
+}
+#comments span.showcommentimages {
+    margin: 7px 0 6px 10px;
+}
+#comments .overall-more-rating {
+    margin-top: 5px;
+}
+.comment_overall span p {
+    display: none;
+}
+#commentform .gd_rating {
+    margin-top: 20px;
+}
+.gd-rating-box-in-left select {
+    margin: 7px;
+}
+.geodir_category_list_view li.geodir-gridview .geodir-addinfo {
+    width: 95%;
+    margin-left: 5%;
+}
+.gd-location-switcher .fa-map-marker {
+    margin-right: 5px;
+}
+.whoop-review-rating p {
+    margin-left: 0;
+}
+.whoop-review-rating .geodir-rating {
+    margin-right: 5px;
+}
+.whoop-img-track .geodir_thumbnail {
+    width: 250px;
+    height: 250px;
+    background-position: center;
+    background-size: 100% 100%;
+}
+@media only screen and (max-width: 860px) {
+    .whoop-img-track .geodir_thumbnail {
+        height: 250px !important;
+    }
+}
+.comp-user-avatar {
+    width: 25%;
+}
+.comp-user-avatar .avatar {
+    float: left;
+}
+.comp-user-avatar .comp-username {
+    text-align: left;
+}
+.whoop-com-links {
+    clear: both;
+    overflow: hidden;
+}
+.whoop-com-links .gd_comment_replaylink span {
+    display: none;
+}
+.whoop-com-links .comment-reply-link {
+    margin-right: 10px;
+}
+#reviewsTab ol.commentlist ol.children li {
+    padding: 0;
+}
+#reviewsTab ol.commentlist ol.children li img.avatar {
+    margin-bottom: 0;
+}
+
+.whoop-next-avatar .geodir_thumbnail {
+    background-size: cover;
+}
+.body_fullscreen .header,
+.body_fullscreen #wpadminbar {
+    display: none;
+}
+.geodir-search input[type="button"].geodir_submit_search {
+    /*display: none;*/
+}
+/*div.geodir-search button[type="button"] {*/
+	/*margin: 0;*/
+/*}*/
+/*.geodir-search .fa-search,*/
+/*.geodir-advance-search .fa-search {*/
+	/*display: inline-block;*/
+/*}*/
+/*.geodir-adv-form-wait .geodir-search .fa-search,*/
+/*.geodir-adv-form-wait .geodir-advance-search .fa-search {*/
+	/*display: none;*/
+/*}*/
+/*.geodir-search .gd-srchbtn-txt,*/
+/*.geodir-advance-search .gd-srchbtn-txt {*/
+	/*display: none !important;*/
+/*}*/
+
+/*WooCommerce*/
+.woocommerce #respond input#submit.alt,
+.woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt {
+    color: white;
+    border: none;
+    background: #e34f43 none;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 -1px 0 #760400;
+}
+
+.woocommerce #respond input#submit.alt:hover,
+.woocommerce a.button.alt:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce input.button.alt:hover {
+    background: #e34f43 none;
+}
+
+.woocommerce .quantity .qty {
+    line-height: 23px;
+}
+
+.woocommerce .woocommerce-message {
+    border-top-color: #ed6d62;
+}
+.woocommerce .woocommerce-message:before {
+    color: #ed6d62;
+}
+
+.woocommerce div.product p.price, .woocommerce div.product span.price {
+    color: #ed6d62;
+}
+
+.woocommerce span.onsale {
+    background-color: #ed6d62;
+}
+
+.woocommerce-cart table.cart td.actions .coupon .input-text,
+.woocommerce form .form-row input#coupon_code {
+    line-height: 22px;
+}
+
+.woocommerce input[type="text"],
+.woocommerce input[type="password"],
+.woocommerce input[type="datetime"],
+.woocommerce input[type="datetime-local"],
+.woocommerce input[type="date"],
+.woocommerce input[type="month"],
+.woocommerce input[type="time"],
+.woocommerce input[type="week"],
+.woocommerce input[type="number"],
+.woocommerce input[type="email"],
+.woocommerce input[type="url"],
+.woocommerce input[type="search"],
+.woocommerce input[type="tel"],
+.woocommerce input[type="color"],
+.woocommerce select,
+.woocommerce textarea,
+.woocommerce .field {
+    max-width: 100%;
+}
+
+.woocommerce td.product-name dl.variation dd p {
+    padding: 0;
+}
+
+.checkout_coupon p.form-row {
+    margin-bottom: 0;
+}
+
+.woocommerce-page .hentry header {
+    padding: 0 1.5em;
+    border-bottom: none;
+}
+
+.widget_archive ul,
+.widget_nav_menu ul,
+.widget_categories ul {
+    font-size: 15px;
+    line-height: 23px;
+    list-style: square;
+    margin: 0 0 20px 20px;
+}
+
+.widget_archive ul .sub-menu,
+.widget_nav_menu ul .sub-menu,
+.widget_categories ul .sub-menu,
+.widget_archive ul .children,
+.widget_nav_menu ul .children,
+.widget_categories ul .children {
+    margin-bottom: 0;
+}
+
+#wp-calendar {
+    width: 100%;
+}
+#wp-calendar td,
+#wp-calendar th {
+    text-align: center;
+    line-height: 30px;
+}
+#wp-calendar #prev {
+    text-align: left;
+}
+#wp-calendar #next {
+    text-align: right;
+}
+.header-right-area div.geodir-search input[type="button"] {
+    margin-top: 5px;
+}
+.whoop-btn-group .geodir-addtofav {
+    margin: 0;
+}
+.whoop-btn-group .geodir-company_info {
+    display: inline-block;
+    margin-left: -2px;
+}
+a.mobile-right {
+    display: none;
+}
+#comment-nav-below {
+    padding: 1.5em;
+}
+#comment-nav-below h1 {
+    display: none;
+}
+#comment-nav-below .nav-previous,
+#comment-nav-below .nav-next {
+    display: inline-block;
+}
+#comment-nav-below .nav-next {
+    float: right;
+}
+/*#reviewsTab .comments-area ol.commentlist article {*/
+    /*padding-top: 5px;*/
+/*}*/
+/*.whoop-com-links {*/
+    /*position: absolute;*/
+    /*right: 0;*/
+/*}*/
+/*.whoop-com-links .comment-reply-link {*/
+    /*padding: 4px 6px;*/
+    /*height: 24px;*/
+    /*font-size: 12px;*/
+/*}*/
+.event-content-avatar-inner .geodir_thumbnail {
+    background-size: cover;
+}
+
+.whoop-img-track .geodir_thumbnail {
+    background-size: cover;
+}
+header nav ul li:first-child a {
+    padding-left: 8px;
+}
+
+.whoop-r-activity-body .gdbp-feature-image img {
+    display: none;
+    /*display: block;*/
+}
+
+/*list manager*/
+.gd_list .byline.vcard {
+    display: none;
+}
+.gdlists-tab-title {
+    font-size: 18px;
+    line-height: 16px;
+    margin: 5px 0;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+#geodir_content .gd-list-item-wrap h3 {
+    font-size: 16px;
+    margin-bottom: 0;
+}
+.gd-list-item-wrap p {
+    margin-bottom: 5px;
+}
+.gd-list-item-wrap-ul li {
+    margin-bottom: 10px;
+}
+body.lists.buddypress .geodir-whoop-listing-review {
+    display: none;
+}
+
+/*AYI widget*/
+.geodir-tabs-content .inline-layout > li {
+    width: 50%;
+    padding: 0 3px;
+    margin: 0;
+    min-height: 0;
+}
+#geodir_content h3.widget-title {
+    font-size: 16px;
+    margin: 5px;
+}
+.ayi-html-wrap {
+    overflow: hidden;
+}
+
+/*postview widget layout*/
+#geodir_content .geodir_list_heading h3.widget-title {
+    margin: 0;
+}
+
+/*author page*/
+.whoop-author-p-title {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/*gd lists*/
+.post-type-archive-gd_list #geodir_content article.gd_list {
+    margin-bottom: 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+.post-type-archive-gd_list #geodir_content article.gd_list header {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.post-type-archive-gd_list #geodir_content article.gd_list .entry-content {
+    padding-top: 10px;
+}
+.post-type-archive-gd_list #geodir_content article.gd_list .article-filed-under {
+    display: none;
+}
+.post-type-archive-gd_list #geodir_content .archive-title {
+    padding: 0 20px;
+}
+
+/*buddypress groups fix*/
+body.single-item.groups #geodir_content {
+    width: 100%;
+}
+.whoop-full-width-content {
+    width: 100% !important;
+}
+
+.whoop-event-date-display p {
+    margin: 0 !important;
+}
+.gd-locate-me #post_address.gd-form-control {
+    max-width: 100%;
+}
+.gd-locate-me .gd-locate-me-btn .fa {
+    font-size: 120% !important;
+}
+.whoop_event_details .eve-dates > p {
+    margin: 0 0 5px 0;
+    line-height: 20px !important;
+}

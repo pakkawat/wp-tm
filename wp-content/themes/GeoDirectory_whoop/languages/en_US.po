@@ -1,0 +1,2520 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Whoop 1.0.9\n"
+"POT-Creation-Date: 2016-11-30 17:14+0000\n"
+"PO-Revision-Date: 2016-11-30 17:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: options\n"
+
+#: 404.php:8
+msgid "Epic 404 - Article Not Found"
+msgstr ""
+
+#: 404.php:13
+msgid ""
+"The article you were looking for was not found, but maybe try looking again!"
+msgstr ""
+
+#: admin/options-init.php:137
+msgid "Section via hook"
+msgstr ""
+
+#: admin/options-init.php:138
+msgid ""
+"<p class=\"description\">This is a section created by adding a filter to the "
+"sections array. Can be used by child themes to add/remove sections from the "
+"options.</p>"
+msgstr ""
+
+#: admin/options-init.php:216
+#, php-format
+msgid "Customize &#8220;%s&#8221;"
+msgstr ""
+
+#: admin/options-init.php:233
+#, php-format
+msgid "By %s"
+msgstr ""
+
+#: admin/options-init.php:234
+#, php-format
+msgid "Version %s"
+msgstr ""
+
+#: admin/options-init.php:235
+msgid "Tags"
+msgstr ""
+
+#: admin/options-init.php:240
+#, php-format
+msgid "This <a href=\"%1$s\">child theme</a> requires its parent theme, %2$s."
+msgstr ""
+
+#: admin/options-init.php:275
+msgid "Homepage not set as GeoDirectory (settings on this page may not work)"
+msgstr ""
+
+#: admin/options-init.php:276
+#, php-format
+msgid ""
+"Please set it at Setings>Reading>Front page>GD Home Page, <a href=\"%s"
+"\">here</a>"
+msgstr ""
+
+#: admin/options-init.php:284
+msgid "Optimal content settings for GeoDirectory."
+msgstr ""
+
+#: admin/options-init.php:285
+msgid "Please set Content to 67% and Sidebars to 30%"
+msgstr ""
+
+#: admin/options-init.php:290
+msgid "Home Settings"
+msgstr ""
+
+#: admin/options-init.php:291
+msgid ""
+"GeoDirectory Framework was designed to be used with the GeoDirectory plugin, "
+"though it can be used without it.  You can enable and disable widget areas "
+"and also style almost any area of your website from here."
+msgstr ""
+
+#: admin/options-init.php:299
+msgid "Warning and Info messages"
+msgstr ""
+
+#: admin/options-init.php:300
+msgid "You can disable warning and info messages."
+msgstr ""
+
+#: admin/options-init.php:316
+msgid "Site Width"
+msgstr ""
+
+#: admin/options-init.php:317
+msgid "Select the maximum layout width"
+msgstr ""
+
+#: admin/options-init.php:318
+#, php-format
+msgid "You can set this to 98% for a nice wide layout (default is 1040px)"
+msgstr ""
+
+#: admin/options-init.php:330
+msgid "GD Home Top Section - Width"
+msgstr ""
+
+#: admin/options-init.php:331
+#, php-format
+msgid ""
+"You can set this to be full-width or standard, (you can also set the map "
+"widget to be 100% from it's widget)"
+msgstr ""
+
+#: admin/options-init.php:348 library/geodirectory_framework.php:369
+msgid "Header Styling Options"
+msgstr ""
+
+#: admin/options-init.php:354
+msgid "Site Logo"
+msgstr ""
+
+#: admin/options-init.php:357
+msgid "You can upload your site logo here"
+msgstr ""
+
+#: admin/options-init.php:358
+msgid "This will replace your site title and tag line"
+msgstr ""
+
+#: admin/options-init.php:368
+msgid "Site Favicon"
+msgstr ""
+
+#: admin/options-init.php:371
+msgid "You can upload your site favicon.ico here"
+msgstr ""
+
+#: admin/options-init.php:372
+msgid "must be a .ico"
+msgstr ""
+
+#: admin/options-init.php:387
+msgid "Apple device Favicon"
+msgstr ""
+
+#: admin/options-init.php:390
+msgid "You can upload your site apple-touch-icon here"
+msgstr ""
+
+#: admin/options-init.php:391
+msgid "must be 129px x 129px .png"
+msgstr ""
+
+#: admin/options-init.php:415
+msgid "Site Logo Margins"
+msgstr ""
+
+#: admin/options-init.php:416
+msgid "Position your logo"
+msgstr ""
+
+#: admin/options-init.php:417
+msgid "You can position your logo exactly how you want it.(px)"
+msgstr ""
+
+#: admin/options-init.php:428
+msgid "Fixed position Header?"
+msgstr ""
+
+#: admin/options-init.php:430
+msgid "This set the position of the header as fixed."
+msgstr ""
+
+#: admin/options-init.php:442
+msgid "Site Title Text"
+msgstr ""
+
+#: admin/options-init.php:444
+msgid "Specify the title font properties. Only applies to text (if no logo)"
+msgstr ""
+
+#: admin/options-init.php:458
+msgid "Tagline Text Color"
+msgstr ""
+
+#: admin/options-init.php:460
+msgid "Specify the tagline font properties. Only applies to text (if no logo)"
+msgstr ""
+
+#: admin/options-init.php:476
+msgid "Header Background"
+msgstr ""
+
+#: admin/options-init.php:477
+msgid "Pick a background color for the theme header(default: #af0606)."
+msgstr ""
+
+#: admin/options-init.php:488
+msgid "Header Gradient Color Option"
+msgstr ""
+
+#: admin/options-init.php:489
+msgid "Background for the theme header.(replaces header background)"
+msgstr ""
+
+#: admin/options-init.php:490 admin/options-init.php:563
+#: admin/options-init.php:759 admin/options-init.php:933
+msgid "This is not supported in IE9 or below."
+msgstr ""
+
+#: admin/options-init.php:501
+msgid "Header Button Color"
+msgstr ""
+
+#: admin/options-init.php:502
+msgid "Select a background color for the header buttons (default: #e34f43)."
+msgstr ""
+
+#: admin/options-init.php:511
+msgid "Header Button Hover Color"
+msgstr ""
+
+#: admin/options-init.php:512
+msgid ""
+"Select a background color for the header buttons on hover (default: #dc2f21)."
+msgstr ""
+
+#: admin/options-init.php:521
+msgid "Header Button Border Color"
+msgstr ""
+
+#: admin/options-init.php:522
+msgid "Select a Header Button border color (default: #B64425)."
+msgstr ""
+
+#: admin/options-init.php:529
+msgid "Menu Options"
+msgstr ""
+
+#: admin/options-init.php:535
+msgid "Menu Font"
+msgstr ""
+
+#: admin/options-init.php:537
+msgid "Specify the menu font properties."
+msgstr ""
+
+#: admin/options-init.php:552
+msgid "Menu Background Color"
+msgstr ""
+
+#: admin/options-init.php:553
+msgid "Select a background color for the menu."
+msgstr ""
+
+#: admin/options-init.php:561
+msgid "Menu Gradient Color Option"
+msgstr ""
+
+#: admin/options-init.php:562
+msgid "Background for the menu."
+msgstr ""
+
+#: admin/options-init.php:574
+msgid "Sub Menu Background Color"
+msgstr ""
+
+#: admin/options-init.php:575
+msgid "Select a sub menu background color for the menu."
+msgstr ""
+
+#: admin/options-init.php:584
+msgid "Sub Menu Border Color"
+msgstr ""
+
+#: admin/options-init.php:585
+msgid "Select a sub menu border color for the menu."
+msgstr ""
+
+#: admin/options-init.php:592
+msgid "Menu Border Option"
+msgstr ""
+
+#: admin/options-init.php:595
+msgid "Enter the px value for each border, ie: 1"
+msgstr ""
+
+#: admin/options-init.php:613
+msgid "Menu Button Border Option"
+msgstr ""
+
+#: admin/options-init.php:616
+msgid "Enter the px value for the border, ie: 1"
+msgstr ""
+
+#: admin/options-init.php:631
+msgid "Menu Border Radius"
+msgstr ""
+
+#: admin/options-init.php:632
+msgid "top-left and top-right border radius"
+msgstr ""
+
+#: admin/options-init.php:633
+msgid "This sets the corner radius of the menu"
+msgstr ""
+
+#: admin/options-init.php:662
+msgid "Admin Bar's and Mobile options"
+msgstr ""
+
+#: admin/options-init.php:669
+msgid "WordPress Admin Bar"
+msgstr ""
+
+#: admin/options-init.php:671
+msgid "Here you can disable the WP admin bar."
+msgstr ""
+
+#: admin/options-init.php:684
+msgid "GDF Admin Bar"
+msgstr ""
+
+#: admin/options-init.php:686
+msgid ""
+"This will enable the GDF admin bar and widget areas, which are good for "
+"search and GDF welcome login widgets."
+msgstr ""
+
+#: admin/options-init.php:699
+msgid "Fixed position GDF Admin Bar?"
+msgstr ""
+
+#: admin/options-init.php:701
+msgid "This set the position of the admin bar as fixed."
+msgstr ""
+
+#: admin/options-init.php:714
+msgid "Mobile User Menu"
+msgstr ""
+
+#: admin/options-init.php:716
+msgid ""
+"This will show a user menu to be able to login and manage user functions on "
+"mobile"
+msgstr ""
+
+#: admin/options-init.php:736
+msgid "Body Styling Options"
+msgstr ""
+
+#: admin/options-init.php:737
+msgid "Background Options"
+msgstr ""
+
+#: admin/options-init.php:745
+msgid "Body Background"
+msgstr ""
+
+#: admin/options-init.php:746
+msgid "Select a background for the theme body."
+msgstr ""
+
+#: admin/options-init.php:757
+msgid "Body Gradient Color Option"
+msgstr ""
+
+#: admin/options-init.php:758
+msgid "Background for the theme body."
+msgstr ""
+
+#: admin/options-init.php:770
+msgid "Content Background Color"
+msgstr ""
+
+#: admin/options-init.php:771
+msgid "Select a background color for the content (default: #FFFFFF)."
+msgstr ""
+
+#: admin/options-init.php:780
+msgid "Sidebar Background Color"
+msgstr ""
+
+#: admin/options-init.php:781
+msgid "Select a background color for the sidebars (default: #FFFFFF)."
+msgstr ""
+
+#: admin/options-init.php:790
+msgid "Button Color"
+msgstr ""
+
+#: admin/options-init.php:791
+msgid "Select a background color for the buttons (default: #e34f43)."
+msgstr ""
+
+#: admin/options-init.php:800
+msgid "Button Hover Color"
+msgstr ""
+
+#: admin/options-init.php:801
+msgid "Select a background color for the buttons on hover (default: #dc2f21)."
+msgstr ""
+
+#: admin/options-init.php:810
+msgid "Text Options"
+msgstr ""
+
+#: admin/options-init.php:817
+msgid "Body Font"
+msgstr ""
+
+#: admin/options-init.php:819
+msgid "Specify the body font properties."
+msgstr ""
+
+#: admin/options-init.php:832
+msgid "Links Color Option"
+msgstr ""
+
+#: admin/options-init.php:835
+msgid "Change the colour of your site links"
+msgstr ""
+
+#: admin/options-init.php:851
+msgid "Body h1 Font"
+msgstr ""
+
+#: admin/options-init.php:853
+msgid "Specify the h1 font properties."
+msgstr ""
+
+#: admin/options-init.php:866
+msgid "Body h2 Font"
+msgstr ""
+
+#: admin/options-init.php:868
+msgid "Specify the h2 font properties."
+msgstr ""
+
+#: admin/options-init.php:881
+msgid "Body h3 Font"
+msgstr ""
+
+#: admin/options-init.php:883
+msgid "Specify the h3 font properties."
+msgstr ""
+
+#: admin/options-init.php:910
+msgid "Footer Styling Options"
+msgstr ""
+
+#: admin/options-init.php:919
+msgid "Footer Background"
+msgstr ""
+
+#: admin/options-init.php:920
+msgid "Select a background for the theme footer."
+msgstr ""
+
+#: admin/options-init.php:931
+msgid "Footer Gradient Color Option"
+msgstr ""
+
+#: admin/options-init.php:932
+msgid "Background for the theme footer."
+msgstr ""
+
+#: admin/options-init.php:944
+msgid "Footer text Color"
+msgstr ""
+
+#: admin/options-init.php:945
+msgid "Select a color for the footer text (default: #FFFFFF)."
+msgstr ""
+
+#: admin/options-init.php:952
+msgid "Enable footer widget areas"
+msgstr ""
+
+#: admin/options-init.php:954
+msgid "Select how many footer widget areas to show.none, one, two, three, four"
+msgstr ""
+
+#: admin/options-init.php:969
+msgid "Copyright text"
+msgstr ""
+
+#: admin/options-init.php:970
+msgid "Enter your copyright text"
+msgstr ""
+
+#: admin/options-init.php:971
+msgid "You can enter HTML here or plain text"
+msgstr ""
+
+#: admin/options-init.php:982
+msgid "Delete Profile Custom Fields"
+msgstr ""
+
+#: admin/options-init.php:988
+msgid ""
+"This option deletes all BuddyPress profile custom fields created by Whoop "
+"theme."
+msgstr ""
+
+#: admin/options-init.php:993
+#: buddypress/members/single/messages/messages-loop.php:73
+#: geodirectory/listing-listview.php:220
+msgid "Delete"
+msgstr ""
+
+#: admin/options-init.php:1000
+msgid "Create Profile Custom Fields"
+msgstr ""
+
+#: admin/options-init.php:1006
+msgid ""
+"This option creates all Whoop BuddyPress profile custom fields. ( Only "
+"creates if the field not exists )"
+msgstr ""
+
+#: admin/options-init.php:1011
+msgid "ReInstall"
+msgstr ""
+
+#: admin/options-init.php:1018
+msgid "BuddyPress Options"
+msgstr ""
+
+#: admin/options-init.php:1020
+msgid ""
+"Some components can be enabled / disabled from Settings -> BuddyPress -> "
+"Components"
+msgstr ""
+
+#: admin/options-init.php:1025
+msgid "BuddyPress \"Activity\" Tab"
+msgstr ""
+
+#: admin/options-init.php:1027
+msgid "Here you can disable the BuddyPress \"Activity\" Tab."
+msgstr ""
+
+#: admin/options-init.php:1039
+msgid "BuddyPress \"Reviews\" Tab"
+msgstr ""
+
+#: admin/options-init.php:1041
+msgid "Here you can disable the BuddyPress \"Reviews\" Tab."
+msgstr ""
+
+#: admin/options-init.php:1053
+msgid "BuddyPress \"Bookmarks\" Tab"
+msgstr ""
+
+#: admin/options-init.php:1055
+msgid "Here you can disable the BuddyPress \"Bookmarks\" Tab."
+msgstr ""
+
+#: admin/options-init.php:1067
+msgid "BuddyPress Profile Field Options"
+msgstr ""
+
+#: admin/options-init.php:1088 admin/options-init.php:1090
+msgid "bbPress Options"
+msgstr ""
+
+#: admin/options-init.php:1095
+msgid "Enable header on bbPress replies?"
+msgstr ""
+
+#: admin/options-init.php:1097
+msgid ""
+"Header contains link like EDIT | CLOSE | MERGE | TRASH | SPAM | REPLY etc."
+msgstr ""
+
+#: admin/options-init.php:1111 admin/options-init.php:1113
+msgid "Review Settings"
+msgstr ""
+
+#: admin/options-init.php:1118
+msgid "Limit 1 Review / User / Post"
+msgstr ""
+
+#: admin/options-init.php:1120
+msgid "When enabled user can write only one review in each post"
+msgstr ""
+
+#: admin/options-init.php:1132
+msgid "Enable Reviews on Events?"
+msgstr ""
+
+#: admin/options-init.php:1133
+msgid ""
+"Enable Reviews on Events?. (Applicable only if GD Events addon installed)"
+msgstr ""
+
+#: admin/options-init.php:1143
+msgid "Enable author comment on reviews?"
+msgstr ""
+
+#: admin/options-init.php:1144
+msgid ""
+"When enabled, a \"Reply\" button will be visible under each review for "
+"listing author"
+msgstr ""
+
+#: admin/options-init.php:1154
+msgid "Enable user comment on reviews?"
+msgstr ""
+
+#: admin/options-init.php:1155
+msgid ""
+"When enabled, \"Reply\" button will be visible under each review for normal "
+"users too."
+msgstr ""
+
+#: admin/options-init.php:1172
+msgid "Quick Code"
+msgstr ""
+
+#: admin/options-init.php:1173
+msgid "Override CSS, Add JS"
+msgstr ""
+
+#: admin/options-init.php:1181
+msgid "CSS Code"
+msgstr ""
+
+#: admin/options-init.php:1182
+msgid "Paste your CSS code here."
+msgstr ""
+
+#: admin/options-init.php:1191
+msgid "JS Code"
+msgstr ""
+
+#: admin/options-init.php:1192
+msgid "Paste your JS code here."
+msgstr ""
+
+#: admin/options-init.php:1208
+msgid "<strong>Theme URL:</strong> "
+msgstr ""
+
+#: admin/options-init.php:1209
+msgid "<strong>Author:</strong> "
+msgstr ""
+
+#: admin/options-init.php:1210
+msgid "<strong>Version:</strong> "
+msgstr ""
+
+#: admin/options-init.php:1214
+msgid "<strong>Tags:</strong> "
+msgstr ""
+
+#: admin/options-init.php:1227 admin/options-init.php:1277
+msgid "Documentation"
+msgstr ""
+
+#: admin/options-init.php:1243
+msgid "Import / Export"
+msgstr ""
+
+#: admin/options-init.php:1244
+msgid ""
+"Import and Export your GeoDirectory Framework settings from file, text or "
+"URL."
+msgstr ""
+
+#: admin/options-init.php:1263
+msgid "Theme Information"
+msgstr ""
+
+#: admin/options-init.php:1264
+msgid ""
+"<p class=\"description\">GeoDirectory Framework was designed to be used with "
+"the GeoDirectory plugin, though it can be used without it. You can enable "
+"and disable widget areas and also style almost any area of your website from "
+"here.</p>"
+msgstr ""
+
+#: admin/options-init.php:1288
+msgid "Theme Information 1"
+msgstr ""
+
+#: admin/options-init.php:1289 admin/options-init.php:1295
+msgid "<p>This is the tab content, HTML is allowed.</p>"
+msgstr ""
+
+#: admin/options-init.php:1294
+msgid "Theme Information 2"
+msgstr ""
+
+#: admin/options-init.php:1299
+msgid "<p>This is the sidebar content, HTML is allowed.</p>"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:334
+msgid "Install Required Plugins"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:335
+msgid "Install Plugins"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:337
+#, php-format
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:339
+#, php-format
+msgid "Updating Plugin: %s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:340
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:343
+#, php-format
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:349
+#, php-format
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:355
+#, php-format
+msgid ""
+"The following plugin needs to be updated to its latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgid_plural ""
+"The following plugins need to be updated to their latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:361
+#, php-format
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:367
+#, php-format
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:373
+#, php-format
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:378
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:383
+msgid "Begin updating plugin"
+msgid_plural "Begin updating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:388
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:392
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:393
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:394
+#: admin/tgm/class-tgm-plugin-activation.php:3252
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:395
+#: admin/tgm/class-tgm-plugin-activation.php:3045
+msgid "The following plugin was activated successfully:"
+msgid_plural "The following plugins were activated successfully:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:397
+#, php-format
+msgid "No action taken. Plugin %1$s was already active."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:399
+#, php-format
+msgid ""
+"Plugin not activated. A higher version of %s is needed for this theme. "
+"Please update the plugin."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:401
+#, php-format
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:402
+msgid "Dismiss this notice"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:403
+msgid ""
+"There are one or more required or recommended plugins to install, update or "
+"activate."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:404
+msgid "Please contact the administrator of this site for help."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2075
+#, php-format
+msgid "TGMPA v%s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2366
+msgid "Required"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2369
+msgid "Recommended"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2385
+msgid "WordPress Repository"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2388
+msgid "External Source"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2391
+msgid "Pre-Packaged"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2408
+msgid "Not Installed"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2412
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2414
+#: whoop-widgets/buddypress/bp-friends-widget.php:155
+msgid "Active"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2420
+msgid "Required Update not Available"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2423
+msgid "Requires Update"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2426
+msgid "Update recommended"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2481
+#, php-format
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2485
+#, php-format
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2489
+#, php-format
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2493
+#, php-format
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2583
+msgid "Installed version:"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2591
+msgid "Minimum required version:"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2603
+msgid "Available version:"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2640
+msgid "Plugin"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2641
+msgid "Source"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2642
+msgid "Type"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2646
+msgid "Version"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2647
+msgid "Status"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2696
+#, php-format
+msgid "Install %2$s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2701
+#, php-format
+msgid "Update %2$s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2707
+#, php-format
+msgid "Activate %2$s"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2810
+msgid "Install"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2816
+msgid "Update"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2819
+msgid "Activate"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2850
+msgid "No plugins were selected to be installed. No action taken."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2852
+msgid "No plugins were selected to be updated. No action taken."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2893
+msgid "No plugins are available to be installed at this time."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:2895
+msgid "No plugins are available to be updated at this time."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3251
+msgid "Plugin activation failed."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3591
+#, php-format
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3594
+#, php-format
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3596
+#, php-format
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3600
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3602
+#, php-format
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3603
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3605
+#, php-format
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3608
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3611
+msgid "All installations have been completed."
+msgstr ""
+
+#: admin/tgm/class-tgm-plugin-activation.php:3613
+#, php-format
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: archive.php:8
+msgid "Posts Categorized:"
+msgstr ""
+
+#: archive.php:14
+msgid "Posts Tagged:"
+msgstr ""
+
+#: archive.php:22
+msgid "Posts By:"
+msgstr ""
+
+#: archive.php:28
+msgid "Daily Archives:"
+msgstr ""
+
+#: archive.php:34
+msgid "Monthly Archives:"
+msgstr ""
+
+#: archive.php:40
+msgid "Yearly Archives:"
+msgstr ""
+
+#: archive.php:61
+#, php-format
+msgid ""
+"Posted <time class=\"updated\" datetime=\"%1$s\" >%2$s</time> by <span class="
+"\"author\">%3$s</span> <span class=\"amp\">&</span> filed under %4$s."
+msgstr ""
+
+#: archive.php:61 blog-page.php:27 functions.php:545 home.php:21
+msgid "F jS, Y"
+msgstr ""
+
+#: archive.php:77 bbpress.php:114 blog-page.php:41 buddypress.php:59
+#: full-width.php:103 home.php:35 index.php:31 page.php:49 single.php:29
+msgid "Oops, Post Not Found!"
+msgstr ""
+
+#: archive.php:82 bbpress.php:119 blog-page.php:46 buddypress.php:64
+#: full-width.php:113 home.php:40 index.php:36 page.php:54 single.php:34
+msgid "Uh Oh. Something is missing. Try double checking things."
+msgstr ""
+
+#: archive.php:87
+msgid "This is the error message in the archive.php template."
+msgstr ""
+
+#: author.php:10
+#, php-format
+msgid "%s's Profile"
+msgstr ""
+
+#: author.php:13
+msgid "Listings"
+msgstr ""
+
+#: author.php:19
+msgid "Favorites"
+msgstr ""
+
+#: bbpress.php:32
+msgid "New Conversation"
+msgstr ""
+
+#: bbpress.php:102 buddypress.php:44 full-width.php:73 page.php:34
+#: post-formats/format-video.php:32 post-formats/format.php:82
+msgid "Pages:"
+msgstr ""
+
+#: bbpress.php:124 blog-page.php:51 full-width.php:123 home.php:45 page.php:59
+msgid "This is the error message in the page.php template."
+msgstr ""
+
+#: bbpress/form-reply.php:35
+msgid ""
+"This topic is marked as closed to new replies, however your posting "
+"capabilities still allow you to do so."
+msgstr ""
+
+#: bbpress/form-reply.php:63 bbpress/form-topic.php:81
+msgid ""
+"You may use these <abbr title=\"HyperText Markup Language\">HTML</abbr> tags "
+"and attributes:"
+msgstr ""
+
+#: bbpress/form-reply.php:92 bbpress/form-topic.php:155
+msgid "Notify the author of follow-up replies via email"
+msgstr ""
+
+#: bbpress/form-reply.php:96 bbpress/form-topic.php:159
+msgid "Notify me of follow-up replies via email"
+msgstr ""
+
+#: bbpress/form-reply.php:113 bbpress/form-topic.php:175
+msgid "Keep a log of this edit:"
+msgstr ""
+
+#: bbpress/form-reply.php:117 bbpress/form-topic.php:179
+msgid "Optional reason for editing:"
+msgstr ""
+
+#: bbpress/form-reply.php:134 bbpress/form-topic.php:194
+msgid "Submit"
+msgstr ""
+
+#: bbpress/form-reply.php:157
+#, php-format
+msgid "The topic &#8216;%s&#8217; is closed to new replies."
+msgstr ""
+
+#: bbpress/form-reply.php:165 bbpress/form-topic.php:217
+#, php-format
+msgid "The forum &#8216;%s&#8217; is closed to new topics and replies."
+msgstr ""
+
+#: bbpress/form-reply.php:173
+msgid "You cannot reply to this topic."
+msgstr ""
+
+#: bbpress/form-reply.php:173
+msgid "You must be logged in to reply to this topic."
+msgstr ""
+
+#: bbpress/form-topic.php:40
+#, php-format
+msgid "Now Editing &ldquo;%s&rdquo;"
+msgstr ""
+
+#: bbpress/form-topic.php:42
+#, php-format
+msgid "Create New Topic in &ldquo;%s&rdquo;"
+msgstr ""
+
+#: bbpress/form-topic.php:42
+msgid "Create New Topic"
+msgstr ""
+
+#: bbpress/form-topic.php:52
+msgid ""
+"This forum is marked as closed to new topics, however your posting "
+"capabilities still allow you to do so."
+msgstr ""
+
+#: bbpress/form-topic.php:66
+#, php-format
+msgid "Topic Title (Maximum Length: %d):"
+msgstr ""
+
+#: bbpress/form-topic.php:92
+msgid "Topic Tags:"
+msgstr ""
+
+#: bbpress/form-topic.php:105
+msgid "Forum:"
+msgstr ""
+
+#: bbpress/form-topic.php:108
+msgid "(No Forum)"
+msgstr ""
+
+#: bbpress/form-topic.php:124
+msgid "Topic Type:"
+msgstr ""
+
+#: bbpress/form-topic.php:136
+msgid "Topic Status:"
+msgstr ""
+
+#: bbpress/form-topic.php:225
+msgid "You cannot create new topics."
+msgstr ""
+
+#: bbpress/form-topic.php:225
+msgid "You must be logged in to create new topics."
+msgstr ""
+
+#: bbpress/loop-single-reply.php:21
+msgid "in reply to: "
+msgstr ""
+
+#: bbpress/loop-topics.php:19
+msgid "Topic"
+msgstr ""
+
+#: bbpress/loop-topics.php:20
+msgid "Voices"
+msgstr ""
+
+#: bbpress/loop-topics.php:21
+msgid "Replies"
+msgstr ""
+
+#: bbpress/loop-topics.php:21
+msgid "Posts"
+msgstr ""
+
+#: bbpress/loop-topics.php:22
+msgid "Freshness"
+msgstr ""
+
+#: blog-page.php:27 home.php:21
+#, php-format
+msgid ""
+"Posted <time class=\"updated\" datetime=\"%1$s\" >%2$s</time> by <span class="
+"\"author\"><a href=\"%3$s\" >%4$s</a></span> <span class=\"amp\">&</span> "
+"filed under %5$s."
+msgstr ""
+
+#: buddypress.php:69
+msgid "This is the error message in the buddypress.php template."
+msgstr ""
+
+#: buddypress/members/members-loop.php:105
+msgid "Sorry, no members were found."
+msgstr ""
+
+#: buddypress/members/single/home.php:14
+msgid "'s Profile"
+msgstr ""
+
+#: buddypress/members/single/home.php:31
+msgid "Member Since"
+msgstr ""
+
+#: buddypress/members/single/member-header.php:35 functions/buddypress.php:192
+#: whoop-widgets/buddypress/bp-recent-activity.php:45
+msgid "Friends"
+msgstr ""
+
+#: buddypress/members/single/member-header.php:47 functions/reviews.php:46
+msgid "Reviews"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:27
+msgid "Select all"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:28
+msgid "From"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:29
+msgid "Subject"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:30
+msgid "Actions"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:46
+msgid "From:"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:53
+msgid "To:"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:68
+msgid "Read"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:70
+msgid "Unread"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:97
+msgid ""
+"Want to communicate on a more personal level with your friends? Send a "
+"message now!"
+msgstr ""
+
+#: buddypress/members/single/messages/messages-loop.php:99
+msgid "Compose"
+msgstr ""
+
+#: buddypress/members/single/profile/edit.php:35
+#: buddypress/members/single/profile/edit.php:49
+#, php-format
+msgid ""
+"This field can be seen by: <span class=\"current-visibility-level\">%s</span>"
+msgstr ""
+
+#: buddypress/members/single/profile/edit.php:35
+msgid "Change"
+msgstr ""
+
+#: buddypress/members/single/profile/edit.php:40
+msgid "Who can see this field?"
+msgstr ""
+
+#: buddypress/members/single/profile/edit.php:45
+msgid "Close"
+msgstr ""
+
+#: comments.php:16 index.php:19
+msgid "<span>No</span> Comments"
+msgstr ""
+
+#: comments.php:16 index.php:19
+msgid "<span>One</span> Comment"
+msgstr ""
+
+#: comments.php:16 index.php:19
+msgid "<span>%</span> Comments"
+msgid_plural "<span>%</span> Comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:37
+msgid "&larr; Previous Comments"
+msgstr ""
+
+#: comments.php:40
+msgid "More Comments &rarr;"
+msgstr ""
+
+#: comments.php:46 reviews.php:52
+msgid "Comments are closed."
+msgstr ""
+
+#: footer.php:35 library/geodirectory_framework.php:233
+msgid "Footer Links"
+msgstr ""
+
+#: functions.php:27
+msgid ""
+"Theme requires <a href=\"https://wordpress.org/plugins/geodirectory/\" "
+"target=\"_blank\">GeoDirectory</a> plugin."
+msgstr ""
+
+#: functions.php:28
+msgid "Whoop theme has been deactivated."
+msgstr ""
+
+#: functions.php:317
+msgid "600px by 150px"
+msgstr ""
+
+#: functions.php:318
+msgid "300px by 100px"
+msgstr ""
+
+#: functions.php:347
+msgid "GD Blog Details"
+msgstr ""
+
+#: functions.php:348 functions.php:358 functions.php:368
+msgid "The first (primary) sidebar."
+msgstr ""
+
+#: functions.php:357
+msgid "GD Blog Listing"
+msgstr ""
+
+#: functions.php:367
+msgid "GD Page Details"
+msgstr ""
+
+#: functions.php:378 functions.php:379
+msgid "Event Index Sidebar"
+msgstr ""
+
+#: functions.php:388 functions.php:389
+msgid "Event Index Content"
+msgstr ""
+
+#: functions.php:400 functions.php:401
+msgid "BuddyPress Sidebar"
+msgstr ""
+
+#: functions.php:412
+msgid "GD Footer 1"
+msgstr ""
+
+#: functions.php:413
+msgid "The first footer"
+msgstr ""
+
+#: functions.php:424
+msgid "GD Footer 2"
+msgstr ""
+
+#: functions.php:425
+msgid "The second footer"
+msgstr ""
+
+#: functions.php:436
+msgid "GD Footer 3"
+msgstr ""
+
+#: functions.php:437
+msgid "The third footer"
+msgstr ""
+
+#: functions.php:448
+msgid "GD Footer 4"
+msgstr ""
+
+#: functions.php:449
+msgid "The forth footer"
+msgstr ""
+
+#: functions.php:459
+msgid "GD Header Right"
+msgstr ""
+
+#: functions.php:460
+msgid "Right side of header"
+msgstr ""
+
+#: functions.php:470
+msgid "GD Admin Bar Left"
+msgstr ""
+
+#: functions.php:471
+msgid "Left side of admin bar"
+msgstr ""
+
+#: functions.php:480
+msgid "GD Admin Bar Right"
+msgstr ""
+
+#: functions.php:481
+msgid "Right side of admin bar"
+msgstr ""
+
+#: functions.php:542
+#, php-format
+msgid "<cite class=\"fn\">%1$s</cite> %2$s"
+msgstr ""
+
+#: functions.php:542 functions/reviews.php:296 functions/reviews.php:346
+msgid "(Edit)"
+msgstr ""
+
+#: functions.php:551 functions/reviews.php:390
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: functions/ayi.php:56 whoop-widgets/events-are-you-interested-widget.php:43
+msgid "Are You Interested?"
+msgstr ""
+
+#: functions/ayi.php:86 functions/ayi.php:95
+msgid "You Replied:"
+msgstr ""
+
+#: functions/ayi.php:87 functions/ayi.php:106
+msgid "I'm in!"
+msgstr ""
+
+#: functions/ayi.php:89 functions/ayi.php:98 functions/share.php:134
+msgid "Cancel"
+msgstr ""
+
+#: functions/ayi.php:96 functions/ayi.php:110 functions/ayi.php:132
+#: functions/buddypress.php:456
+msgid "Sounds Cool"
+msgstr ""
+
+#: functions/ayi.php:118
+msgid "Who's in?"
+msgstr ""
+
+#: functions/ayi.php:119 functions/ayi.php:133
+#, php-format
+msgid "1 response"
+msgid_plural "%s responses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/ayi.php:127 functions/ayi.php:141
+msgid "No one is in yet."
+msgstr ""
+
+#: functions/bookmarks.php:5
+msgid "Add to Bookmarks"
+msgstr ""
+
+#: functions/bookmarks.php:12
+msgid "Remove from Bookmarks"
+msgstr ""
+
+#: functions/bookmarks.php:19
+msgid "Bookmark"
+msgstr ""
+
+#: functions/bookmarks.php:26
+msgid "Bookmarked"
+msgstr ""
+
+#: functions/bookmarks.php:41
+msgid "Bookmarks"
+msgstr ""
+
+#: functions/buddypress.php:18 functions/reviews.php:76
+#: functions/reviews.php:137
+#, php-format
+msgid "1 of 1"
+msgid_plural "%1$s to %2$s of %3$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/buddypress.php:27 functions/reviews.php:140
+msgid "Go to Page"
+msgstr ""
+
+#: functions/buddypress.php:121
+msgid "You"
+msgstr ""
+
+#: functions/buddypress.php:128
+msgid "are not closely connected to"
+msgstr ""
+
+#: functions/buddypress.php:184
+msgid "My Friends"
+msgstr ""
+
+#: functions/buddypress.php:186
+msgid "'s Friends"
+msgstr ""
+
+#: functions/buddypress.php:239
+msgid "See more recent activity"
+msgstr ""
+
+#: functions/buddypress.php:246
+msgid "We don't have any recent activity of you right now."
+msgstr ""
+
+#: functions/buddypress.php:248
+msgid "We don't have any recent activity of your friends right now"
+msgstr ""
+
+#: functions/buddypress.php:250
+msgid "We don't have any recent activity right now"
+msgstr ""
+
+#: functions/buddypress.php:318
+msgid "We don't have any event updates right now"
+msgstr ""
+
+#: functions/buddypress.php:351
+msgid "is attending"
+msgstr ""
+
+#: functions/buddypress.php:353
+msgid "says \"Sounds Cool\" for"
+msgstr ""
+
+#: functions/buddypress.php:410
+msgid "Events"
+msgstr ""
+
+#: functions/buddypress.php:443
+msgid "Events Attended"
+msgstr ""
+
+#: functions/buddypress.php:445 functions/buddypress.php:455
+msgid "Events Submitted"
+msgstr ""
+
+#: functions/buddypress.php:447
+msgid "Events Sounds Cool"
+msgstr ""
+
+#: functions/buddypress.php:449
+msgid "Events Attending"
+msgstr ""
+
+#: functions/buddypress.php:454
+msgid "Past Events"
+msgstr ""
+
+#: functions/buddypress.php:457
+msgid "Attending"
+msgstr ""
+
+#: functions/buddypress.php:511
+msgid "Sorry, no events just yet."
+msgstr ""
+
+#: functions/buddypress.php:513
+msgid "Find Events"
+msgstr ""
+
+#: functions/buddypress.php:676
+msgid ""
+"America's Next Top Singer, Don't you wish your girlfriend was Elite like me?"
+msgstr ""
+
+#: functions/buddypress.php:688
+msgid "Comma separated phrases (e.g. sushi, Radiohead, puppies)"
+msgstr ""
+
+#: functions/buddypress.php:700
+msgid "Greenwich Village, Nob Hill, or short pants"
+msgstr ""
+
+#: functions/buddypress.php:712
+msgid "Schenectady, NY"
+msgstr ""
+
+#: functions/buddypress.php:724
+msgid "www.someblog.wordpress.com"
+msgstr ""
+
+#: functions/buddypress.php:736
+msgid "I go out 7 times a week, sometimes 8; I'm the king of the world!"
+msgstr ""
+
+#: functions/buddypress.php:748
+msgid "www.flickr.com, www.pets.com"
+msgstr ""
+
+#: functions/buddypress.php:760
+msgid "Stephen Colbert's I Am America, Whatever Oprah tells me"
+msgstr ""
+
+#: functions/buddypress.php:772
+msgid "Duran Duran, Vanilla Ice, Wang Chung"
+msgstr ""
+
+#: functions/buddypress.php:784
+msgid "Eat Drink Man Woman, Harold & Kumar Go to White Castle"
+msgstr ""
+
+#: functions/buddypress.php:796
+msgid "French Laundry, My mom's meatloaf, A tub of fried chicken"
+msgstr ""
+
+#: functions/buddypress.php:808
+msgid "I love Starbucks; My mom nominated me for the Elite Squad"
+msgstr ""
+
+#: functions/buddypress.php:820
+msgid "Shoegazer Music, In-N-Out Animal Style"
+msgstr ""
+
+#: functions/buddypress.php:832
+msgid "Hayden Panettiere, Jessie's Girl"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Sunday"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Monday"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Tuesday"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Wednesday"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Thursday"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Friday"
+msgstr ""
+
+#: functions/events.php:48
+msgid "Saturday"
+msgstr ""
+
+#: functions/events.php:107
+msgid "Category:"
+msgstr ""
+
+#: functions/events.php:167
+msgid "When:"
+msgstr ""
+
+#: functions/events.php:177
+msgid "Where:"
+msgstr ""
+
+#: functions/events.php:187
+msgid "Submitted By:"
+msgstr ""
+
+#: functions/events.php:206
+msgid "See all of"
+msgstr ""
+
+#: functions/events.php:206
+msgid "events"
+msgstr ""
+
+#: functions/events.php:216
+msgid "What/Why:"
+msgstr ""
+
+#: functions/events.php:512
+msgid "Submitted by"
+msgstr ""
+
+#: functions/events.php:531
+msgid "is interested"
+msgstr ""
+
+#: functions/events.php:531
+msgid "are interested"
+msgstr ""
+
+#: functions/general.php:143
+msgid "friends"
+msgstr ""
+
+#: functions/general.php:157
+msgid "reviews"
+msgstr ""
+
+#: functions/general.php:167
+msgid "Rating Information"
+msgstr ""
+
+#: functions/general.php:178
+msgid "User Links"
+msgstr ""
+
+#: functions/general.php:189
+msgid "Listing Information"
+msgstr ""
+
+#: functions/general.php:200
+msgid "Like this page"
+msgstr ""
+
+#: functions/general.php:214
+msgid "Google Analytics"
+msgstr ""
+
+#: functions/general.php:225
+msgid "Share this page"
+msgstr ""
+
+#: functions/general.php:272
+msgid "No Reviews"
+msgstr ""
+
+#: functions/general.php:310
+msgid "Write a Review"
+msgstr ""
+
+#: functions/general.php:319 functions/photos.php:306
+msgid "Add Photo"
+msgstr ""
+
+#: functions/general.php:328 geodirectory/listing-listview.php:212
+msgid "Edit"
+msgstr ""
+
+#: functions/general.php:334 functions/share.php:133
+msgid "Share"
+msgstr ""
+
+#: functions/general.php:427 geodirectory/listing-listview.php:254
+msgid " Website"
+msgstr ""
+
+#: functions/photos.php:39
+#, php-format
+msgid "See all %d photos"
+msgstr ""
+
+#: functions/photos.php:163
+#, php-format
+msgid "From <a href=\"%s\">%s</a>"
+msgstr ""
+
+#: functions/photos.php:194
+msgid "Add Photos"
+msgstr ""
+
+#: functions/photos.php:214 functions/photos.php:216
+msgid "Prev"
+msgstr ""
+
+#: functions/photos.php:220 functions/photos.php:222
+msgid "Next"
+msgstr ""
+
+#: functions/photos.php:316 functions/photos.php:343
+msgid "Image is required"
+msgstr ""
+
+#: functions/photos.php:333
+msgid "Image upload error."
+msgstr ""
+
+#: functions/photos.php:358
+msgid "Image"
+msgstr ""
+
+#: functions/photos.php:363
+msgid "Photo Caption"
+msgstr ""
+
+#: functions/photos.php:368
+msgid "Add Image"
+msgstr ""
+
+#: functions/photos.php:375
+msgid "You cannot upload more images in this package."
+msgstr ""
+
+#: functions/reviews.php:38 functions/reviews.php:57
+msgid "Search Reviews"
+msgstr ""
+
+#: functions/reviews.php:40
+msgid "Recent Reviews"
+msgstr ""
+
+#: functions/reviews.php:42
+msgid "All Reviews"
+msgstr ""
+
+#: functions/reviews.php:51
+msgid "There were no results for"
+msgstr ""
+
+#: functions/reviews.php:59
+msgid "Search Reviews..."
+msgstr ""
+
+#: functions/reviews.php:61
+msgid "Search"
+msgstr ""
+
+#: functions/reviews.php:133
+msgid "More"
+msgstr ""
+
+#: functions/reviews.php:160
+msgid "hasn't written any reviews just yet."
+msgstr ""
+
+#: functions/reviews.php:218
+msgid "Remove from Review of The Day"
+msgstr ""
+
+#: functions/reviews.php:218
+msgid "Remove from ROTD - "
+msgstr ""
+
+#: functions/reviews.php:221
+msgid "Mark as Review of The Day"
+msgstr ""
+
+#: functions/reviews.php:221
+msgid "Mark as ROTD - "
+msgstr ""
+
+#: functions/reviews.php:254
+#, php-format
+msgid "Review of the Day Updated <a href=\"%s\">Go back to All Reviews</a>"
+msgstr ""
+
+#: functions/reviews.php:296 functions/reviews.php:346
+msgid "Pingback:"
+msgstr ""
+
+#: functions/reviews.php:407
+msgid "Reply"
+msgstr ""
+
+#: functions/reviews.php:428
+#, php-format
+msgid "%1$s at %2$s"
+msgstr ""
+
+#: functions/reviews.php:449
+#, php-format
+msgid "<a href=\"%s\">%s</a> wrote a review for <a href=\"%s\">%s</a>"
+msgstr ""
+
+#: functions/reviews.php:484 functions/share.php:70
+msgid "Share review"
+msgstr ""
+
+#: functions/reviews.php:492
+msgid "Send Compliment"
+msgstr ""
+
+#: functions/reviews.php:501
+msgid "Send message"
+msgstr ""
+
+#: functions/share.php:51
+#, php-format
+msgid "%s wants to tell you about a business on %s"
+msgstr ""
+
+#: functions/share.php:55
+msgid "Message sent successfully!"
+msgstr ""
+
+#: functions/share.php:57
+msgid "There was an error!"
+msgstr ""
+
+#: functions/share.php:76
+msgid "Facebook"
+msgstr ""
+
+#: functions/share.php:90
+msgid "Twitter"
+msgstr ""
+
+#: functions/share.php:118
+msgid "You can either fill username or email or both"
+msgstr ""
+
+#: functions/share.php:127
+msgid "and/or"
+msgstr ""
+
+#: functions/share.php:128
+msgid "Email addresses (Comma separated)"
+msgstr ""
+
+#: functions/share.php:129
+msgid "Add a Note"
+msgstr ""
+
+#: functions/share.php:129
+msgid "Optional"
+msgstr ""
+
+#: functions/share.php:142
+msgid "Select Username(s)"
+msgstr ""
+
+#: geodirectory/listing-listview.php:104
+msgid "feet"
+msgstr ""
+
+#: geodirectory/listing-listview.php:106
+msgid "meters"
+msgstr ""
+
+#: geodirectory/listing-listview.php:111
+msgid "miles"
+msgstr ""
+
+#: geodirectory/listing-listview.php:113
+msgid "km"
+msgstr ""
+
+#: geodirectory/listing-listview.php:207
+msgid "Edit Listing"
+msgstr ""
+
+#: geodirectory/listing-listview.php:215
+msgid "Delete Listing"
+msgstr ""
+
+#: header.php:153
+msgid "About Me"
+msgstr ""
+
+#: header.php:158
+msgid "Account Settings"
+msgstr ""
+
+#: header.php:166
+msgid "Log Out"
+msgstr ""
+
+#: header.php:178
+msgid "Sign Up"
+msgstr ""
+
+#: header.php:183
+msgid "Log In"
+msgstr ""
+
+#: index.php:12 post-formats/format-video.php:11 post-formats/format.php:22
+#: search.php:15
+#, php-format
+msgid ""
+"Posted <time class=\"updated\" datetime=\"%1$s\" >%2$s</time> by <span class="
+"\"author\"><a href=\"%3$s\" >%4$s</a></span>"
+msgstr ""
+
+#: index.php:21
+#, php-format
+msgid "<p class=\"footer-category\">Filed under: %1$s</p>"
+msgstr ""
+
+#: index.php:22 post-formats/format-video.php:41 post-formats/format.php:92
+#: search.php:21
+msgid "Tags:"
+msgstr ""
+
+#: index.php:41
+msgid "This is the error message in the index.php template."
+msgstr ""
+
+#: library/geodirectory_framework.php:66
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: library/geodirectory_framework.php:232
+msgid "The Main Menu"
+msgstr ""
+
+#: library/geodirectory_framework.php:305
+msgid "No Related Posts Yet!"
+msgstr ""
+
+#: library/geodirectory_framework.php:356
+msgid "Read "
+msgstr ""
+
+#: library/geodirectory_framework.php:356 search.php:18
+msgid "Read more &raquo;"
+msgstr ""
+
+#: library/geodirectory_framework.php:378
+msgid "Logo"
+msgstr ""
+
+#: library/geodirectory_framework.php:386
+msgid "Site Title Color"
+msgstr ""
+
+#: library/geodirectory_framework.php:447
+msgid "GeoDirectory Framework:"
+msgstr ""
+
+#: library/geodirectory_framework.php:447
+msgid "File is not writable: "
+msgstr ""
+
+#: library/geodirectory_framework.php:552
+msgid "Welcome Login Widget"
+msgstr ""
+
+#: library/geodirectory_framework.php:555
+msgid "GDF > Welcome Login"
+msgstr ""
+
+#: library/geodirectory_framework.php:583
+#: library/geodirectory_framework.php:586
+msgid "Welcome"
+msgstr ""
+
+#: library/geodirectory_framework.php:584
+msgid "Logout"
+msgstr ""
+
+#: library/geodirectory_framework.php:586
+msgid "Guest"
+msgstr ""
+
+#: library/geodirectory_framework.php:587
+msgid "Sign in"
+msgstr ""
+
+#: post-formats/format.php:91 search.php:20
+#, php-format
+msgid "Filed under: %1$s"
+msgstr ""
+
+#: reviews.php:41
+msgid "Comment navigation"
+msgstr ""
+
+#: reviews.php:42
+msgid "&larr; Older Comments"
+msgstr ""
+
+#: reviews.php:43
+msgid "Newer Comments &rarr;"
+msgstr ""
+
+#: reviews.php:61 reviews.php:69
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr ""
+
+#: reviews.php:69
+msgid "Leave a Comment"
+msgstr ""
+
+#: reviews.php:69
+msgid "Post Comment"
+msgstr ""
+
+#: reviews.php:69
+msgid "Comment text"
+msgstr ""
+
+#: reviews.php:71
+msgid "Leave a Review"
+msgstr ""
+
+#: reviews.php:71 whoop-widgets/your-next-review-awaits.php:191
+msgid "Post Review"
+msgstr ""
+
+#: reviews.php:71
+msgid "Review text"
+msgstr ""
+
+#: reviews.php:71
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a Review."
+msgstr ""
+
+#: search.php:7
+msgid "Search Results for:"
+msgstr ""
+
+#: search.php:31
+msgid "Sorry, No Results."
+msgstr ""
+
+#: search.php:36
+msgid "Try your search again."
+msgstr ""
+
+#: search.php:41
+msgid "This is the error message in the search.php template."
+msgstr ""
+
+#: sidebar-blog-details.php:13 sidebar-blog-listing.php:13
+#: sidebar-bp-details.php:12 sidebar-page-details.php:13
+msgid "This is a widget ready area. Add some and they will appear here."
+msgstr ""
+
+#: single.php:39
+msgid "This is the error message in the single.php template."
+msgstr ""
+
+#: updater/theme-updater.php:29
+msgid "Theme License"
+msgstr ""
+
+#: updater/theme-updater.php:30
+msgid "Enter your theme license key."
+msgstr ""
+
+#: updater/theme-updater.php:31
+msgid "License Key"
+msgstr ""
+
+#: updater/theme-updater.php:32
+msgid "License Action"
+msgstr ""
+
+#: updater/theme-updater.php:33
+msgid "Deactivate License"
+msgstr ""
+
+#: updater/theme-updater.php:34
+msgid "Activate License"
+msgstr ""
+
+#: updater/theme-updater.php:35 updater/theme-updater.php:47
+msgid "License status is unknown."
+msgstr ""
+
+#: updater/theme-updater.php:36
+msgid "Renew?"
+msgstr ""
+
+#: updater/theme-updater.php:37
+msgid "unlimited"
+msgstr ""
+
+#: updater/theme-updater.php:38
+msgid "License key is active."
+msgstr ""
+
+#: updater/theme-updater.php:39
+#, php-format
+msgid "Expires %s."
+msgstr ""
+
+#: updater/theme-updater.php:40
+#, php-format
+msgid "You have %1$s / %2$s sites activated."
+msgstr ""
+
+#: updater/theme-updater.php:41
+#, php-format
+msgid "License key expired %s."
+msgstr ""
+
+#: updater/theme-updater.php:42
+msgid "License key has expired."
+msgstr ""
+
+#: updater/theme-updater.php:43
+msgid "License keys do not match."
+msgstr ""
+
+#: updater/theme-updater.php:44
+msgid "License is inactive."
+msgstr ""
+
+#: updater/theme-updater.php:45
+msgid "License key is disabled."
+msgstr ""
+
+#: updater/theme-updater.php:46
+msgid "Site is inactive."
+msgstr ""
+
+#: updater/theme-updater.php:48
+msgid ""
+"Updating this theme will lose any customizations you have made. 'Cancel' to "
+"stop, 'OK' to update."
+msgstr ""
+
+#: updater/theme-updater.php:49
+#, php-format
+msgid ""
+"<strong>%1$s %2$s</strong> is available. <a href=\"%3$s\" class=\"thickbox\" "
+"title=\"%4s\">Check out what's new</a> or <a href=\"%5$s\"%6$s>update now</"
+"a>."
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:27
+msgid "A list of recent topics, sorted by popularity or freshness."
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:30
+msgid "Whoop > Today in Talk"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:174
+msgid "More Talk"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:219
+msgid "Title:"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:220
+msgid "Maximum topics to show:"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:223
+msgid "Parent Forum ID:"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:229
+msgid "\"0\" to show only root - \"any\" to show all"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:233
+msgid "Order By:"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:235
+msgid "Newest Topics"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:236
+msgid "Popular Topics"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:237
+msgid "Topics With Recent Replies"
+msgstr ""
+
+#: whoop-widgets/bbpress/today-in-talk.php:254
+msgid "Today in Talk"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-event-updates.php:11
+msgid "Display event updates in event page like Yelp"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-event-updates.php:27
+msgid "Event Updates"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:11
+msgid ""
+"A list of recently active, popular, and newest Friends of the displayed "
+"member.  Widget is only shown when viewing a member profile."
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:35
+#, php-format
+msgid "%s Friends"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:37
+#, php-format
+msgid "%s Friend"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:102
+msgid "has no friends."
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:147
+msgid "Link widget title to Members directory"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:149
+msgid "Max friends to show:"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:152
+msgid "Default friends to show:"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:154
+msgid "Newest"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-friends-widget.php:156
+msgid "Popular"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-recent-activity.php:11
+msgid "Display recent activities in home page like Yelp"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-recent-activity.php:27
+msgid "Recent Activity"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-recent-activity.php:44
+msgid "Near You"
+msgstr ""
+
+#: whoop-widgets/buddypress/bp-recent-activity.php:46
+msgid "Your Activity"
+msgstr ""
+
+#: whoop-widgets/events-are-you-interested-widget.php:14
+msgid "Displays \"Are you interested?\" widget in event pages"
+msgstr ""
+
+#: whoop-widgets/events-are-you-interested-widget.php:46
+#: whoop-widgets/popular-events-widget.php:117
+#: whoop-widgets/review-of-the-day.php:115
+#: whoop-widgets/your-next-review-awaits.php:94
+msgid "Widget Title:"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:11
+msgid "Displays \"Popular Events\" widget in event pages"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:27
+#: whoop-widgets/popular-events-widget.php:112
+#: whoop-widgets/popular-events-widget.php:138
+msgid "Popular Events"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:38
+msgid "Browse All Events"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:43
+msgid "See Events For:"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:44
+msgid "All Events"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:45
+msgid "Today"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:46
+msgid "Upcoming"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:47
+msgid "Past"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:48
+msgid "This Week"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:49
+msgid "Next Week"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:50
+msgid "Week After Next"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:80
+msgid "More Events"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:87
+msgid "We don't have any events right now"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:126
+msgid "Number of events to display:"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:135
+msgid "Widget Type:"
+msgstr ""
+
+#: whoop-widgets/popular-events-widget.php:137
+msgid "Latest Events"
+msgstr ""
+
+#: whoop-widgets/review-of-the-day.php:6 whoop-widgets/review-of-the-day.php:9
+msgid "Whoop > Review of the Day"
+msgstr ""
+
+#: whoop-widgets/review-of-the-day.php:48
+msgid "Read more"
+msgstr ""
+
+#: whoop-widgets/review-of-the-day.php:82
+msgid "reviewed"
+msgstr ""
+
+#: whoop-widgets/review-of-the-day.php:112
+msgid "Review of the Day"
+msgstr ""
+
+#: whoop-widgets/whoop-userinfo-widget.php:11
+msgid "Displays user information when logged in."
+msgstr ""
+
+#: whoop-widgets/your-next-review-awaits.php:10
+msgid "Displays \"Your Next Review Awaits\" widget"
+msgstr ""
+
+#: whoop-widgets/your-next-review-awaits.php:29
+#: whoop-widgets/your-next-review-awaits.php:88
+msgid "Your Next Review Awaits"
+msgstr ""
+
+#: whoop-widgets/your-next-review-awaits.php:103
+msgid "Post Type:"
+msgstr ""
+
+#: whoop-widgets/your-next-review-awaits.php:192
+msgid "Start your review..."
+msgstr ""
+
+#~ msgid "http://codex.wordpress.org/Child_Themes"
+#~ msgstr "http://codex.wordpress.org/"

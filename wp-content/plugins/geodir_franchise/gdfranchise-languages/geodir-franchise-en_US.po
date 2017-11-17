@@ -1,0 +1,645 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory Franchise Manager 1.0.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-12 15:41+0100\n"
+"PO-Revision-Date: 2017-10-12 15:41+0100\n"
+"Last-Translator: \n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:78
+msgid ""
+"<span style=\"color:#FF0000\">There was an issue determining where "
+"GeoDirectory Plugin is installed and activated. Please install or activate "
+"GeoDirectory Plugin.</span>"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:124
+#, php-format
+msgid "Add %d franchises of \"%s\""
+msgstr ""
+
+#: includes/gdfranchise_functions.php:126
+#, php-format
+msgid "Add franchise of \"%s\""
+msgstr ""
+
+#: includes/gdfranchise_functions.php:207
+#: includes/gdfranchise_functions.php:1690
+#: includes/gdfranchise_functions.php:1758
+#: includes/gdfranchise_functions.php:2302
+msgid "Add Franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:264
+msgid "Save"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:265
+msgid "Saving..."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:266
+msgid "Pay For Franchises"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:267
+msgid "Are you sure?"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:268
+msgid "Please enter card holder name!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:269
+msgid "Please enter card number!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:270
+msgid "Please enter valid card expire date!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:271
+msgid "Processing..."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:272
+msgid "Redirecting to checkout..."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:273
+msgid "Error: fail to save data, please check your data and try again!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:274
+msgid "Duplicate images from Main Listing"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:275
+msgid "Duplicating images from Main Listing..."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:276
+msgid "No images duplicated from main listing!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:325
+msgid "Franchise Settings"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:329
+#: includes/gdfranchise_functions.php:430
+msgid "General Settings"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:334
+#: includes/gdfranchise_functions.php:596
+msgid "Notifications"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:390
+#: includes/gdfranchise_functions.php:401
+msgid "Save changes"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:432
+#: includes/gdfranchise_functions.php:2358
+msgid "Enable Franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:435
+msgid "Select post type to enable franchise feature"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:436
+msgid "Select the post types that requires franchise feature."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:442
+msgid "Select post types"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:447
+msgid "Detail Page Franchises Tab Settings"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:450
+msgid "Display Franchises Tab:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:451
+msgid "Enable franchises tab on listing detail page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:457
+msgid "Display Link To All Franchises:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:458
+msgid ""
+"Enable link to view all franchises under franchises tab on listing detail "
+"page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:465
+msgid "Layout"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:466
+msgid "Set the listing view of franchise post on detail page"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:473
+msgid "Grid View (Two Columns)"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:474
+msgid "Grid View (Three Columns)"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:475
+msgid "Grid View (Four Columns)"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:476
+msgid "Grid View (Five Columns)"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:477
+msgid "List view"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:482
+msgid "Sort by"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:483
+msgid "Set the franchise post listing sort by view"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:490
+msgid "A-Z"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:491
+msgid "Latest"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:492
+msgid "Featured"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:493
+msgid "Review"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:494
+msgid "Rating"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:495
+msgid "Random"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:500
+msgid "Number of posts:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:501
+msgid "Enter number of posts to display on franchise posts listing"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:509
+msgid "Post excerpt"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:510
+msgid "Post content excerpt character count"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:520
+msgid "Enable Location Filter:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:521
+msgid "Enable location filter on franchise post."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:528
+msgid "Hide viewing franchise:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:529
+msgid "Do not show current viewing franchise in franchises tab."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:535
+msgid "Show main listing in MAIN listing franchises tab:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:536
+msgid "Show main listing in franchises tab on MAIN listing detail page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:542
+msgid "Hide main listing from FRANCHISE listing franchises tab:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:543
+msgid ""
+"Do not show main listing in franchises tab on FRANCHISES listing detail page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:550
+msgid "Detail Page Sidebar Settings"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:552
+msgid "Display All Franchises Link:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:553
+msgid "Display \"All Franchises\" link on sidebar of listing detail page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:559
+msgid "Display Main Listing Link:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:560
+msgid ""
+"Display \"Main Listing For Franchise\" link on sidebar of franchise listing "
+"detail page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:566
+msgid "Hide main listing from All Franchises view page:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:567
+msgid "Do not show main listing on All Franchises view page."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:598
+msgid "Notifications Settings"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:601
+msgid "BCC option for franchise listings approved:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:602
+msgid "Enable bcc option for notifications on franchise listings approved."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:609
+#: includes/gdfranchise_functions.php:1713
+#: includes/gdfranchise_functions.php:2364
+msgid "Yes"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:610
+#: includes/gdfranchise_functions.php:1713
+#: includes/gdfranchise_functions.php:2363
+msgid "No"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:614
+msgid "Franchise Notifications"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:616
+msgid "Notify to client for franchise listings approved:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:621
+msgid "Your franchise listings of \"[#listing_title#]\" approved"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:629
+msgid ""
+"<p>Dear [#client_name#],<p><p>Your request to add franchises of "
+"<b>[#listing_title#]</b> has been APPROVED at site [#site_link#].</p><p>Your "
+"details are below:</p><p>Your main listing: [#main_listing_link#]</"
+"p><p>Franchise listings: [#franchise_listings_links#]</p><br><p>We hope you "
+"enjoy. Thanks!</p><p>[#site_link#]</p>"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:673
+msgid "Settings saved."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:827
+msgid "Only select"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:827
+msgid " categories for this package."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:837
+#: includes/gdfranchise_functions.php:840
+msgid "Select Category"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:927
+msgid "The requested listing not found!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:935
+msgid "You are not allowed to access this listing!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:952
+msgid "View main listing"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:970
+#, php-format
+msgid ""
+"Oops! franchise listing not saved because you have reached the limit of <b>"
+"%d</b> franchise(s) with this package."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1017
+#: includes/gdfranchise_functions.php:1335
+#, php-format
+msgid "%s ( ID: %d )"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1026
+msgid "Add another franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1046
+msgid "Franchise listing updated successfully."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1048
+msgid "Franchise listing submitted successfully."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1056
+msgid "View franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1071
+msgid ""
+"Franchise listing has been submitted. In order to publish your listing, "
+"kindly complete the payment of Pay For Franchises."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1073
+msgid ""
+"Franchise listing has been submitted. An admin will review your listing "
+"shortly."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1105
+msgid "Filesystem ERROR: Could not access filesystem."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1110
+msgid "Filesystem ERROR: "
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1121
+msgid ""
+"ERROR: Could not create cache directory. This is usually due to inconsistent "
+"file permissions."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1148
+msgid "No images found to duplicate from main listing."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1151
+msgid "You are not allowed to do this action!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1190
+#, php-format
+msgid "Pay amount of <b>%s</b> for %d franchise(s). Cost per franchise is %s"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1313
+msgid "Manage Franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1326
+#: includes/gdfranchise_functions.php:1328
+msgid "Select Franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1329
+msgid "Add New Franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1342
+msgid "Franchises Cost"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1367
+#: includes/gdfranchise_functions.php:1637
+#, php-format
+msgid "You can add <b>%d</b> more new franchise(s) with this package."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1369
+#, php-format
+msgid "You can add total only <b>%d</b> franchise(s) with this package."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1370
+#, php-format
+msgid "You have reached the limit of <b>%d</b> franchise(s) with this package!"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1373
+msgid "You can add <b>unlimited</b> franchises with this package."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1396
+msgid "Enable franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1399
+msgid "Enable franchise feature for your listing."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1402
+msgid "Lock franchise fields"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1404
+#: includes/gdfranchise_functions.php:1718
+msgid "Select Fields"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1605
+#, php-format
+msgid "%s Franchise Settings"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1640
+#, php-format
+msgid ""
+"You have reached the limit of <b>%d</b> franchise(s) with this package, the "
+"listing will <b>NOT</b> be saved as a franchise listing."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1654
+msgid "Listing Title"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1712
+msgid "Is Franchise:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:1716
+msgid "Lock franchise fields:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2367
+msgid "Enable franchise feature."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2369
+msgid ""
+"You must have franchise feature enabled for post type in general settings."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2369
+msgid "You can only manage franchise once price saved."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2375
+#, php-format
+msgid "Franchise Cost ( %s )"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2380
+msgid "Franchise price will be charged to each franchise. Ex: 5.00"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2384
+msgid "Franchises Limit"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2389
+msgid ""
+"Limit the number of franchises that can be added under main listing for this "
+"price package. Leave blank or add 0 (zero) for unlimited."
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2650
+msgid "Franchises"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:2760
+msgid "View all franchises"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3067
+#: includes/gdfranchise_functions.php:3085
+#, php-format
+msgid ""
+"Email from GeoDirectory failed to send.\n"
+"Message type: %s\n"
+"Send time: %s\n"
+"To: %s\n"
+"Subject: %s\n"
+"\n"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3117
+msgid "Package ID:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3121
+msgid "Package:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3141
+#, php-format
+msgid "%s <small> ( ID: %d )</small>"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3158
+#, php-format
+msgid "- %s <small> ( ID: %d )</small>"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3167
+msgid "Franchise Details:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3169
+msgid "Main Listing:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3173
+msgid "Franchise Listings:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3455
+msgid "Main Listing For Franchise"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3484
+msgid "All Franchises"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3557
+#, php-format
+msgid "All %s Franchises"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3609
+msgid "Franchise Listing Type"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3609
+#: includes/gdfranchise_functions.php:3632
+msgid "Main Listing"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3636
+msgid "Franchise Listing"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3641
+msgid "Normal Listing"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3651
+msgid "ID:"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3651
+#, php-format
+msgid "Edit &#8220;%s&#8221;"
+msgstr ""
+
+#: includes/gdfranchise_functions.php:3652
+#, php-format
+msgid "View &#8220;%s&#8221;"
+msgstr ""

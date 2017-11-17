@@ -1,0 +1,715 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory Advanced Search 1.4.92\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-12 15:30+0100\n"
+"PO-Revision-Date: 2017-10-12 15:30+0100\n"
+"Last-Translator: \n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2;esc_attr_e;esc_attr__\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: advance_search_admin/custom_advance_search_field_html.php:25
+msgid "Fieldset:"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:115
+msgid "Double Click to toggle and drag-drop to sort"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:123
+msgid "Drag and drop to sort"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:127
+msgid "Click to remove field"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:166
+msgid "Show in main search bar?"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:168
+msgid ""
+"This will show the filed in the main search bar as a select input, it will "
+"no longer show in the advanced search dropdown."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:177
+#: geodirectory_advance_search_filters_output.php:95
+#: geodirectory_advance_search_function.php:156
+#: geodirectory_advance_search_function.php:1073
+#: geodirectory_advance_search_function.php:1743
+msgid "Yes"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:183
+#: geodirectory_advance_search_function.php:159
+msgid "No"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:200
+msgid "Search bar priority"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:202
+msgid ""
+"Where in the search bar you want it to be placed (recommended 15). CPT "
+"input: 10, Search input:20, Near input:30"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:221
+#: advance_search_admin/custom_advance_search_field_html.php:265
+msgid "Field Data Type"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:223
+#: advance_search_admin/custom_advance_search_field_html.php:267
+msgid "Select Custom Field type."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:233
+msgid "SELECT"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:237
+msgid "CHECK"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:241
+msgid "RADIO"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:245
+msgid "LINK"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:277
+msgid "Range in SELECT"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:281
+msgid "Range in LINK"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:285
+msgid "Range in TEXT"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:303
+#: advance_search_admin/custom_advance_search_field_html.php:482
+#: advance_search_admin/custom_advance_search_field_html.php:484
+msgid "Searching Type"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:305
+msgid "Select searching type."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:315
+msgid "Range single"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:319
+msgid "Range from"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:333
+#: advance_search_admin/custom_advance_search_field_html.php:335
+msgid "Starting Search Range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:358
+msgid "Maximum Search Range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:360
+msgid ""
+"Enter the maximum radius of the search zone you want to create, for example "
+"if you want your visitors to search any listing within 50 miles or "
+"kilometers from the current location, then you would enter 50."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:380
+msgid "Difference in Search Range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:382
+msgid ""
+"Here you decide how many different search radii you make available to your "
+"visitors. If you enter a fifth of the Maximum Search Range, there will be 5 "
+"options; if you enter half of the Maximum Search Range, then there will be 2 "
+"options."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:399
+msgid "You want to searching with single range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:414
+#: advance_search_admin/custom_advance_search_field_html.php:416
+msgid "First Search Range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:437
+#: advance_search_admin/custom_advance_search_field_html.php:439
+msgid "First Search Range Text"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:448
+#: geodirectory_advance_search_function.php:1388
+msgid "Less than"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:459
+#: advance_search_admin/custom_advance_search_field_html.php:461
+msgid "Last Search Range Text"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:470
+#: geodirectory_advance_search_function.php:1391
+msgid "More than"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:495
+msgid "Range in single"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:499
+msgid "Range in from"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:538
+msgid "Expand Search Range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:540
+msgid ""
+"If you leave this blank, then all options as per Difference in Search Range "
+"will be shown. Entering a  number lower than the number of options as per "
+"Difference in Search Range will only show that lower number of options, and "
+"will add a More link to expand the options so all will be shown."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:550
+msgid "Please check to expand Search Range"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:572
+msgid "Show distance sorting"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:574
+#: advance_search_admin/custom_advance_search_field_html.php:598
+#: advance_search_admin/custom_advance_search_field_html.php:625
+#: advance_search_admin/custom_advance_search_field_html.php:643
+msgid "Select if you want to show option in distance sort."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:596
+msgid "Select Nearest"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:614
+msgid "Ascending title"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:623
+msgid "Select Farthest"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:641
+msgid "Descending title"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:663
+msgid "Search Operator"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:665
+msgid ""
+"( Works with Checkbox type only. )  If AND is selected then the listing must "
+"contain all the selected options, if OR is selected then the listing must "
+"contain 1 selected item."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:672
+msgid "AND"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:674
+msgid "OR"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:688
+msgid "Frontend  title"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:690
+#: advance_search_admin/custom_advance_search_field_html.php:708
+msgid "This is the text used for the advanced search field."
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:706
+msgid "Frontend description"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:729
+msgid "Save"
+msgstr ""
+
+#: advance_search_admin/custom_advance_search_field_html.php:731
+msgid "Delete"
+msgstr ""
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: geodir_advance_search_filters.php:111
+msgid ""
+"<span style=\"color:#FF0000\">There was an issue determining where "
+"GeoDirectory Plugin is installed and activated. Please install or activate "
+"GeoDirectory Plugin.</span>"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:253
+#: geodirectory_advance_search_filters_output.php:260
+msgid "Select date"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:269
+#: geodirectory_advance_search_filters_output.php:278
+msgid "Start search date"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:270
+#: geodirectory_advance_search_filters_output.php:279
+msgid "End search date"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:354
+#: geodirectory_advance_search_filters_output.php:365
+msgid "Select time"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:378
+#: geodirectory_advance_search_filters_output.php:393
+msgid "Start search time"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:382
+#: geodirectory_advance_search_filters_output.php:398
+msgid "End search time"
+msgstr ""
+
+#: geodirectory_advance_search_filters_output.php:663
+msgid "Select Option"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:92
+msgid "Advance Search"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:148
+msgid "Include this field in advanced search :"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:150
+msgid ""
+"Lets you use this filed as an advanced search, set from advanced search tab "
+"above."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:203
+msgid "Fieldset (section separator)"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:210
+msgid "Search By Distance"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1143
+msgid "Start date"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1144
+msgid "End date"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1222
+#: geodirectory_advance_search_function.php:1574
+msgid "Select option"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1423
+msgid "Start search value"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1424
+msgid "End search value"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1709
+#: geodirectory_advance_search_hooks_actions.php:368
+msgid "Within"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1755
+#: geodirectory_advance_search_function.php:1985
+msgid "More"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1779
+msgid "Customize My Search"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1962
+#: geodirectory_advance_search_hooks_actions.php:618
+#: geodirectory_advance_search_hooks_actions.php:620
+msgid "Near:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1964
+#: geodirectory_advance_search_hooks_actions.php:618
+msgid "Me"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1965
+#: geodirectory_advance_search_hooks_actions.php:278
+msgid "km"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1965
+#: geodirectory_advance_search_hooks_actions.php:278
+msgid "miles"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1972
+#: geodirectory_advance_search_hooks_actions.php:620
+msgid "User defined"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1976
+msgid "Do you wish to be geolocated to listings near you?"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1977
+msgid "Unable to find your location."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1978
+msgid "Permission denied in finding your location."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1979
+msgid "Your location is currently unknown."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1980
+msgid "Attempt to find location took too long."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1981
+msgid "Geolocation is not supported by this browser."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1983
+msgid "Browser unable to find your location."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1986
+msgid "Less"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1987
+msgid "In:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1988
+#: geodirectory_advance_search_function.php:2465
+msgid "(Country)"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1989
+#: geodirectory_advance_search_function.php:2485
+msgid "(Region)"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1990
+#: geodirectory_advance_search_function.php:2503
+msgid "(City)"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:1991
+#: geodirectory_advance_search_function.php:2518
+msgid "(Neighbourhood)"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2045
+msgid "Autocompleter for GeoDirectory"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2047
+msgid "Search Autocompleter Settings"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2050
+msgid "Enable Search autocompleter:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2051
+msgid "If an option is selected, the autocompleter for Search is enabled."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2059
+msgid "Autosubmit the form on select a Search option:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2060
+msgid ""
+"If an option is selected, the search form automatically is triggered when "
+"selecting a Search option."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2068
+msgid "Min chars needed to trigger autocomplete"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2069
+msgid ""
+"Enter the minimum characters users need to be typed to trigger auto complete "
+"ex. 2"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2077
+msgid "Max Results to be returned by autocomplete"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2078
+msgid ""
+"Enter the maximum number of results to be returned by autocomplete ex. 10"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2087
+msgid "Enable Location Filter:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2088
+msgid ""
+"If an option is selected, the autocompleter search results will be filtered "
+"with current location."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2099
+msgid "Near Autocompleter Settings"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2102
+msgid "Enable Near autocompleter:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2103
+msgid "If an option is selected, the autocompleter for Near is enabled."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2111
+msgid "Autosubmit the form on select a Near option:"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2112
+msgid ""
+"If an option is selected, the search form automatically is triggered when "
+"selecting a Near option."
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2123
+msgid "Redirect Settings On First Time Load"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2125
+msgid "First time load redirect"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2126
+msgid "No redirect"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2134
+msgid "Redirect to nearest location"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2135
+msgid ""
+"Redirect to nearest location <i>(on first time load users will be auto "
+"geolocated and redirected to nearest geolocation found)</i>"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2143
+msgid "Redirect to default location"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2144
+msgid ""
+"Redirect to default location <i>(on first time load users will be redirected "
+"to default location</i>"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2154
+msgid "GeoLocation Settings"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2170
+msgid "Ask user if they wish to be geolocated"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2171
+msgid ""
+"If this option is selected, users will be asked if they with to be "
+"geolocated via a popup"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2180
+msgid "Default Near Me miles limit (1-200)"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2181
+msgid ""
+"Enter whole number only ex. 40 (Tokyo is largest city in the world @40 sq "
+"miles) LEAVE BLANK FOR NO DISTANCE LIMIT"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2197
+msgid "Advanced Search"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2208
+#: geodirectory_advance_search_function.php:2216
+msgid "Save changes"
+msgstr ""
+
+#: geodirectory_advance_search_function.php:2668
+msgid ""
+"Your version of PHP is below the minimum version of PHP required by "
+"<b>GeoDirectory Advance Search Filters</b>. Please contact your host and "
+"request that your PHP version be upgraded to <b>5.3 or later</b>."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:72
+msgid "Advanced sort & filters options"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:100
+msgid "Manage advance search options."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:114
+#, php-format
+msgid "Available advance search option for %s listing and search results."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:127
+#, php-format
+msgid ""
+"Click on any box below to make it appear in advance search form on %s "
+"listing and search results.<br />To make a filed available here, go to "
+"custom fields tab and expand any field from selected fields panel and tick "
+"the checkbox saying 'Include this field in advance search option'."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:140
+#, php-format
+msgid ""
+"List of fields those will appear in advance search form on %s listing and "
+"search results page."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:154
+#, php-format
+msgid ""
+"Click to expand and view field related settings. You may drag and drop to "
+"arrange fields order in advance search form on %s listing and search results "
+"page."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:293
+msgid "Near me"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:313
+msgid "Search"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:313
+msgid " :"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:353
+#: geodirectory_advance_search_hooks_actions.php:384
+#: geodirectory_advance_search_hooks_actions.php:424
+#: geodirectory_advance_search_hooks_actions.php:441
+msgid "From:"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:355
+#: geodirectory_advance_search_hooks_actions.php:382
+#: geodirectory_advance_search_hooks_actions.php:426
+#: geodirectory_advance_search_hooks_actions.php:443
+msgid "To:"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:587
+msgid "Display searched parameters with title"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:588
+msgid ""
+"Enable to display searched parameters with title when searching for a custom "
+"field."
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:679
+msgid "Custom advanced search fields"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:718
+msgid "Open customize my search from:"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:720
+msgid "Default"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:721
+msgid "Open when searched"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:722
+msgid "Always open"
+msgstr ""
+
+#: geodirectory_advance_search_hooks_actions.php:725
+msgid "Select when the customize my search from should be open or hide."
+msgstr ""
+
+#: tests/test-Advanced_Search_Filters.php:98
+#: tests/test-Advanced_Search_Filters.php:100
+#: tests/test-Advanced_Search_Filters.php:106
+msgid "Salary"
+msgstr ""
+
+#: tests/test-Advanced_Search_Filters.php:99
+msgid "Enter salary."
+msgstr ""

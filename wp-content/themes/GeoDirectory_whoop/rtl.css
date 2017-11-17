@@ -1,0 +1,304 @@
+body {
+    direction: rtl;
+    unicode-bidi: embed;
+}
+.site-logo {
+    float: right;
+}
+.header-right-area {
+    float: right;
+}
+.whoop-account {
+    float: left;
+}
+.nav li {
+    float: right;
+}
+.whoop-dd-menu {
+    left:0;
+    right: auto;
+}
+.whoop-dd-menu-arrow:after, .whoop-dd-menu-arrow:before {
+    left:8px;
+    right: auto;
+}
+.geodir_list_heading a {
+    text-align: left;
+}
+.geodir_category_list_view li .geodir-addinfo {
+    float: left;
+}
+.geodir_category_list_view li .geodir-post-img {
+    float: right;
+    margin-right: 0;
+    margin-left: 3%;
+}
+.geodir_category_list_view li .geodir-content {
+    float: right;
+}
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-entry-content {
+    float: right;
+}
+.geodir-whoop-listing-review img {
+    float: right;
+    margin-right: 0;
+    margin-left: 5px;
+}
+
+#gd-sidebar-wrapper {
+    float: right;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    margin-right: 1.5%;
+    padding-right: 1.5%;
+    border-right: 1px solid #e5e5e1;
+}
+#geodir_content {
+    float: right;
+}
+.geodir-big-header-ratings {
+    float: right;
+}
+.geodir-big-header-ratings .geodir-rating, .geodir-big-header-ratings .geodir-big-header-rc {
+    float: right;
+    margin-right: 0;
+    margin-left: 7px;
+}
+.whoop-btn-group .whoop-btn, .whoop-btn-group .geodir-addtofav a {
+    float: right;
+}
+.whoop-btn-group .whoop-btn:first-child {
+    border-radius: 0 3px 3px 0;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset -1px -1px 0 0 #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset -1px -1px 0 0 #fff;
+}
+
+.whoop-btn-group .whoop-btn:last-child, .whoop-btn-group .geodir-addtofav a {
+    border-radius: 3px 0 0 3px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 1px -1px 0 0 #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 1px -1px 0 0 #fff;
+}
+
+.whoop-write-rev-btn {
+    float: right;
+    margin: 0 0 0 12px;
+}
+
+.whoop-img-track .whoop-photo-3 {
+    left: 0;
+}
+
+.whoop-img-track .whoop-photo-1 {
+    left: 440px;
+}
+
+.gd-rate-area span {
+    float: right;
+}
+#comments .gd-rate-cat-in span.lable {
+    float: right;
+}
+.gd-rate-category ul.rate-area-list {
+    float: right;
+}
+span.gd-rank {
+    float: right;
+    padding-left: 0;
+    padding-right: 15px;
+}
+
+#comments .gd-rate-category span.gd-rank {
+    padding-top: 8px;
+}
+
+ul.rate-area-list {
+    float: right;
+}
+.geodir-company_info i.fa {
+    margin-right: 0;
+    margin-left: 3px;
+}
+
+.geodir_category_list_view.whoop-view li .geodir-addinfo {
+    float: right;
+}
+
+.whoop-account-info > .whoop-media-avatar {
+    border-right: none;
+    border-left: 9px solid transparent;
+}
+.geodir-tax-sort, .geodir-list-view-select {
+    float: right;
+}
+
+#buddypress ul.item-list li img.avatar {
+    float: right;
+    margin: 0 0 0 10px;
+}
+
+#buddypress ul#members-list li,
+.widget_bp_whoop_friends_widget ul#members-list,
+.widget_bp_whoop_friends_widget ul.ayi-list-users li {
+    float: right;
+}
+
+#buddypress div.pagination .pag-count {
+    float: right;
+}
+
+#buddypress div.pagination .pagination-links {
+    float: right;
+    border-left: none;
+    border-right: 1px solid #999;
+    padding-right: 10px;
+}
+
+#buddypress div.item-list-tabs ul li {
+    float: right;
+}
+
+#buddypress #item-nav div.item-list-tabs ul li {
+    float: right;
+}
+
+.whoop-member-title h1 {
+    float: right;
+}
+
+.whoop-member-item-wrap #gd-sidebar-wrapper {
+    float: left;
+}
+.whoop-member-item-wrap #item-body {
+    float: right;
+}
+.whoop-member-item-wrap #item-header {
+    float: right;
+}
+
+#buddypress div#item-header img.avatar {
+    float: right;
+    margin: 0 0 19px 15px;
+}
+
+.gdbp-wrapper-reviews .whoop-member-post-metas,
+.whoop-member-profile-reviews .whoop-member-post-metas {
+    float: right;
+}
+
+.gdbp-wrapper-reviews header > a,
+.whoop-member-profile-reviews header > a {
+    float: right;
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.whoop-review-rating .geodir-rating {
+    float: right;
+    margin-right: 0;
+    margin-left: 5px;
+}
+
+#comments .comment_overall {
+    float: right;
+    margin-left: 15px;
+    margin-right: 0;
+}
+#comments .overall-more-rating {
+    float: left;
+}
+
+#buddypress #item-body {
+    border-right: 1px solid #e5e5e1;
+    border-left: none;
+    padding: 0 15px;
+}
+
+.whoop-event-header-wrap h3 {
+    float: right;
+}
+#buddypress ul.item-list li div.action {
+    left:0;
+    right: auto;
+}
+
+.whoop-review-header .whoop-title-and-count {
+    float: right;
+}
+
+#buddypress div.message-search {
+    float: left;
+}
+
+#buddypress div#message-thread img.avatar {
+    float: right;
+    margin: 0 0 5px 10px;
+}
+#buddypress .standard-form div.submit input {
+    margin-right: 0;
+    margin-left: 15px;
+}
+#buddypress div.review-search {
+    float: left;
+}
+
+.event-author {
+    float: left;
+}
+.event-title {
+    float: right;
+}
+.event-content-body {
+    float: right;
+}
+.event-content-avatar {
+    float: right;
+    border-right: none;
+    border-left: 12px solid transparent;
+}
+.event-interested {
+    text-align: right;
+    width: 22%;
+}
+.geodir-search .search_by_post {
+    float: right;
+}
+.geodir-search input[type="text"] {
+    float: right;
+}
+.geodir-search input[type="button"],
+.geodir-search input[type="submit"] {
+    float: right;
+}
+.geodir_full_page .geodir-search input[type="text"],
+.geodir_full_page .geodir-search select {
+    margin-right: 0 !important;
+    margin-left: 1% !important;
+}
+input.snear {
+    text-align: left;
+}
+.customize_filter-in .geodir-filter-cat {
+    float: right;
+}
+.geodirf-ab .geodir_advance_search_widget input[type="text"],
+.header-right-area .geodir_advance_search_widget input[type="text"] {
+    float: right;
+}
+
+.header-right-area .widget .geodir-search input[type="text"],
+.geodir_custom_posts .geodir-search select {
+    margin-left: 1%;
+    margin-right: 0;
+}
+
+.detail_page_map_canvas_getdirection {
+    float: left;
+    width: 28%;
+    margin: 1% !important;
+}
+#detail_page_map_canvas_fromAddress {
+    float: right;
+    width: 68%;
+    margin: 1%;
+}

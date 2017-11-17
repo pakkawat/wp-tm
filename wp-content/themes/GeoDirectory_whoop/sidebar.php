@@ -1,0 +1,1 @@
+<?php //not needed, removed standard sidebar template ?>

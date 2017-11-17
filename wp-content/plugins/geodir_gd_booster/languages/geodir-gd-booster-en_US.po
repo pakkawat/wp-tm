@@ -1,0 +1,1210 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GD Booster 1.2.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-13 12:36+0100\n"
+"PO-Revision-Date: 2017-06-13 12:36+0100\n"
+"Last-Translator: \n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:395
+msgid ""
+"<strong>GD Booster:</strong> detected a new version of itself. Recompiling "
+"w/ latest version... wiping the cache... all done :-)"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:534 geodir-gd-booster.inc.php:551
+msgid "GD Booster"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:567
+msgid "Settings"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:608 geodir-gd-booster.inc.php:675
+msgid "dismiss &times;"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:729
+msgid "Every 15 Minutes"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:861
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected significant changes. Found %1$s in the "
+"cache; auto-wiping."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:903
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected important site changes. Found %1$s in "
+"the cache for this site; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:980
+msgid "Post"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:988
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"%2$s ID: <code>%3$s</code>; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1147
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache, for "
+"XML feeds of type: <code>%2$s</code>; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1188
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"XML sitemaps; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1229
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"the designated \"Home Page\"; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1285
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"the designated \"Posts Page\"; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1338
+msgid "Untitled"
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1349
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"Custom Post Type: <code>%2$s</code>; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1437
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"Author Page: <code>%2$s</code>; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1587
+#, php-format
+msgid ""
+"<strong>GD Booster:</strong> detected changes. Found %1$s in the cache for "
+"%2$s: <code>%3$s</code>; auto-clearing."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:1864 geodir-gd-booster.inc.php:1890
+msgid ""
+"Doing it wrong! Missing `base_dir` option value. MUST call this method after "
+"`setup()`."
+msgstr ""
+
+#: geodir-gd-booster.inc.php:2297
+msgid ""
+"Please disable the LITE version of GD Booster before you activate the PRO "
+"version."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:634
+#, php-format
+msgid ""
+"GD Booster fully functional :-) Cache file served for (%1$s) in %2$s "
+"seconds, on: %3$s."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:755
+#, php-format
+msgid "Unexpected OB phase: `%1$s`."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:817
+#, php-format
+msgid ""
+"Cache directory not writable. GD Booster needs this directory please: `"
+"%1$s`. Set permissions to `755` or higher; `777` might be needed in some "
+"cases."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:825 includes/advanced-cache.tpl.php:846
+#, php-format
+msgid ""
+"Unable to create symlink: `%1$s` » `%2$s`. Possible permissions issue (or "
+"race condition), please check your cache directory: `%3$s`."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:833
+#, php-format
+msgid "GD Booster file path: %1$s"
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:834
+#, php-format
+msgid "GD Booster file built for (%1$s) in %2$s seconds, on: %3$s."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:836
+#, php-format
+msgid ""
+"This GD Booster file will auto-expire (and be rebuilt) on: %1$s (based on "
+"your configured expiration time)."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:856
+#, php-format
+msgid ""
+"GD Booster: failed to write cache file for: `%1$s`; possible permissions "
+"issue (or race condition), please check your cache directory: `%2$s`."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:898
+msgid ""
+"because `PHP_SAPI` reports that you are currently running from the command "
+"line."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:902
+msgid "because `$_GET['gdbAC']` is set to a boolean-ish FALSE value."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:906
+msgid ""
+"because `$_SERVER['HTTP_HOST']` is missing from your server configuration."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:910
+msgid ""
+"because `$_SERVER['REQUEST_URI']` is missing from your server configuration."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:914
+msgid ""
+"because the PHP constant `GEODIR_GD_BOOSTER_ALLOWED` has been set to a "
+"boolean-ish `FALSE` value at runtime. Perhaps by WordPress itself, or by one "
+"of your themes/plugins. This usually means that you have a theme/plugin "
+"intentionally disabling the cache on this page; and it's usually for a very "
+"good reason."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:918
+msgid ""
+"because the environment variable `$_SERVER['GEODIR_GD_BOOSTER_ALLOWED']` has "
+"been set to a boolean-ish `FALSE` value at runtime. Perhaps by WordPress "
+"itself, or by one of your themes/plugins. This usually means that you have a "
+"theme/plugin intentionally disabling the cache on this page; and it's "
+"usually for a very good reason."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:922
+msgid ""
+"because the PHP constant `DONOTCACHEPAGE` has been set at runtime. Perhaps "
+"by WordPress itself, or by one of your themes/plugins. This usually means "
+"that you have a theme/plugin intentionally disabling the cache on this page; "
+"and it's usually for a very good reason."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:926
+msgid ""
+"because the environment variable `$_SERVER['DONOTCACHEPAGE']` has been set "
+"at runtime. Perhaps by WordPress itself, or by one of your themes/plugins. "
+"This usually means that you have a theme/plugin intentionally disabling the "
+"cache on this page; and it's usually for a very good reason."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:930
+msgid ""
+"because `$_SERVER['REQUEST_METHOD']` is `POST`, `PUT`, `DELETE`, `HEAD`, "
+"`OPTIONS`, `TRACE` or `CONNECT`. These request methods should never (ever) "
+"be cached in any way."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:934
+msgid ""
+"because `$_SERVER['REMOTE_ADDR']` === `$_SERVER['SERVER_ADDR']`; i.e. a self-"
+"serve request. DEVELOPER TIP: if you are testing on a localhost "
+"installation, please add `define('LOCALHOST', TRUE);` to your `/wp-config."
+"php` file while you run tests :-) Remove it (or set it to a `FALSE` value) "
+"once you go live on the web."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:938
+msgid ""
+"because `$_SERVER['REQUEST_URI']` indicates this is a `/feed`; and the "
+"configuration of this site says not to cache XML-based feeds."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:942
+msgid ""
+"because `$_SERVER['REQUEST_URI']` indicates this is a `wp-` or `xmlrpc` "
+"file; i.e. a WordPress systematic file. WordPress systematics are never "
+"(ever) cached in any way."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:946
+msgid ""
+"because `$_SERVER['REQUEST_URI']` or the `is_admin()` function indicates "
+"this is an administrative area of the site."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:950
+msgid ""
+"because `$_SERVER['REQUEST_URI']` indicates this is a Multisite Network; and "
+"this was a request for `/files/*`, not a page."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:955
+msgid ""
+"because the current user visiting this page (usually YOU), appears to be "
+"logged-in. The current configuration says NOT to cache pages for logged-in "
+"visitors. This message may also appear if you have an active PHP session on "
+"this site, or if you've left (or replied to) a comment recently. If this "
+"message continues, please clear your cookies and try again."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:959
+msgid ""
+"because `$_GET` contains query string data. The current configuration says "
+"NOT to cache GET requests with a query string."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:963
+msgid ""
+"because the WordPress `is_404()` Conditional Tag says the current page is a "
+"404 error. The current configuration says NOT to cache 404 errors."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:967
+msgid ""
+"because a plugin running on this installation says this page is in "
+"Maintenance Mode; i.e. is not available publicly at this time."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:971
+msgid ""
+"because GD Booster is unable to cache already-compressed output. Please use "
+"`mod_deflate` w/ Apache; or use `zlib.output_compression` in your `php.ini` "
+"file. GD Booster is NOT compatible with `ob_gzhandler()` and others like "
+"this."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:975
+msgid ""
+"because the contents of this document contain `<body id=\"error-page\">`, "
+"which indicates this is an auto-generated WordPress error message."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:979
+msgid ""
+"because a `Content-Type:` header was set via PHP at runtime. The header "
+"contains a MIME type which is NOT a variation of HTML or XML. This header "
+"might have been set by your hosting company, by WordPress itself; or by one "
+"of your themes/plugins."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:983
+msgid ""
+"because a `Status:` header (or an `HTTP/` header) was set via PHP at "
+"runtime. The header contains a non-`2xx` status code. This indicates the "
+"current page was not loaded successfully. This header might have been set by "
+"your hosting company, by WordPress itself; or by one of your themes/plugins."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:987
+msgid ""
+"because the WordPress `is_404()` Conditional Tag says the current page is a "
+"404 error; and this is the first time it's happened on this page. Your "
+"current configuration says that 404 errors SHOULD be cached, so GD Booster "
+"built a cached symlink which points future requests for this location to "
+"your already-cached 404 error document. If you reload this page (assuming "
+"you don't clear the cache before you do so); you should get a cached version "
+"of your 404 error document. This message occurs ONCE for each new/unique 404 "
+"error request."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:991
+msgid ""
+"because GD Booster detected an early output buffer termination. This may "
+"happen when a theme/plugin ends, cleans, or flushes all output buffers "
+"before reaching the PHP shutdown phase. It's not always a bad thing. "
+"Sometimes it is necessary for a theme/plugin to do this. However, in this "
+"scenario it is NOT possible to cache the output; since GD Booster is "
+"effectively disabled at runtime when this occurs."
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:995
+msgid ""
+"due to an unexpected behavior in the application. Please report this as a "
+"bug!"
+msgstr ""
+
+#: includes/advanced-cache.tpl.php:998
+#, php-format
+msgid "GD Booster is NOT caching this page, %1$s"
+msgstr ""
+
+#: includes/menu-pages.php:24
+msgid ""
+"Wipe Cache (Start Fresh); clears the cache for all sites in this network at "
+"once!"
+msgstr ""
+
+#: includes/menu-pages.php:26
+msgid "Wipe"
+msgstr ""
+
+#: includes/menu-pages.php:28
+msgid "Clear Cache (Start Fresh)"
+msgstr ""
+
+#: includes/menu-pages.php:28
+msgid "; affects the current site only."
+msgstr ""
+
+#: includes/menu-pages.php:30
+msgid "Clear"
+msgstr ""
+
+#: includes/menu-pages.php:33
+msgid ""
+"Restore default plugin options? You will lose all of your current settings! "
+"Are you absolutely sure about this?"
+msgstr ""
+
+#: includes/menu-pages.php:35
+msgid "Restore"
+msgstr ""
+
+#: includes/menu-pages.php:37
+msgid "All Panels"
+msgstr ""
+
+#: includes/menu-pages.php:41
+msgid "GD Booster Cache Options"
+msgstr ""
+
+#: includes/menu-pages.php:46
+msgid "Options updated successfully."
+msgstr ""
+
+#: includes/menu-pages.php:52
+msgid "Default options successfully restored."
+msgstr ""
+
+#: includes/menu-pages.php:58
+msgid ""
+"Cache wiped across all sites; recreation will occur automatically over time."
+msgstr ""
+
+#: includes/menu-pages.php:64
+msgid ""
+"Cache cleared for this site; recreation will occur automatically over time."
+msgstr ""
+
+#: includes/menu-pages.php:70
+msgid ""
+"Failed to update your <code>/wp-config.php</code> file automatically. Please "
+"add the following line to your <code>/wp-config.php</code> file (right after "
+"the opening <code>&lt;?php</code> tag; on it's own line). <pre class=\"code"
+"\"><code>&lt;?php<br />define('WP_CACHE', TRUE);</code></pre>"
+msgstr ""
+
+#: includes/menu-pages.php:76
+msgid ""
+"Failed to update your <code>/wp-config.php</code> file automatically. Please "
+"remove the following line from your <code>/wp-config.php</code> file, or set "
+"<code>WP_CACHE</code> to a <code>FALSE</code> value. <pre class=\"code"
+"\"><code>define('WP_CACHE', TRUE);</code></pre>"
+msgstr ""
+
+#: includes/menu-pages.php:83
+#, php-format
+msgid ""
+"Failed to update your <code>/wp-content/advanced-cache.php</code> file. "
+"Cannot write stat file: <code>%1$s/gdb-advanced-cache</code>. Please be sure "
+"this directory exists (and that it's writable): <code>%1$s</code>. Please "
+"use directory permissions <code>755</code> or higher (perhaps <code>777</"
+"code>). Once you've done this, please try again."
+msgstr ""
+
+#: includes/menu-pages.php:84
+msgid ""
+"Failed to update your <code>/wp-content/advanced-cache.php</code> file. Most "
+"likely a permissions error. Please create an empty file here: <code>/wp-"
+"content/advanced-cache.php</code> (just an empty PHP file, with nothing in "
+"it); give it permissions <code>644</code> or higher (perhaps <code>666</"
+"code>). Once you've done this, please try again."
+msgstr ""
+
+#: includes/menu-pages.php:90
+msgid ""
+"Failed to remove your <code>/wp-content/advanced-cache.php</code> file. Most "
+"likely a permissions error. Please delete (or empty the contents of) this "
+"file: <code>/wp-content/advanced-cache.php</code>."
+msgstr ""
+
+#: includes/menu-pages.php:96
+msgid "close"
+msgstr ""
+
+#: includes/menu-pages.php:97
+msgid ""
+"<strong>Pro Features (Preview)</strong> ~ New option panels below. Please "
+"explore before <a href=\"http://www.websharks-inc.com/product/quick-cache/\" "
+"target=\"_blank\">upgrading <i class=\"fa fa-heart-o\"></i></a>.<br /"
+"><small>NOTE: the free version of GD Booster (this LITE version); is more-"
+"than-adequate for most sites. Please upgrade only if you desire advanced "
+"features or would like to support the developer.</small>"
+msgstr ""
+
+#: includes/menu-pages.php:103
+msgid "GD Booster is currently disabled; please review options below."
+msgstr ""
+
+#: includes/menu-pages.php:111
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/menu-pages.php:116
+msgid "Yes, enable GD Booster!"
+msgstr ""
+
+#: includes/menu-pages.php:116
+msgid "No, disable."
+msgstr ""
+
+#: includes/menu-pages.php:118
+#, php-format
+msgid ""
+"<strong>HUGE Time-Saver:</strong> Approx. 95% of all WordPress sites running "
+"GD Booster, simply enable it here; and that's it :-) <strong>No further "
+"configuration is necessary (really).</strong> All of the other options (down "
+"below) are already tuned for the BEST performance on a typical WordPress "
+"installation. Simply enable GD Booster here and click \"Save All Changes\". "
+"If you get any warnings please follow the instructions given. Otherwise, "
+"you're good <i class=\"fa fa-smile-o\"></i>. This plugin is designed to run "
+"just fine like it is. Take it for a spin right away; you can always fine-"
+"tune things later if you deem necessary."
+msgstr ""
+
+#: includes/menu-pages.php:121
+msgid "How Can I Tell GD Booster is Working?"
+msgstr ""
+
+#: includes/menu-pages.php:122
+msgid ""
+"First of all, please make sure that you've enabled GD Booster here; then "
+"scroll down to the bottom of this page and click \"Save All Changes\". All "
+"of the other options (below) are already pre-configured for typical usage. "
+"Feel free to skip them all for now. You can go back through all of these "
+"later and fine-tune things the way you like them."
+msgstr ""
+
+#: includes/menu-pages.php:123
+msgid ""
+"Once GD Booster has been enabled, <strong>you'll need to log out (and/or "
+"clear browser cookies)</strong>. By default, cache files are NOT served to "
+"visitors who are logged-in, and that includes you too ;-) Cache files are "
+"NOT served to recent comment authors either. If you've commented (or replied "
+"to a comment lately); please clear your browser cookies before testing."
+msgstr ""
+
+#: includes/menu-pages.php:124
+msgid ""
+"<strong>To verify that GD Booster is working</strong>, navigate your site "
+"like a normal visitor would. Right-click on any page (choose View Source), "
+"then scroll to the very bottom of the document. At the bottom, you'll find "
+"comments that show GD Booster stats and information. You should also notice "
+"that page-to-page navigation is <i class=\"fa fa-flash\"></i> "
+"<strong>lightning fast</strong> now that GD Booster is running; and it gets "
+"faster over time!"
+msgstr ""
+
+#: includes/menu-pages.php:126
+msgid ""
+"Yes, enable notes in the source code so I can see it's working (recommended)."
+msgstr ""
+
+#: includes/menu-pages.php:127
+msgid ""
+"Yes, enable notes in the source code AND show debugging details (not "
+"recommended for production)."
+msgstr ""
+
+#: includes/menu-pages.php:128
+msgid "No, I don't want my source code to contain any of these notes."
+msgstr ""
+
+#: includes/menu-pages.php:137
+msgid "Plugin Deletion Safeguards"
+msgstr ""
+
+#: includes/menu-pages.php:142
+msgid "Uninstall on Plugin Deletion; or Safeguard Options?"
+msgstr ""
+
+#: includes/menu-pages.php:143
+msgid ""
+"<strong>Tip:</strong> By default, if you delete GD Booster using the plugins "
+"menu in WordPress, nothing is lost. However, if you want to completely "
+"uninstall GD Booster you should set this to <code>Yes</code> and "
+"<strong>THEN</strong> deactivate &amp; delete GD Booster from the plugins "
+"menu in WordPress. This way GD Booster will erase your options for the "
+"plugin, erase directories/files created by the plugin, remove the "
+"<code>advanced-cache.php</code> file, terminate CRON jobs, etc. It erases "
+"itself from existence completely."
+msgstr ""
+
+#: includes/menu-pages.php:145
+msgid "Safeguard my options and the cache (recommended)."
+msgstr ""
+
+#: includes/menu-pages.php:146
+msgid "Yes, uninstall (completely erase) GD Booster on plugin deletion."
+msgstr ""
+
+#: includes/menu-pages.php:155
+msgid "Directory / Expiration Time"
+msgstr ""
+
+#: includes/menu-pages.php:159
+msgid ""
+"Base Cache Directory (Must be Writable; e.g. <a href=\"http://codex."
+"wordpress.org/Changing_File_Permissions\" target=\"_blank\">Permissions</a> "
+"<code>755</code> or Higher)"
+msgstr ""
+
+#: includes/menu-pages.php:160
+msgid ""
+"This is where GD Booster will store the cached version of your site. If "
+"you're not sure how to deal with directory permissions, don't worry too much "
+"about this. If there is a problem, GD Booster will let you know about it. By "
+"default, this directory is created by GD Booster and the permissions are "
+"setup automatically. In most cases there is nothing more you need to do."
+msgstr ""
+
+#: includes/menu-pages.php:164
+msgid "Automatic Expiration Time (Max Age)"
+msgstr ""
+
+#: includes/menu-pages.php:165
+msgid ""
+"If you don't update your site much, you could set this to <code>6 months</"
+"code> and optimize everything even further. The longer the Cache Expiration "
+"Time is, the greater your performance gain. Alternatively, the shorter the "
+"Expiration Time, the fresher everything will remain on your site. A default "
+"value of <code>7 days</code> (recommended); is a good conservative middle-"
+"ground."
+msgstr ""
+
+#: includes/menu-pages.php:166
+msgid ""
+"Keep in mind that your Expiration Time is only one part of the big picture. "
+"GD Booster will also clear the cache automatically as changes are made to "
+"the site (i.e. you edit a post, someone comments on a post, you change your "
+"theme, you add a new navigation menu item, etc., etc.). Thus, your "
+"Expiration Time is really just a fallback; e.g. the maximum amount of time "
+"that a cache file could ever possibly live."
+msgstr ""
+
+#: includes/menu-pages.php:167
+msgid ""
+"All of that being said, you could set this to just <code>60 seconds</code> "
+"and you would still see huge differences in speed and performance. If you're "
+"just starting out with GD Booster (perhaps a bit nervous about old cache "
+"files being served to your visitors); you could set this to something like "
+"<code>30 minutes</code>, and experiment with it while you build confidence "
+"in GD Booster. It's not necessary to do so, but many site owners have "
+"reported this makes them feel like they're more-in-control when the cache "
+"has a short expiration time. All-in-all, it's a matter of preference <i "
+"class=\"fa fa-smile-o\"></i>."
+msgstr ""
+
+#: includes/menu-pages.php:169
+msgid ""
+"<strong>Tip:</strong> the value that you specify here MUST be compatible "
+"with PHP's <a href=\"http://php.net/manual/en/function.strtotime.php\" "
+"target=\"_blank\" style=\"text-decoration:none;\"><code>strtotime()</code></"
+"a> function. Examples: <code>30 seconds</code>, <code>2 hours</code>, "
+"<code>7 days</code>, <code>6 months</code>, <code>1 year</code>."
+msgstr ""
+
+#: includes/menu-pages.php:170
+msgid ""
+"<strong>Note:</strong> GD Booster will never serve a cache file that is "
+"older than what you specify here (even if one exists in your cache "
+"directory; stale cache files are never used). In addition, a WP Cron job "
+"will automatically cleanup your cache directory (once daily); purging "
+"expired cache files periodically. This prevents a HUGE cache from building "
+"up over time, creating a potential storage issue."
+msgstr ""
+
+#: includes/menu-pages.php:178
+msgid "Client-Side Cache"
+msgstr ""
+
+#: includes/menu-pages.php:183
+msgid "Allow Double-Caching In The Client-Side Browser?"
+msgstr ""
+
+#: includes/menu-pages.php:184
+msgid ""
+"Recommended setting: <code>No</code> (for membership sites, very important). "
+"Otherwise, <code>Yes</code> would be better (if users do NOT log in/out of "
+"your site)."
+msgstr ""
+
+#: includes/menu-pages.php:185
+msgid ""
+"GD Booster handles content delivery through its ability to communicate with "
+"a browser using PHP. If you allow a browser to (cache) the caching system "
+"itself, you are momentarily losing some control; and this can have a "
+"negative impact on users that see more than one version of your site; e.g. "
+"one version while logged-in, and another while NOT logged-in. For instance, "
+"a user may log out of your site, but upon logging out they report seeing "
+"pages on the site which indicate they are STILL logged in (even though "
+"they're not — that's bad). This can happen if you allow a client-side cache, "
+"because their browser may cache web pages they visited while logged into "
+"your site which persist even after logging out. Sending no-cache headers "
+"will work to prevent this issue."
+msgstr ""
+
+#: includes/menu-pages.php:186
+msgid ""
+"All of that being said, if all you care about is blazing fast speed and "
+"users don't log in/out of your site (only you do); you can safely set this "
+"to <code>Yes</code> (recommended in this case). Allowing a client-side "
+"browser cache will improve speed and reduce outgoing bandwidth when this "
+"option is feasible."
+msgstr ""
+
+#: includes/menu-pages.php:188
+msgid "No, prevent a client-side browser cache (safest option)."
+msgstr ""
+
+#: includes/menu-pages.php:189
+msgid "Yes, I will allow a client-side browser cache of pages on the site."
+msgstr ""
+
+#: includes/menu-pages.php:191
+msgid ""
+"<strong>Tip:</strong> Setting this to <code>No</code> is highly recommended "
+"when running a membership plugin like <a href=\"http://wordpress.org/plugins/"
+"s2member/\" target=\"_blank\">s2Member</a> (as one example). In fact, many "
+"plugins like s2Member will send <a href=\"http://codex.wordpress.org/"
+"Function_Reference/nocache_headers\" target=\"_blank\">nocache_headers()</a> "
+"on their own, so your configuration here will likely be overwritten when you "
+"run such plugins (which is better anyway). In short, if you run a membership "
+"plugin, you should NOT allow a client-side browser cache."
+msgstr ""
+
+#: includes/menu-pages.php:192
+msgid ""
+"<strong>Tip:</strong> Setting this to <code>No</code> will NOT impact static "
+"content; e.g. CSS, JS, images, or other media. This setting pertains only to "
+"dynamic PHP scripts which produce content generated by WordPress."
+msgstr ""
+
+#: includes/menu-pages.php:193
+msgid ""
+"<strong>Advanced Tip:</strong> if you have this set to <code>No</code>, but "
+"you DO want to allow a few special URLs to be cached by the browser; you can "
+"add this parameter to your URL <code>?qcABC=1</code>. This tells GD Booster "
+"that it's OK for the browser to cache that particular URL. In other words, "
+"the <code>qcABC=1</code> parameter tells GD Booster NOT to send no-cache "
+"headers to the browser."
+msgstr ""
+
+#: includes/menu-pages.php:201
+msgid "GET Requests"
+msgstr ""
+
+#: includes/menu-pages.php:206
+msgid "Caching Enabled for GET (Query String) Requests?"
+msgstr ""
+
+#: includes/menu-pages.php:207
+msgid ""
+"This should almost ALWAYS be set to <code>No</code>. UNLESS, you're using "
+"unfriendly Permalinks. In other words, if all of your URLs contain a query "
+"string (e.g. <code>/?key=value</code>); you're using unfriendly Permalinks. "
+"Ideally, you would refrain from doing this; and instead, update your "
+"Permalink options immediately; which also optimizes your site for search "
+"engines. That being said, if you really want to use unfriendly Permalinks, "
+"and ONLY if you're using unfriendly Permalinks, you should set this to "
+"<code>Yes</code>; and don't worry too much, the sky won't fall on your "
+"head :-)"
+msgstr ""
+
+#: includes/menu-pages.php:209
+msgid ""
+"No, do NOT cache (or serve a cache file) when a query string is present."
+msgstr ""
+
+#: includes/menu-pages.php:210
+msgid "Yes, I would like to cache URLs that contain a query string."
+msgstr ""
+
+#: includes/menu-pages.php:212
+msgid ""
+"<strong>Note:</strong> POST requests (i.e. forms with <code>method=&quot;"
+"post&quot;</code>) are always excluded from the cache, which is the way it "
+"should be. Any <a href=\"http://www.w3.org/Protocols/rfc2616/rfc2616-sec9."
+"html\" target=\"_blank\">POST/PUT/DELETE</a> request should NEVER (ever) be "
+"cached. CLI (and self-serve) requests are also excluded from the cache "
+"(always). A CLI request is one that comes from the command line; commonly "
+"used by CRON jobs and other automated routines. A self-serve request is an "
+"HTTP connection established from your site -› to your site. For instance, a "
+"WP Cron job, or any other HTTP request that is spawned not by a user, but by "
+"the server itself."
+msgstr ""
+
+#: includes/menu-pages.php:213
+msgid ""
+"<strong>Advanced Tip:</strong> If you are NOT caching GET requests "
+"(recommended), but you DO want to allow some special URLs that include query "
+"string parameters to be cached; you can add this special parameter to any "
+"URL <code>?qcAC=1</code>. This tells GD Booster that it's OK to cache that "
+"particular URL, even though it contains query string arguments. If you ARE "
+"caching GET requests and you want to force GD Booster to NOT cache a "
+"specific request, you can add this special parameter to any URL <code>?"
+"qcAC=0</code>."
+msgstr ""
+
+#: includes/menu-pages.php:221
+msgid "404 Requests"
+msgstr ""
+
+#: includes/menu-pages.php:226
+msgid "Caching Enabled for 404 Requests?"
+msgstr ""
+
+#: includes/menu-pages.php:227
+msgid ""
+"When this is set to <code>No</code>, GD Booster will ignore all 404 requests "
+"and no cache file will be served. While this is fine for most site owners, "
+"caching the 404 page on a high-traffic site may further reduce server load. "
+"When this is set to <code>Yes</code>, GD Booster will cache the 404 page "
+"(see <a href=\"https://codex.wordpress.org/Creating_an_Error_404_Page\" "
+"target=\"_blank\">Creating an Error 404 Page</a>) and then serve that single "
+"cache file to all future 404 requests."
+msgstr ""
+
+#: includes/menu-pages.php:229
+msgid "No, do NOT cache (or serve a cache file) for 404 requests."
+msgstr ""
+
+#: includes/menu-pages.php:230
+msgid ""
+"Yes, I would like to cache the 404 page and serve the cached file for 404 "
+"requests."
+msgstr ""
+
+#: includes/menu-pages.php:232
+msgid ""
+"<strong>How does GD Booster cache 404 requests?</strong> GD Booster will "
+"create a special cache file (<code>----404----.html</code>, see Advanced Tip "
+"below) for the first 404 request and then <a href=\"http://www.php.net/"
+"manual/en/function.symlink.php\" target=\"_blank\">symlink</a> future 404 "
+"requests to this special cache file. That way you don't end up with lots of "
+"404 cache files that all contain the same thing (the contents of the 404 "
+"page). Instead, you'll have one 404 cache file and then several symlinks (i."
+"e., references) to that 404 cache file."
+msgstr ""
+
+#: includes/menu-pages.php:233
+msgid ""
+"<strong>Advanced Tip:</strong> The default 404 cache filename "
+"(<code>----404----.html</code>) is designed to minimize the chance of a "
+"collision with a cache file for a real page with the same name. However, if "
+"you want to override this default and define your own 404 cache filename, "
+"you can do so by adding <code>define('GEODIR_GD_BOOSTER_404_CACHE_FILENAME', "
+"'your-404-cache-filename');</code> to your <code>wp-config.php</code> file "
+"(note that the <code>.html</code> extension should be excluded when defining "
+"a new filename)."
+msgstr ""
+
+#: includes/menu-pages.php:241
+msgid "RSS, RDF, and Atom Feeds"
+msgstr ""
+
+#: includes/menu-pages.php:246
+msgid "Caching Enabled for RSS, RDF, Atom Feeds?"
+msgstr ""
+
+#: includes/menu-pages.php:247
+msgid ""
+"This should almost ALWAYS be set to <code>No</code>. UNLESS, you're sure "
+"that you want to cache your feeds. If you use a web feed management provider "
+"like Google® Feedburner and you set this option to <code>Yes</code>, you may "
+"experience delays in the detection of new posts. <strong>NOTE:</strong> If "
+"you do enable this, it is highly recommended that you also enable automatic "
+"Feed Clearing too. Please see the section above: \"Clearing the Cache\". "
+"Find the sub-section titled: \"Auto-Clear RSS/RDF/ATOM Feeds\" (available "
+"only in the pro version)."
+msgstr ""
+
+#: includes/menu-pages.php:249
+msgid "No, do NOT cache (or serve a cache file) when displaying a feed."
+msgstr ""
+
+#: includes/menu-pages.php:250
+msgid "Yes, I would like to cache feed URLs."
+msgstr ""
+
+#: includes/menu-pages.php:252
+msgid ""
+"<strong>Note:</strong> This option affects all feeds served by WordPress, "
+"including the site feed, the site comment feed, post-specific comment feeds, "
+"author feeds, search feeds, and category and tag feeds. See also: <a href="
+"\"http://codex.wordpress.org/WordPress_Feeds\" target=\"_blank\">WordPress "
+"Feeds</a>."
+msgstr ""
+
+#: includes/menu-pages.php:260
+msgid "GZIP Compression"
+msgstr ""
+
+#: includes/menu-pages.php:265
+msgid ""
+"<a href=\"https://developers.google.com/speed/articles/gzip\" target=\"_blank"
+"\">GZIP Compression</a> (Optional; Highly Recommended)"
+msgstr ""
+
+#: includes/menu-pages.php:266
+msgid ""
+"You don't have to use an <code>.htaccess</code> file to enjoy the "
+"performance enhancements provided by this plugin; caching is handled "
+"automatically by WordPress/PHP alone. That being said, if you want to take "
+"advantage of the additional speed enhancements associated w/ GZIP "
+"compression (and we do recommend this), then you WILL need an <code>."
+"htaccess</code> file to accomplish that part."
+msgstr ""
+
+#: includes/menu-pages.php:267
+msgid ""
+"GD Booster fully supports GZIP compression on its output. However, it does "
+"not handle GZIP compression directly. We purposely left GZIP compression out "
+"of this plugin, because GZIP compression is something that should really be "
+"enabled at the Apache level or inside your <code>php.ini</code> file. GZIP "
+"compression can be used for things like JavaScript and CSS files as well, so "
+"why bother turning it on for only WordPress-generated pages when you can "
+"enable GZIP at the server level and cover all the bases!"
+msgstr ""
+
+#: includes/menu-pages.php:268
+msgid ""
+"If you want to enable GZIP, create an <code>.htaccess</code> file in your "
+"WordPress® installation directory, and put the following few lines in it. "
+"Alternatively, if you already have an <code>.htaccess</code> file, just add "
+"these lines to it, and that is all there is to it. GZIP is now enabled in "
+"the recommended way! See also: <a href=\"https://developers.google.com/speed/"
+"articles/gzip\" target=\"_blank\"><i class=\"fa fa-youtube-play\"></i> video "
+"about GZIP Compression</a>."
+msgstr ""
+
+#: includes/menu-pages.php:279
+msgid "Theme/Plugin Developers"
+msgstr ""
+
+#: includes/menu-pages.php:284
+msgid "Developing a Theme or Plugin for WordPress?"
+msgstr ""
+
+#: includes/menu-pages.php:285
+msgid ""
+"<strong>Tip:</strong> GD Booster can be disabled temporarily. If you're a "
+"theme/plugin developer, you can set a flag within your PHP code to disable "
+"the cache engine at runtime. Perhaps on a specific page, or in a specific "
+"scenario. In your PHP script, set: <code>"
+"$_SERVER['GEODIR_GD_BOOSTER_ALLOWED'] = FALSE;</code> or "
+"<code>define('GEODIR_GD_BOOSTER_ALLOWED', FALSE)</code>. GD Booster is also "
+"compatible with: <code>define('DONOTCACHEPAGE', TRUE)</code>. It does't "
+"matter where or when you define one of these, because GD Booster is the last "
+"thing to run before script execution ends."
+msgstr ""
+
+#: includes/menu-pages.php:287
+msgid "Writing \"Advanced Cache\" Plugins Specifically for GD Booster"
+msgstr ""
+
+#: includes/menu-pages.php:288
+msgid ""
+"Theme/plugin developers can take advantage of the GD Booster plugin "
+"architecture by creating PHP files inside this special directory: <code>/wp-"
+"content/ac-plugins/</code>. There is an <a href=\"https://github.com/"
+"WebSharks/Quick-Cache/blob/000000-dev/quick-cache/includes/ac-plugin.example."
+"php\" target=\"_blank\">example plugin file @ GitHub</a> (please review it "
+"carefully and ask questions). If you develop a plugin for GD Booster, please "
+"share it with the community by publishing it in the plugins respository at "
+"WordPress.org."
+msgstr ""
+
+#: includes/menu-pages.php:289
+msgid ""
+"<strong>Why does GD Booster have it's own plugin architecture?</strong> "
+"WordPress loads the <code>advanced-cache.php</code> drop-in file (for "
+"caching purposes) very early-on; before any other plugins or a theme. For "
+"this reason, GD Booster implements it's own watered-down version of "
+"functions like <code>add_action()</code>, <code>do_action()</code>, "
+"<code>add_filter()</code>, <code>apply_filters()</code>."
+msgstr ""
+
+#: includes/menu-pages.php:297
+msgid "MaxCDN Settings"
+msgstr ""
+
+#: includes/menu-pages.php:302
+msgid "Use MaxCDN for Content Delivery Network"
+msgstr ""
+
+#: includes/menu-pages.php:303
+msgid ""
+"<strong>Tip:</strong> GD Booster and MaxCDN can work very well together to "
+"help your site load faster from many locations around the world."
+msgstr ""
+
+#: includes/menu-pages.php:304
+#, php-format
+msgid ""
+"<a href=\"//tracking.maxcdn.com/c/258301/3968/378\">Click here For 25% off "
+"your first month with MaxCDN</a><img height=\"0\" width=\"0\" src=\"//"
+"tracking.maxcdn.com/i/258301/3968/378\" style=\"position:absolute;visibility:"
+"hidden;\" border=\"0\" />"
+msgstr ""
+
+#: includes/menu-pages.php:305
+msgid ""
+"<strong>Defaults:</strong> bmp|bz2|gif|ico|gz|jpg|jpeg|mp3|pdf|png|rar|rtf|"
+"swf|tar|tgz|txt|wav|zip|js|css"
+msgstr ""
+
+#: includes/menu-pages.php:310
+msgid "Disabled"
+msgstr ""
+
+#: includes/menu-pages.php:311
+msgid "Enabled"
+msgstr ""
+
+#: includes/menu-pages.php:314
+msgid "CDN Root URL"
+msgstr ""
+
+#: includes/menu-pages.php:317
+msgid "CDN File Extensions"
+msgstr ""
+
+#: includes/menu-pages.php:328
+msgid "JS/CSS Files Exclusion From Combines"
+msgstr ""
+
+#: includes/menu-pages.php:332
+msgid "Excludes JS/CSS Files when combine in one file."
+msgstr ""
+
+#: includes/menu-pages.php:333
+msgid ""
+"Sometimes there are certain cases where a particular js/css file you don't "
+"want to combine. Please enter file names per line to exclude; e.g. "
+"<code>autocomplete.js</code>;<code>autocomplete.css</code> OR for same file "
+"names use <code>myplugin/js/script.js</code>;<code>myplugin/css/style.css</"
+"code>."
+msgstr ""
+
+#: includes/menu-pages.php:335
+msgid ""
+"<strong>Note:</strong> please remember that each file name must be per line."
+msgstr ""
+
+#: includes/menu-pages.php:336
+msgid "Max url length to split combined js/css urls"
+msgstr ""
+
+#: includes/menu-pages.php:337
+msgid ""
+"When GD Booster combines javascript file urls into one combined js url and "
+"css file urls into one combined css url, the combined url length becomes "
+"larger. Extremely long URLs are usually a mistake. URLs over 2,000 "
+"characters will not work in the most popular web browser. Although the "
+"specification of the HTTP protocol does not specify any maximum length of "
+"urls, practical limits are imposed by web browser and server software."
+msgstr ""
+
+#: includes/menu-pages.php:340
+msgid "250 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:341
+msgid "500 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:342
+msgid "750 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:343
+msgid "1000 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:344
+msgid "1250 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:345
+msgid "1500 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:346
+msgid "1750 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:347
+msgid "2000 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:348
+msgid "2250 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:349
+msgid "2500 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:350
+msgid "2750 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:351
+msgid "3000 Characters"
+msgstr ""
+
+#: includes/menu-pages.php:353
+msgid ""
+"<strong>@see: </strong><a href=\"http://stackoverflow.com/questions/7724270/"
+"max-size-of-url-parameters-in-get#answers\" target=\"_blank\">www."
+"stackoverflow.com/questions/7724270/max-size-of-url-parameters-in-"
+"get#answers</a> & <a href=\"http://www.boutell.com/newfaq/misc/urllength.html"
+"\" target=\"_blank\">www.boutell.com/newfaq/misc/urllength.html</a>"
+msgstr ""
+
+#: includes/menu-pages.php:362
+msgid "Save All Changes"
+msgstr ""
+
+#: includes/share.php:203
+msgid "Unable to determine cache directory location."
+msgstr ""
+
+#: includes/share.php:1308 includes/share.php:1402
+msgid ""
+"The `options` property w/ a `cache_max_age` key is not defined in this class."
+msgstr ""
+
+#: includes/share.php:1323
+#, php-format
+msgid "Unable to delete files. Rename failure on directory: `%1$s`."
+msgstr ""
+
+#: includes/share.php:1340 includes/share.php:1453 includes/share.php:1516
+#, php-format
+msgid "Unable to delete file: `%1$s`."
+msgstr ""
+
+#: includes/share.php:1346 includes/share.php:1459 includes/share.php:1522
+#, php-format
+msgid "Unable to delete dir: `%1$s`."
+msgstr ""
+
+#: includes/share.php:1353 includes/share.php:1436 includes/share.php:1466
+#, php-format
+msgid "Unable to delete files. Rename failure on tmp directory: `%1$s`."
+msgstr ""
+
+#: includes/share.php:1508 includes/share.php:1529
+#, php-format
+msgid ""
+"Unable to delete all files/dirs. Rename failure on tmp directory: `%1$s`."
+msgstr ""
+
+#: includes/share.php:1534
+#, php-format
+msgid "Unable to delete directory: `%1$s`."
+msgstr ""
+
+#: includes/share.php:1555
+#, php-format
+msgid "%1$s file"
+msgid_plural "%1$s files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/share.php:1569
+#, php-format
+msgid "%1$s directory"
+msgid_plural "%1$s directories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/share.php:1583
+#, php-format
+msgid "%1$s file/directory"
+msgid_plural "%1$s files/directories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/share.php:1614
+msgid "Invalid hook."
+msgstr ""
+
+#: includes/wp-php53.php:31
+#, php-format
+msgid ""
+"<strong>%1$s is NOT active; %1$s requires PHP v5.3 (or higher).</strong>"
+msgstr ""
+
+#: includes/wp-php53.php:32
+#, php-format
+msgid "You're currently running <code>PHP v%1$s</code>."
+msgstr ""
+
+#: includes/wp-php53.php:33
+msgid ""
+"A simple update is necessary. Please ask your web hosting company to do this "
+"for you."
+msgstr ""
+
+#: includes/wp-php53.php:34
+#, php-format
+msgid "To remove this message, please deactivate %1$s."
+msgstr ""

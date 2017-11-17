@@ -1,0 +1,145 @@
+v1.1.0
+Backward compatibility for multibyte string functions - CHANGED
+AYI widget related functions moved to events plugin - CHANGED
+Updates and licencing now uses WP Easy Updates - CHANGED
+Mobile menu sub items now open on main text click and not just arrow click - CHANGED
+Listing preview shows incorrect date format - FIXED
+
+v1.0.9
+bbPress search box not working - FIXED
+Sidebar not get displayed in buddypress Activity page - FIXED
+
+v1.0.8
+GD lists templates removed to make it compatible with other themes - CHANGED
+AYI shortcode added - ADDED
+structured data tags - ADDED
+Upgraded TGM_Plugin_Activation class - CHANGED
+Custom fields not working in listings page - FIXED
+Author template file - ADDED
+Google font using http instead of https - FIXED
+GD Lists compatibility - ADDED
+
+v1.0.7
+Reviews template can be overridden via child theme - ADDED
+Anonymous functions converted to normal functions - CHANGED
+Filter added to modify recent activity objects - ADDED
+Facebook share popup not working properly - FIXED
+Detail page google static maps broken - FIXED
+BuddyPress Bookmark tab visibility setting not working - FIXED
+Undefined activity notices in wp admin - FIXED
+Recurring event date not being displayed correctly - FIXED
+Multisite dynamic styles not saving - FIXED
+
+v1.0.6
+RTL language support added - ADDED
+Unapproved comments visible in recent activity - FIXED
+Location switcher can be rendered twice in mobile menu - FIXED
+Share review links not linking to comments - FIXED
+Filter added to display share review link for review authors - ADDED
+listing-listview.php template updated for double pinpoint/fav bug - FIXED
+get_currentuserinfo() Depreciated and removed/changed - FIXED
+Share review popup bug fixes - FIXED
+
+v1.0.5
+With multi ratings the comment sorting is reversed then selected under settings -> discussion - FIXED
+The category description is not responsive - FIXED
+Event thumbnail not working - FIXED
+Safari lightbox z-index bug - FIXED
+Added missing geodir_after_favorite_html hook - ADDED
+New update licence system implemented - CHANGED
+
+v1.0.4
+blog-page.php using page sidebar instead of blog listing sidebar - FIXED
+Header search button not aligned correctly - FIXED
+Business owner popup not working properly when user links disabled- FIXED
+Option added to let normal users comment on reviews - ADDED
+Search button broken - FIXED
+
+v1.0.3
+Responsive layout bug fixes - FIXED
+Incorrect review count on User Info widget - FIXED
+Listing author can comment on reviews - ADDED
+Rating images are broken in older whoop installation - FIXED
+Review limit setting not working  - FIXED
+Business owner button added to listing detail box  - ADDED
+When header position is set to fixed full width not working  - FIXED
+Removed custom search filter template. Now uses GD core template - CHANGED
+structure data review missing date - FIXED
+Filters added to disable detail page header buttons like write a review, add photo etc - ADDED
+The "add photo" button does not adhere to the price package image limit - FIXED
+Trashed posts appearing on YNRA widget - FIXED
+Some translation strings not working - FIXED
+In listing search form spinner icon customized with font-awesome spinner – CHANGED
+geodir_listing_after_pinpoint action missing in listview - FIXED
+removed listing-success template - REMOVED
+replace date function with date_i18n - CHANGED
+woocommerce plugin compatibility styles added - ADDED
+Homepage settings warning updated - CHANGED
+
+v1.0.2
+If buddypress not installed Whoop can throw an error - FIXED
+
+v1.0.1
+Login/signup urls changed to new GD function geodir_login_url() - CHANGED
+
+v1.0.0
+Images on mobile not showing up - FIXED
+Uploaded Images cropped and zoomed - FIXED
+Added a filter to change ROTD excerpt length - FIXED
+Event What/Why part disabled by default to prevent duplicate content - FIXED
+Removed custom compliments page template. Uses plugin template now - CHANGED
+Added some hooks to override some part of compliments design - ADDED
+Filter added to disable contact info below maps - ADDED
+'Add listing' link hardcoded in detail page - FIXED
+Menu Font Settings do not work - FIXED
+Avatar links to the member page are inconsistent - FIXED
+Link added for author on blog post page - CHANGED
+Listing listview address setting not working properly - FIXED
+
+v0.0.3
+Whoop will not autoupdate from next version release - ADDED
+Pages have full width by default - FIXED
+Empty space bug on mobile screen - FIXED
+share buttons not visible on mobile screen - FIXED
+Dynamic styles sheet auto saves on theme update - FIXED
+All widgets changed from PHP4 style constructors to PHP5 __construct, for WordPress 4.3 - CHANGED
+Styles saved on multisite take affect on all blogs - FIXED
+Option added to enable/disable event reviews - ADDED
+Pictures uploaded stretched - FIXED
+Whoop Carousal photos are clickable now - ADDED
+The length of the tags is causing screen expansion on iPhone - FIXED
+Multirating compatibility issues on events - FIXED
+
+v0.0.2
+BuddyPress signup redirection bug - FIXED
+Header box shadow bug for custom bg color - FIXED
+Photos page has no 'Go back' link - FIXED
+Fixed header setting option - ADDED
+write a review, add photo buttons hidden of non logged users - FIXED
+Bug with mobile menu not showing dropdown in chrome browser - FIXED
+Your next review widget now supports custom post types - ADDED
+Write a review button scroll not working when review tab not active - FIXED
+Some buttons not using color from settings - FIXED
+Added options to set header button colors and borders - ADDED
+Logout redirect to default WordPress login page - FIXED
+Fatal error thrown when Friends component not active - FIXED
+Popular post widget not displaying correctly - FIXED
+Listing page white space bug - FIXED
+Warning: Illegal string offset 'url' - FIXED
+YNRA widget multirating bugs - FIXED
+Whoop options customizer bugs - FIXED
+BuddyPress gravatar php notices - FIXED
+BuddyPress custom fields code refactored - CHANGED
+BuddyPress custom fields delete and create options added in settings page - ADDED
+User photos now available in the GD Attachments - ADDED
+Admin enrolled to event automatically when publishing an event - FIXED
+Non-location post types have a map on the detail page - FIXED
+setting added to enable/disable bbPress header on forum replies - ADDED
+
+
+v0.0.0
+PHP notice "bbp_setup_current_user was called incorrectly." - FIXED
+Main button top shadow changed as it looked out of place - CHANGED
+Reduced the number of DB update queries by replacing "friends_get_friend_count_for_user" with our own function "whoop_get_friend_count_for_user" - CHANGED
+Added ajax loader spinner to your next review awaits widget - ADDED
+Compatibility changes for rating manager plugin - ADDED

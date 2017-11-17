@@ -1,0 +1,749 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory Review Rating 1.4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-12 15:52+0100\n"
+"PO-Revision-Date: 2017-10-12 15:52+0100\n"
+"Last-Translator: Stiofan <info@geotheme.com>\n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2;esc_attr_e;esc_attr__\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:124
+msgid "Least Images"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:125
+msgid "Highest Images"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:129
+msgid "Lowest Reviews"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:130
+msgid "Highest Reviews"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:184
+msgid "Please select overall rating Off image."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:185
+msgid "Please select overall rating on image."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:186
+msgid "Please select Overall rating half image."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:187
+msgid "Please enter"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:188
+#: geodir_reviewrating_template_functions.php:942
+#: geodir_reviewrating_template_functions.php:947
+msgid "Score text"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:189
+#: geodir_reviewrating_template_functions.php:1025
+#: geodir_reviewrating_template_functions.php:1030
+msgid "Star Text"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:190
+msgid "Please enter Title."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:191
+msgid "Do you want to delete this rating?"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:192
+msgid "Please select"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:193
+msgid "Categories."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:194
+msgid "Please select Post Type."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:195
+msgid "Please enter rating title."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:196
+msgid "Please Select multirating style."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:197
+msgid "Please select review like image."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:198
+msgid "Please select review unlike image."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:200
+msgid "Hide Images"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:201
+#: geodir_reviewrating_template_functions.php:554
+msgid "Show Images"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:203
+msgid "Hide Multi Ratings"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:204
+#: geodir_reviewrating_template_functions.php:542
+msgid "Show Multi Ratings"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:205
+msgid "Are you sure want to delete this image?"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:206
+msgid "Please enter below"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:207
+msgid "Please enter above"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:208
+msgid "Please enter only numeric value"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:209
+msgid "You are create maximum seven star rating"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:210
+msgid "Your input box number and number of star is not same"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:211
+msgid "Your input box number and number of Score text is not same"
+msgstr ""
+
+#: geodir_reviewrating_actions.php:212
+msgid "Please select rating off image."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:218
+msgid "Please type a review."
+msgstr ""
+
+#: geodir_reviewrating_actions.php:219
+msgid "Please type a reply."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:67
+msgid ""
+"<span style=\"color:#FF0000\">There was an issue determining where "
+"GeoDirectory Plugin is installed and activated. Please install or activate "
+"GeoDirectory Plugin.</span>"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:118
+msgid "Rating style"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:119
+msgid "Rating category"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:120
+msgid "Comment image"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:121
+msgid "Comment reviews"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:587
+msgid "Options"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:589
+msgid "General Settings"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:592
+msgid "Enable multirating:"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:593
+msgid "Enable multirating for comment on post."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:600
+msgid "Enable comment images upload:"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:601
+msgid "Enable upload images in comments for a post."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:608
+msgid "Enable review on comments:"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:609
+msgid "Let's users rate comments useful or not."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:616
+msgid "Enable comment list sorting:"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:617
+msgid "Enable comment list sorting."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:624
+msgid "Hide rating stars summary on detail page:"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:625
+msgid ""
+"Hide rating stars summary on the detail page sidebar. (this will break "
+"Google rich snippets for reviews)"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:632
+msgid "Disable mandatory rating star:"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:633
+msgid ""
+"Disable mandatory rating stars for multiratings. (this will allow to post "
+"review without select rating stars for multiratings.)"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:1366
+#: geodir_reviewrating_functions.php:1378
+#: geodir_reviewrating_functions.php:1390
+#: geodir_reviewrating_functions.php:1402
+#: geodir_reviewrating_functions.php:1417
+msgid "Your settings have been saved."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:1405
+msgid "Rating Style Delete successfully."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:1419
+msgid "Rating Delete successfully."
+msgstr ""
+
+#: geodir_reviewrating_functions.php:1488
+msgid "Extra Arguments"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:2791
+msgid "based on"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:2792
+msgid "reviews"
+msgstr ""
+
+#: geodir_reviewrating_functions.php:2792
+msgid "review"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:17
+msgid "Save changes"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:85
+msgid "No Photo"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:87
+#, php-format
+msgid "%d Photo"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:89
+#, php-format
+msgid "%d Photos"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:112
+msgid "more"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:177
+msgid "Latest"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:178
+#: geodir_reviewrating_template_functions.php:1792
+msgid "Oldest"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:179
+msgid "Lowest Rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:180
+msgid "Highest Rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:245
+msgid "Overall Rating:"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:271
+msgid "--Select multirating style--"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:319
+#: geodir_reviewrating_template_functions.php:440
+#: geodir_reviewrating_template_functions.php:894
+#: geodir_reviewrating_template_functions.php:901
+#: geodir_reviewrating_template_functions.php:1039
+#: geodir_reviewrating_template_functions.php:1080
+#: geodir_reviewrating_template_functions.php:1238
+#: geodir_reviewrating_template_functions.php:1401
+#: geodir_reviewrating_template_functions.php:1455
+#: geodir_reviewrating_template_functions.php:1568
+#: geodir_reviewrating_template_functions.php:1633
+msgid "rating icon"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:398
+msgid "Individually rated for:"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:508
+#: geodir_reviewrating_template_functions.php:702
+#: geodir_reviewrating_template_functions.php:1740
+#: geodir_reviewrating_template_functions.php:1754
+msgid "Approve"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:509
+#: geodir_reviewrating_template_functions.php:517
+#: geodir_reviewrating_template_functions.php:708
+#: geodir_reviewrating_template_functions.php:1741
+#: geodir_reviewrating_template_functions.php:1745
+#: geodir_reviewrating_template_functions.php:1756
+msgid "Spam"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:510
+#: geodir_reviewrating_template_functions.php:518
+#: geodir_reviewrating_template_functions.php:714
+#: geodir_reviewrating_template_functions.php:1742
+#: geodir_reviewrating_template_functions.php:1746
+#: geodir_reviewrating_template_functions.php:1757
+msgid "Trash"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:516
+#: geodir_reviewrating_template_functions.php:1744
+#: geodir_reviewrating_template_functions.php:1755
+msgid "Unapprove"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:524
+#: geodir_reviewrating_template_functions.php:1748
+msgid "Not Spam"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:525
+#: geodir_reviewrating_template_functions.php:532
+#: geodir_reviewrating_template_functions.php:1749
+#: geodir_reviewrating_template_functions.php:1752
+msgid "Delete Permanently"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:531
+#: geodir_reviewrating_template_functions.php:1751
+msgid "Restore"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:648
+msgid "Items"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:651
+msgid "Go to the first page"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:655
+msgid "Go to the previous page"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:659
+msgid "of"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:663
+msgid "Go to the next page"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:667
+msgid "Go to the last page"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:691
+msgid "All"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:696
+msgid "Pending"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:741
+msgid "You must be logged-in to like a review comment."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:746
+#, php-format
+msgid "%d people like this."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:751
+msgid "You and 1 other like this."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:751
+#, php-format
+msgid "You and %d others like this."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:753
+msgid "You like this."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:886
+msgid "Overall Rating Settings"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:891
+msgid "Overall rating image."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:900
+msgid "Overall rating image for featured listing:"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:905
+msgid "Overall rating color code"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:910
+msgid "Overall rating color code for featured listing:"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:915
+msgid "Overall rating setting score"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:922
+msgid "Overall rating score text."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:954
+#: geodir_reviewrating_template_functions.php:1325
+msgid "Update Settings"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:991
+msgid "Manage Rating Styles"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:998
+msgid "Title"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1002
+msgid "Rating score (default 5)"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1010
+msgid "Rating text"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1037
+msgid "Rating off image.&nbsp;"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1045
+msgid "Rating color"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1051
+msgid "Save Style"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1056
+#: geodir_reviewrating_template_functions.php:1212
+msgid "S No."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1057
+msgid "Style Title"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1058
+msgid "Rating Text"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1059
+msgid "Image"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1060
+msgid "Max Rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1061
+#: geodir_reviewrating_template_functions.php:1218
+msgid "Action"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1088
+#: geodir_reviewrating_template_functions.php:1282
+msgid "Edit Rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1088
+#: geodir_reviewrating_template_functions.php:1282
+msgid "Delete Rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1095
+#: geodir_reviewrating_template_functions.php:1287
+msgid "No Record Found."
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1129
+#: geodir_reviewrating_template_tags.php:23
+msgid "Create Ratings"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1137
+msgid "Select multirating style"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1141
+msgid "Rating title"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1145
+msgid "Showing method"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1148
+msgid "Show star"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1150
+msgid "Show dropdown"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1154
+msgid "Select post type"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1207
+msgid "Save Changes"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1213
+msgid "Rating Style"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1214
+msgid "Rating Title"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1215
+msgid "Rating Image"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1216
+msgid "Post Types"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1217
+msgid "Categories"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1307
+msgid "Manage Like / Unlike Icons"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1313
+msgid "Review like image"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1314
+msgid "like icon"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1318
+msgid "Review unlike image"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1319
+msgid "unlike icon"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1350
+msgid "Drop files to upload"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1351
+msgid "Select Files"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1363
+msgid "Please drag &amp; drop the images to rearrange the order"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1393
+#, php-format
+msgid "Rate this %s (overall):"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1489
+#, php-format
+msgid "Rate this %s individually for:"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1547
+msgid "You can rate the area"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1552
+#: geodir_reviewrating_template_functions.php:1597
+msgid "Rate this area:"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1775
+msgid "Show all post types"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1789
+msgid "Sort :"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1791
+msgid "Newest"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1793
+msgid "Lowest rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1794
+msgid "Highest rating"
+msgstr ""
+
+#: geodir_reviewrating_template_functions.php:1798
+msgid "Filter"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:11
+msgid "MultiRatings"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:14
+msgid "General"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:17
+msgid "Overall Rating"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:20
+msgid "Rating Styles"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:31
+msgid "Reviews <span id=\"\">"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:34
+msgid "All ("
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:37
+msgid "Pending ("
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:40
+msgid "Approve ("
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:43
+msgid "Spam ("
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:46
+msgid "Trash ("
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:143
+msgid "Allowed Files"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:163
+#, php-format
+msgid "You have reached your upload limit of %s images."
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:164
+#, php-format
+msgid "You may only upload total %s images."
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:165
+#, php-format
+msgid "You may only upload another %s images."
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:166
+#, php-format
+msgid "File size error : You tried to upload a image over %s"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:167
+#, php-format
+msgid "File type error. Allowed image types: %s"
+msgstr ""
+
+#: geodir_reviewrating_template_tags.php:168
+msgid "Remove"
+msgstr ""

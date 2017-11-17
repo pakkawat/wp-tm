@@ -1,0 +1,143 @@
+/* admin style */
+.gd-tab-content .franchise .inner_content_tab_main {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border: medium none;
+    border-radius: 0;
+    margin: 0;
+    min-height: inherit;
+    overflow: visible;
+    padding: 0;
+}
+.misc-franchise-section {
+    padding: 6px 10px 8px;
+}
+#geodir_franchise_admin_field.hide-if-js {
+    display: block;
+}
+body .gd-ajax-spinner {
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-image: url(../../geodirectory/geodirectory-assets/images/loading.gif);
+}
+body .gd-ajax-spinner > * {
+    opacity: .6;
+    filter: alpha(opacity=60);
+}
+.gd-franchise-form #geodir-add-listing-submit .geodir_message_note {
+    display: none;
+}
+
+/* detail page franchises tab */
+#gd_tab_franchisesTab .geodir_location_listing {
+    clear: both
+}
+#gd_tab_franchisesTab .geodir_category_list_view li {
+    margin-left: 0
+}
+#gd_tab_franchisesTab .geodir-entry-header {
+    border-bottom: none
+}
+#gd_tab_franchisesTab .geodir_category_list_view li .geodir-content p {
+    margin-bottom: 0;
+    line-height: 17px
+}
+#gd_tab_franchisesTab .geodir_category_list_view header.geodir-entry-header {
+    padding-bottom: .5em
+}
+#gd_tab_franchisesTab a.geodir-viewall-link {
+    text-align: right;
+    display: block;
+    margin-top: 5px;
+    margin-right: 5px
+}
+#gd_tab_franchisesTab .geodir_category_list_view li.geodir-listview {
+    margin-bottom: 10px
+}
+#gd_tab_franchisesTab .geodir_category_list_view li.geodir-listview header.geodir-entry-header,
+#gd_tab_franchisesTab .geodir_category_list_view li.geodir-listview footer.geodir-entry-meta {
+    padding: 0;
+    margin: 0;
+    border: none
+}
+#gd_tab_franchisesTab .geodir_category_list_view li.geodir-listview .geodir-entry-content p {
+    margin: 0
+}
+.geodir-tabs-content.entry-content #gd_tab_franchisesTab li {
+    margin: auto;
+    margin-bottom: 15px
+}
+
+/* add listing */
+#gd_franchise_cost_row > span {
+    display: block;
+    margin-bottom: 10px
+}
+#gd_franchise_btn_row {
+    text-align: center;
+    margin-top: 5px;
+}
+/* front-end */
+.gd-frm-franchise-s .geodir_price_package_row,
+.gd-frm-franchise-s #geodir_coupon_code_row,
+.gd-frm-franchise-s #geodir_claimed_row,
+.gd-frm-franchise-s #gdfi_import_url,
+.gd-frm-franchise-s #gd_facebook_import,
+.gd-frm-franchise-s > #modal-loading  {
+    display: none !important;
+}
+/* back-end */
+.gd-frm-franchise-s #geodir_franchise_admin_field,
+.gd-frm-franchise-s #geodir_post_package_setting,
+.gd-frm-franchise-s #geodir_claim_listing_information,
+.gd-frm-franchise-s #geodir_listing_transaction,
+.gd-frm-franchise-s #formatdiv,
+.gd-hidden {
+	visibility: hidden !important;
+	height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	left: -9999 !important;
+	position: absolute !important;
+	width: 0 !important;
+}
+.gd-franchise-form .gd-franchise-msg, .gd-frm-franchise-s .gd-franchise-msg {
+	padding: 9px 15px 10px 15px;
+	margin: 7px 0;
+	line-height: normal;
+	clear: both;
+	text-align: center;
+}
+#post.gd-franchise-form .gd-franchise-msg {
+	margin: 12px;
+	padding: 7px 10px;
+}
+.gd-franchise-form .gd-franchise-msg a {
+	margin-right: 7px;
+}
+.gd-franchise-form .gd-franchise-msg.gd-franchise-msg-success {
+	border: 1px solid #46b450;
+	border-left-width: 4px;
+}
+.gd-franchise-form .gd-franchise-msg.gd-franchise-msg-error {
+	border: 1px solid #d70000;
+	border-left-width: 4px;
+}
+.gd-franchise-msg.gd-franchise-msg-success font,
+.gd-franchise-msg.gd-franchise-msg-error font {
+	clear: both;
+	display: block;
+	margin-bottom: 4px
+}
+.gd-franchise-form  #geodir_img_duplicate_row {
+	padding-top: 0;
+	margin-bottom: 10px;
+	text-align: right;
+}
+#post #geodir_post_images.postbox .geodir_form_row{
+	padding: 10px 10px 12px 10px!important;
+	clear: both;
+	border-top: 1px solid #ddd;
+	background: #f5f5f5;
+	margin: 0;
+}

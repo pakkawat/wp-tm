@@ -1,0 +1,51 @@
+/* alternative fix for chosen not supported on mobile device */
+.gd-chosen-no-support .geodir_link_cpt_business_chosen_div {
+    clear: both;
+    float: none !important;
+    padding: 7px 0 !important;
+    width: 100% !important;
+    display: block !important;
+    opacity: 1 !important;
+    max-width: 480px;
+}
+.gd-chosen-no-support .gd-cpt-no-chosen-search,
+.gd-chosen-no-support .gd-cpt-results select {
+    display: block;
+    margin: 3px 0;
+    width: 100%;
+    float: none;
+}
+.gd-chosen-no-support .gd-cpt-no-chosen-search {
+    padding-right: 25px;
+}
+.gd-chosen-no-support .gd-cpt-results select {
+    padding: 0 2px;
+}
+.gd-chosen-no-support .gd-cpt-results .chosen-search {
+    position: relative;
+}
+.gd-chosen-no-support .gd-cpt-results .gd-cpt-loader {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+}
+.gd-chosen-no-support .gd-cpt-results select option {
+    padding: 6px;
+}
+.gd-chosen-no-support select.gd-cpt-select-list {
+    height: auto!important;
+    min-height: 35px!important;
+    margin-top: -2px !important;
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: 0;
+    border-color: #5b9dd9;
+    -webkit-box-shadow: 0 0 2px rgba(30,140,190,.8);
+    box-shadow: 0 0 2px rgba(30,140,190,.8)
+}
+.gd-chosen-no-support #geodir_link_cpt_business_autofill {
+    float: none !important;
+    margin: 0 !important;
+    max-width: 480px !important;
+    width: 100% !important;
+}

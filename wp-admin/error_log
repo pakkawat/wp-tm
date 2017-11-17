@@ -1,0 +1,12 @@
+[08-Nov-2017 18:53:20 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/elmnl7gskvbx/public_html/wp-content/plugins/geodir_event_manager/ayi-functions.php on line 247
+[08-Nov-2017 22:32:31 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/elmnl7gskvbx/public_html/wp-content/plugins/geodir_event_manager/ayi-functions.php on line 247
+[08-Nov-2017 22:32:33 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/elmnl7gskvbx/public_html/wp-content/plugins/geodir_event_manager/ayi-functions.php on line 247
+[08-Nov-2017 22:33:11 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/elmnl7gskvbx/public_html/wp-content/plugins/geodir_event_manager/ayi-functions.php on line 247
+[16-Nov-2017 03:02:58 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/class-wp-query.php on line 1056
+[16-Nov-2017 03:03:44 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/load.php on line 942
+[16-Nov-2017 03:04:31 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/wp-db.php on line 1942
+[16-Nov-2017 03:05:17 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/class-wp-query.php on line 1112
+[16-Nov-2017 03:06:03 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/plugin.php on line 891
+[16-Nov-2017 03:07:38 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/cache.php on line 120
+[17-Nov-2017 00:05:38 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home/elmnl7gskvbx/public_html/wp-includes/plugin.php on line 891
+[17-Nov-2017 00:18:19 UTC] WP_Community_Events::maybe_log_events_response: Valid response received. Details: {"api_url":"https:\/\/api.wordpress.org\/events\/1.0\/","request_args":{"body":{"number":5,"ip":"125.25.108.0","locale":"en_US","timezone":"Asia\/Bangkok"}},"response_code":200,"response_body":{"location":{"ip":"125.25.108.0"},"events":"1 events trimmed."}}

@@ -1,0 +1,192 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory Lists 1.0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-19 12:03+0100\n"
+"PO-Revision-Date: 2017-04-19 12:03+0100\n"
+"Last-Translator: \n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2;esc_attr_e;esc_attr__\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: geodir_list_manager.php:122
+msgid ""
+"Addon requires <a href=\"https://wordpress.org/plugins/posts-to-posts/\" "
+"target=\"_blank\">Posts 2 Posts</a> plugin."
+msgstr ""
+
+#: geodir_list_manager.php:144
+msgid "<i>"
+msgstr ""
+
+#: includes/buddypress-functions.php:21 includes/gdlist-functions.php:5
+msgid "Lists"
+msgstr ""
+
+#: includes/buddypress-functions.php:55
+msgid "Sorry, no list items just yet."
+msgstr ""
+
+#: includes/buddypress-functions.php:82
+msgid "Sorry, no lists just yet."
+msgstr ""
+
+#: includes/buddypress-functions.php:146
+#, php-format
+msgid "%s's Lists"
+msgstr ""
+
+#: includes/buddypress-functions.php:170 includes/template-functions.php:363
+msgid "Oops, No listings Found!"
+msgstr ""
+
+#: includes/gdlist-functions.php:6
+msgid "List"
+msgstr ""
+
+#: includes/gdlist-functions.php:7
+msgid "Add New"
+msgstr ""
+
+#: includes/gdlist-functions.php:8
+msgid "Add New List"
+msgstr ""
+
+#: includes/gdlist-functions.php:9 includes/template-functions.php:30
+#: includes/template-functions.php:239
+msgid "Edit List"
+msgstr ""
+
+#: includes/gdlist-functions.php:10
+msgid "New List"
+msgstr ""
+
+#: includes/gdlist-functions.php:11 includes/template-functions.php:237
+msgid "View List"
+msgstr ""
+
+#: includes/gdlist-functions.php:12
+msgid "Search Lists"
+msgstr ""
+
+#: includes/gdlist-functions.php:13
+msgid "No List Found"
+msgstr ""
+
+#: includes/gdlist-functions.php:14
+msgid "No List Found In Trash"
+msgstr ""
+
+#: includes/gdlist-functions.php:20
+msgid "List post type."
+msgstr ""
+
+#: includes/gdlist-functions.php:29
+msgid "gd_list"
+msgstr ""
+
+#: includes/gdlist-functions.php:65 includes/template-functions.php:32
+msgid "Add List"
+msgstr ""
+
+#: includes/template-functions.php:58
+msgid "You don't have permission to edit this list."
+msgstr ""
+
+#: includes/template-functions.php:68
+msgid "List title required"
+msgstr ""
+
+#: includes/template-functions.php:112
+msgid "Edit List Details"
+msgstr ""
+
+#: includes/template-functions.php:115
+msgid "Update"
+msgstr ""
+
+#: includes/template-functions.php:117
+msgid "Enter List Details"
+msgstr ""
+
+#: includes/template-functions.php:118
+msgid "Create"
+msgstr ""
+
+#: includes/template-functions.php:122
+msgid "List Title"
+msgstr ""
+
+#: includes/template-functions.php:132
+msgid "List Description"
+msgstr ""
+
+#: includes/template-functions.php:143
+msgid "Note: You will be able to add items in the next page"
+msgstr ""
+
+#: includes/template-functions.php:232
+msgid "Edit Title and Desc"
+msgstr ""
+
+#: includes/template-functions.php:240 includes/template-functions.php:251
+#: includes/template-functions.php:256
+msgid "All Lists"
+msgstr ""
+
+#: includes/template-functions.php:250 includes/template-functions.php:255
+msgid " Lists"
+msgstr ""
+
+#: includes/template-functions.php:297
+msgid "Drag and drop items to create or re-arrange your list."
+msgstr ""
+
+#: includes/template-functions.php:300
+msgid "All Your Reviews:"
+msgstr ""
+
+#: includes/template-functions.php:316
+msgid "Your List:"
+msgstr ""
+
+#: includes/template-functions.php:318
+msgid "Done"
+msgstr ""
+
+#: includes/template-functions.php:401
+#, php-format
+msgid "Lists By: %s"
+msgstr ""
+
+#: widgets/fresh-lists.php:10
+msgid "Displays \"Fresh Lists\" widget"
+msgstr ""
+
+#: widgets/fresh-lists.php:81
+msgid "More Lists"
+msgstr ""
+
+#: widgets/fresh-lists.php:85
+msgid "We don't have any lists right now"
+msgstr ""
+
+#: widgets/fresh-lists.php:119
+msgid "Number of lists to display:"
+msgstr ""

@@ -1,0 +1,415 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoDirectory BuddyPress Integration 1.2.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-12 15:34+0100\n"
+"PO-Revision-Date: 2017-10-12 15:34+0100\n"
+"Last-Translator: \n"
+"Language-Team: GeoDirectory <info@wpgeodirectory.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n:1,2;_n_noop:1,2;"
+"_nx:1,2;esc_attr_e;esc_attr__\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: gd_update.php:16
+#, php-format
+msgid ""
+"The plugin %sWP Easy Updates%s is required to check for and update some "
+"installed plugins, please install it now."
+msgstr ""
+
+#: includes/ayi-buddypress.php:17
+msgid "Events"
+msgstr ""
+
+#: includes/ayi-buddypress.php:72 includes/ayi-buddypress.php:349
+msgid "Events Attended"
+msgstr ""
+
+#: includes/ayi-buddypress.php:74 includes/ayi-buddypress.php:84
+#: includes/ayi-buddypress.php:351 includes/ayi-buddypress.php:361
+msgid "Events Submitted"
+msgstr ""
+
+#: includes/ayi-buddypress.php:76 includes/ayi-buddypress.php:353
+msgid "Events Sounds Cool"
+msgstr ""
+
+#: includes/ayi-buddypress.php:78 includes/ayi-buddypress.php:355
+msgid "Events Attending"
+msgstr ""
+
+#: includes/ayi-buddypress.php:83 includes/ayi-buddypress.php:360
+msgid "Past Events"
+msgstr ""
+
+#: includes/ayi-buddypress.php:85 includes/ayi-buddypress.php:245
+#: includes/ayi-buddypress.php:254 includes/ayi-buddypress.php:289
+#: includes/ayi-buddypress.php:362
+msgid "Sounds Cool"
+msgstr ""
+
+#: includes/ayi-buddypress.php:86 includes/ayi-buddypress.php:247
+#: includes/ayi-buddypress.php:253 includes/ayi-buddypress.php:291
+#: includes/ayi-buddypress.php:363
+msgid "Attending"
+msgstr ""
+
+#: includes/ayi-buddypress.php:159 includes/ayi-buddypress.php:474
+msgid "Sorry, no events just yet."
+msgstr ""
+
+#: includes/ayi-buddypress.php:161 includes/ayi-buddypress.php:476
+msgid "Find Events"
+msgstr ""
+
+#: includes/ayi-buddypress.php:168 includes/ayi-buddypress.php:310
+#: includes/ayi-buddypress.php:483
+msgid "Page"
+msgstr ""
+
+#: includes/ayi-buddypress.php:302
+msgid "No users found"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:74
+msgid ""
+"<span style=\"color:#FF0000\">There was an issue determining where "
+"GeoDirectory Plugin is installed and activated. Please install or activate "
+"GeoDirectory Plugin.</span>"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:107
+msgid "BuddyPress Integration"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:111
+#: includes/gdbuddypress_functions.php:134
+msgid "GeoDirectory BuddyPress Integration Settings"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:137
+msgid "General Settings"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:139
+msgid "Use BuddyPress registration form"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:140
+msgid ""
+"If this option is selected, the GD registration form will redirect to the "
+"BuddyPress registration from."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:147
+msgid "Redirect GD dashboard my listing link to BuddyPress profile"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:148
+msgid ""
+"If this option is selected, the my listing link from GD dashboard will "
+"redirect to listings tab of BuddyPress profile."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:155
+msgid "Redirect GD dashboard favorite link to BuddyPress profile"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:156
+msgid ""
+"If this option is selected, the favorite link from GD dashboard will "
+"redirect to favorites tab of BuddyPress profile."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:163
+msgid "Link blog author link to the BuddyPress profile link"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:164
+msgid ""
+"If this option is selected, the blog author page links to the BuddyPress "
+"profile page."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:171
+msgid "Show featured image in activity "
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:172
+msgid ""
+"If this option is selected, the featured image is displayed in activity for "
+"new listing submitted."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:181
+msgid "Member Dashboard Tab Settings"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:184
+msgid "Show listings in BuddyPress dashboard"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:185
+msgid ""
+"Choose the post types to show listing type tab under listings tab in "
+"BuddyPress dashboard"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:190
+#: includes/gdbuddypress_functions.php:202
+#: includes/gdbuddypress_functions.php:250
+#: includes/gdbuddypress_functions.php:262
+msgid "Select post types"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:196
+msgid "Show reviews in BuddyPress dashboard"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:197
+msgid ""
+"Choose the post types to show listing type tab under reviews tab in "
+"BuddyPress dashboard"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:207
+msgid "Default Layout:"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:208
+msgid ""
+"Set the default listing view for listings under the member dashboard "
+"listings tab."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:215
+msgid "Grid View (Two Columns)"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:216
+msgid "Grid View (Three Columns)"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:217
+msgid "Grid View (Four Columns)"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:218
+msgid "Grid View (Five Columns)"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:219
+msgid "List view"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:223
+msgid "Number of listings:"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:224
+msgid ""
+"Enter number of listings to display in the member dashboard listings tab."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:231
+msgid "Listing content excerpt:"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:232
+msgid "Enter listing content excerpt character count."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:241
+msgid "Post Type Activity Settings"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:244
+msgid "Track new listing activity in BuddyPress"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:245
+msgid ""
+"Choose the post types to track new listing submission in BuddyPress activity"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:256
+msgid "Track new review activity in BuddyPress"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:257
+msgid ""
+"Choose the post types to track new review submission in BuddyPress activity"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:269
+msgid "Login Redirect Settings"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:272
+msgid "Login redirection page:"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:273
+msgid "Default"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:282
+msgid "Home Page"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:291
+msgid "Profile Page"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:300
+msgid "Menu Page"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:308
+msgid "Select menu page:"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:309
+msgid ""
+"Select menu page to redirect after login. \"Menu Page\" must be enabled for "
+"\"Login redirection page\"."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:385
+msgid "Settings saved."
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:567
+msgid "Listings"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:603
+#: includes/gdbuddypress_functions.php:673
+#: includes/gdbuddypress_functions.php:690
+#: includes/gdbuddypress_functions.php:743
+#, php-format
+msgid "%s <span class=\"%s\">%s</span>"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:618
+#, php-format
+msgid "Listings <span class=\"%s\">%s</span>"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:650
+#: includes/gdbuddypress_functions.php:688
+msgid "Favorites"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:724
+msgid "Reviews"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:758
+#, php-format
+msgid "Reviews <span class=\"%s\">%s</span>"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:853
+#, php-format
+msgid "Reviews on %s"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:1088
+#, php-format
+msgid "%1$s listed a new %2$s, %3$s, on the site %4$s"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:1090
+#, php-format
+msgid "%1$s listed a new %2$s, %3$s"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:1150
+#, php-format
+msgid "%1$s commented on the %2$s, %3$s, on the site %4$s"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:1152
+#, php-format
+msgid "%1$s commented on the %2$s, %3$s"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:1794
+msgid "About Me"
+msgstr ""
+
+#: includes/gdbuddypress_functions.php:1801
+msgid "Account Settings"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:27
+msgid "Save changes"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:65
+#: includes/gdbuddypress_template_functions.php:255
+msgid "listings"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:121
+#, php-format
+msgid "There were no %s found."
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:351
+msgid "Pingback:"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:351
+msgid "(Edit)"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:376
+msgid "Post author"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:382
+#, php-format
+msgid "%1$s at %2$s"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:389
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:394
+msgid "Edit"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:398
+msgid "Reply"
+msgstr ""
+
+#: includes/gdbuddypress_template_functions.php:463
+msgid "Sort By"
+msgstr ""
+
+#: templates/reviews.php:33
+msgid "Comment navigation"
+msgstr ""
+
+#: templates/reviews.php:36
+msgid "&larr; Older Comments"
+msgstr ""
+
+#: templates/reviews.php:39
+msgid "Newer Comments &rarr;"
+msgstr ""
+
+#: templates/reviews.php:49
+msgid "Comments are closed."
+msgstr ""
