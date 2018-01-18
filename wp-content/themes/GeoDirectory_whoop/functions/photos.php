@@ -174,7 +174,7 @@ function geodir_biz_photos_gallery()
 
     ?>
     <div class="geodir-biz-header-wrap">
-        <h2 class="geodir-biz-header-title"><a href="<?php echo get_the_permalink($post->id); ?>"><?php echo get_the_title($post->id); ?></a>  >  Photos</h2>
+        <h2 class="geodir-biz-header-title"><a href="<?php echo get_the_permalink($post->id); ?>"><?php echo get_the_title($post->id); ?></a>  > <?php echo __('Photos', GEODIRECTORY_FRAMEWORK); ?></h2>
         <?php
         if (is_user_logged_in()) {
         $package_info = array();

@@ -751,10 +751,10 @@ function whoop_bp_user_lists_content()
                 $list_author = $list_post->post_author;
                 if ((get_current_user_id() == $list_author) || (current_user_can('edit_post', $pid))) { ?>
                     <a style="font-size: 10px;" href="<?php echo add_query_arg('edit-list', '1', get_permalink($pid)); ?>">
-                        <?php echo __('Edit Items', 'geodirlists'); ?>
+                        <?php echo __('Edit Items', GEODIRECTORY_FRAMEWORK); ?>
                     </a>
                 <?php } ?>
-                <a href="<?php echo $user_link; ?>lists/" class="see-all-lists"><?php echo __('See All Lists', 'geodirlists'); ?></a>
+                <a href="<?php echo $user_link; ?>lists/" class="see-all-lists"><?php echo __('See All Lists', GEODIRECTORY_FRAMEWORK); ?></a>
             </h3>
             <?php if ($content) { ?>
                 <p class="whoop-list-desc" style="border-bottom: 1px solid #e5e5e1;padding-bottom: 10px;margin-bottom: 10px;">

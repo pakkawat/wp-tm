@@ -68,19 +68,19 @@ function geodir_ayi_widget_html($post, $buttons = false, $gde = false)
                 if ($cur_user_interested == 'event_rsvp_yes') {
                     ?>
                     <p class="geodir-ayi-cur-user-interested">
-                        <?php echo __('You Replied:', 'geodir-ayi'); ?>
-                        <strong><?php echo __("I'm in!", 'geodir-ayi'); ?></strong>
+                        <?php echo __('You Replied:', 'geodirevents'); ?>
+                        <strong><?php echo __("I'm in!", 'geodirevents'); ?></strong>
                         <a href="#" data-action="remove" data-type="event_rsvp_yes" data-gde="<?php echo $gde; ?>" data-postid="<?php echo $post->ID; ?>"
-                           class="geodir-ayi-btn-rsvp"><?php echo __('Cancel', 'geodir-ayi'); ?></a>
+                           class="geodir-ayi-btn-rsvp"><?php echo __('Cancel', 'geodirevents'); ?></a>
                     </p>
                     <?php
                 } elseif ($cur_user_interested == 'event_rsvp_maybe') {
                     ?>
                     <p class="event-cur-user-interested">
-                        <?php echo __('You Replied:', 'geodir-ayi'); ?>
-                        <strong><?php echo __('Sounds Cool', 'geodir-ayi'); ?></strong>
+                        <?php echo __('You Replied:', 'geodirevents'); ?>
+                        <strong><?php echo __('Sounds Cool', 'geodirevents'); ?></strong>
                         <a href="#" data-action="remove" data-type="event_rsvp_maybe" data-gde="<?php echo $gde; ?>" data-postid="<?php echo $post->ID; ?>"
-                           class="geodir-ayi-btn-rsvp"><?php echo __('Cancel', 'geodir-ayi'); ?></a>
+                           class="geodir-ayi-btn-rsvp"><?php echo __('Cancel', 'geodirevents'); ?></a>
                     </p>
                     <?php
                 }
@@ -88,11 +88,11 @@ function geodir_ayi_widget_html($post, $buttons = false, $gde = false)
                 <ul class="geodir-ayi-inline-layout">
                     <li>
                         <a href="#" data-action="add" data-type="event_rsvp_yes" data-gde="<?php echo $gde; ?>" data-postid="<?php echo $post->ID; ?>"
-                           class="geodir-ayi-btn geodir-ayi-btn-small geodir-ayi-btn-full geodir-ayi-btn-rsvp geodir-ayi-btn-rsvp-yes"><?php echo __("I'm in!", 'geodir-ayi'); ?></a>
+                           class="geodir-ayi-btn geodir-ayi-btn-small geodir-ayi-btn-full geodir-ayi-btn-rsvp geodir-ayi-btn-rsvp-yes"><?php echo __("I'm in!", 'geodirevents'); ?></a>
                     </li>
                     <li>
                         <a href="#" data-action="add" data-type="event_rsvp_maybe" data-gde="<?php echo $gde; ?>" data-postid="<?php echo $post->ID; ?>"
-                           class="geodir-ayi-btn geodir-ayi-btn-small geodir-ayi-btn-full geodir-ayi-btn-rsvp geodir-ayi-btn-rsvp-maybe"><?php echo __("Sounds Cool", 'geodir-ayi'); ?></a>
+                           class="geodir-ayi-btn geodir-ayi-btn-small geodir-ayi-btn-full geodir-ayi-btn-rsvp geodir-ayi-btn-rsvp-maybe"><?php echo __("Sounds Cool", 'geodirevents'); ?></a>
                     </li>
                 </ul>
             <?php } ?>
@@ -100,8 +100,8 @@ function geodir_ayi_widget_html($post, $buttons = false, $gde = false)
     <?php } ?>
     <?php $count = geodir_ayi_event_interested_people_count($post->ID, $gde); ?>
     <div class="geodir-ayi-wid geodir-ayi-whois-in geodir-ayi-border-bottom">
-        <h3 class="geodir-ayi-section-title"><?php echo __('Who\'s in?', 'geodir-ayi'); ?>
-            <span><?php $text = sprintf(_n('1 response', '%s responses', $count['yes'], 'geodir-ayi'), $count['yes']);
+        <h3 class="geodir-ayi-section-title"><?php echo __('Who\'s in?', 'geodirevents'); ?>
+            <span><?php $text = sprintf(_n('1 response', '%s responses', $count['yes'], 'geodirevents'), $count['yes']);
                 echo $text; ?></span></h3>
         <?php if ($count['yes'] > 0) { ?>
             <ul class="geodir-ayi-item-list geodir-ayi-list-users">
@@ -109,13 +109,13 @@ function geodir_ayi_widget_html($post, $buttons = false, $gde = false)
             </ul>
         <?php } else { ?>
             <p class="geodir-ayi-noone">
-                <?php echo __('No one is in yet.', 'geodir-ayi'); ?>
+                <?php echo __('No one is in yet.', 'geodirevents'); ?>
             </p>
         <?php } ?>
     </div>
     <div class="geodir-ayi-wid geodir-ayi-sounds-cool">
-        <h3 class="geodir-ayi-section-title"><?php echo __('Sounds Cool', 'geodir-ayi'); ?>
-            <span><?php $text = sprintf(_n('1 response', '%s responses', $count['maybe'], 'geodir-ayi'), $count['maybe']);
+        <h3 class="geodir-ayi-section-title"><?php echo __('Sounds Cool', 'geodirevents'); ?>
+            <span><?php $text = sprintf(_n('1 response', '%s responses', $count['maybe'], 'geodirevents'), $count['maybe']);
                 echo $text; ?></span></h3>
         <?php if ($count['maybe'] > 0) { ?>
             <ul class="geodir-ayi-item-list geodir-ayi-list-users">
@@ -123,7 +123,7 @@ function geodir_ayi_widget_html($post, $buttons = false, $gde = false)
             </ul>
         <?php } else { ?>
             <p class="geodir-ayi-noone">
-                <?php echo __('No one is in yet.', 'geodir-ayi'); ?>
+                <?php echo __('No one is in yet.', 'geodirevents'); ?>
             </p>
         <?php } ?>
     </div>
@@ -418,11 +418,11 @@ function geodir_ayi_rsvp_add_or_remove($rsvp_args = array()) {
 
         update_user_meta($current_user->ID, $rsvp_args['type'], $posts);
     }
-    
+
     if (!isset($rsvp_args['gde'])) {
         $rsvp_args['gde'] = '';
     }
-    
+
     do_action('ayi_interested_update', $rsvp_args['post_id'], $current_user->ID, $rsvp_args['type'], $rsvp_args['action'], $rsvp_args['gde']);
 }
 
@@ -540,7 +540,7 @@ function geodir_ayi_event_list_content_from_post($post) {
                     </div>
                     <div class="event-author">
                         <div class="event-submitted-by">
-                            <?php echo __('Submitted by', 'geodir-ayi'); ?><br/>
+                            <?php echo __('Submitted by', 'geodirevents'); ?><br/>
                             <a href="<?php echo geodir_ayi_get_user_profile_link($user->ID); ?>">
                                 <?php echo geodir_ayi_member_name(geodir_ayi_get_current_user_name($user)); ?>
                             </a>
@@ -569,12 +569,12 @@ function geodir_ayi_event_list_content_from_post($post) {
                         if ($post->rsvp_count > 0) {
                             ?>
                             <a href="<?php echo $interested_url; ?>">
-                                <?php echo $post->rsvp_count; ?> <?php echo geodir_ayi_pluralize($post->rsvp_count, __('is interested', 'geodir-ayi'), __('are interested', 'geodir-ayi')); ?>
+                                <?php echo $post->rsvp_count; ?> <?php echo geodir_ayi_pluralize($post->rsvp_count, __('is interested', 'geodirevents'), __('are interested', 'geodirevents')); ?>
                             </a>
                             <?php
                         } else {
                             ?>
-                            <?php echo $post->rsvp_count; ?> <?php echo geodir_ayi_pluralize($post->rsvp_count, __('is interested', 'geodir-ayi'), __('are interested', 'geodir-ayi')); ?>
+                            <?php echo $post->rsvp_count; ?> <?php echo geodir_ayi_pluralize($post->rsvp_count, __('is interested', 'geodirevents'), __('are interested', 'geodirevents')); ?>
                             <?php
                         }
                         ?>

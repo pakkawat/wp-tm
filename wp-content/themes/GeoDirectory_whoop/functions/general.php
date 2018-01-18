@@ -264,7 +264,7 @@ $check_button= $post->geodir_Button_enable;
 
 if($check_button){
 
-echo "<span class='glf-button' data-glf-cuid=",$post->geodir_CUID," data-glf-ruid=",$post->geodir_RUID," data-glf-auto-open='false'>ORDER NOW</span><script src='https://www.foodbooking.com/widget/js/ewm2.js' defer async ></script>";
+echo "<span class='glf-button' data-glf-cuid=",$post->geodir_CUID," data-glf-ruid=",$post->geodir_RUID," data-glf-auto-open='false'>สั่งเลย</span><script src='https://www.foodbooking.com/widget/js/ewm2.js' defer async ></script>";
 
 }?>
 </div>

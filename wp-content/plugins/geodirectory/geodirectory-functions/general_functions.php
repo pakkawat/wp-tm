@@ -2761,7 +2761,8 @@ function geodir_comments_number( $number ) {
 		}
 	} else {    
 		if ( $number > 1 ) {
-			$output = str_replace( '%', number_format_i18n( $number ), __( '% Reviews', 'geodirectory' ) );
+			//$output = str_replace( '%', number_format_i18n( $number ), __( '% Reviews', 'geodirectory' ) );
+			$output = number_format_i18n( $number ). __( ' Reviews', 'geodirectory' );
 		} elseif ( $number == 0 || $number == '' ) {
 			$output = __( 'No Reviews', 'geodirectory' );
 		} else { // must be one
@@ -3774,7 +3775,7 @@ function geodir_popular_postview_output( $args = '', $instance = '' ) {
 			'geodir_search' => 1, 
 			'stype' => $post_type,
 			's' => '',
-			'snear' => __( 'Near:', 'geodiradvancesearch' ) . ' ' . __( 'Me', 'geodiradvancesearch' ),
+			'snear' => __( 'Near:', 'geodirectory' ) . ' ' . __( 'Me', 'geodirectory' ),
 			'sgeo_lat' => $gd_session->get( 'user_lat' ),
 			'sgeo_lon' => $gd_session->get( 'user_lon' )
 		), geodir_search_page_base_url() );

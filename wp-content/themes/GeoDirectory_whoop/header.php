@@ -174,13 +174,8 @@
           <div class="whoop-account">
               <ul class="whoop-signup-btns">
                   <li>
-                      <a href="<?php echo apply_filters('geodir_signup_reg_form_link', geodir_login_url(array('signup'=>true))); ?>" class="whoop-btn whoop-btn-primary whoop-signup-btn">
+                      <a href="<?php echo apply_filters('geodir_signup_reg_form_link', geodir_login_url()); ?>" class="whoop-btn whoop-btn-primary whoop-signup-btn">
                           <?php echo __('Sign Up', GEODIRECTORY_FRAMEWORK); ?>
-                      </a>
-                  </li>
-                  <li>
-                      <a class="whoop-login-btn" href="<?php echo geodir_login_url(); ?>">
-                          <?php echo __('Log In', GEODIRECTORY_FRAMEWORK); ?>
                       </a>
                   </li>
               </ul>
