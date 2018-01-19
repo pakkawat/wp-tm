@@ -1116,6 +1116,8 @@ if (!function_exists('register_geodir_widgets')) {
          * @todo make the image field recurring
          */
         include_once('geodirectory-widgets/geodirectory_features_widget.php');
+
+        include_once('geodirectory-widgets/tamzang_category_widget.php');
     }
 
 }
