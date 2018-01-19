@@ -142,6 +142,13 @@ function geodir_locate_template($template = '')
             }
             return $template;
             break;
+        case 'tamzang-widget-listing-listview':
+            $template = locate_template(array("geodirectory/tamzang-widget-listing-listview.php"));
+            if (!$template) {
+                $template = geodir_plugin_path() . '/geodirectory-templates/tamzang-widget-listing-listview.php';
+            }
+            return $template;
+            break;
     endswitch;
 
     return false;
