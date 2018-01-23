@@ -575,8 +575,8 @@ function tamzang_category_places_by_term($query_args)
 }
 
 //Ajax functions
-add_action('wp_ajax_geodir_bestof', 'tamzang_category_callback');
-add_action('wp_ajax_nopriv_geodir_bestof', 'tamzang_category_callback');
+add_action('wp_ajax_tamzang_category', 'tamzang_category_callback');
+add_action('wp_ajax_nopriv_tamzang_category', 'tamzang_category_callback');
 
 /**
  * Get the best of widget content using ajax.
@@ -588,7 +588,7 @@ add_action('wp_ajax_nopriv_geodir_bestof', 'tamzang_category_callback');
  */
 function tamzang_category_callback()
 {
-    check_ajax_referer('geodir-bestof-nonce', 'geodir_bestof_nonce');
+    check_ajax_referer('tamzang-category-nonce', 'tamzang_category_nonce');
     //set variables
     $post_type = strip_tags(esc_sql($_POST['post_type']));
     $post_limit = strip_tags(esc_sql($_POST['post_limit']));
@@ -623,7 +623,7 @@ function tamzang_category_callback()
         /** This filter is documented in geodirectory-widgets/geodirectory_bestof_widget.php */
         $view_all_link = apply_filters('geodir_bestof_widget_view_all_link', $view_all_link, $post_type, $term);
 
-        echo '<h3 class="bestof-cat-title">' . wp_sprintf(__('Best of %s', 'geodirectory'), $term->name) . '<a href="' . esc_url($view_all_link) . '">' . __("View all", 'geodirectory') . '</a></h3>';
+        echo '<h3 class="bestof-cat-title">' . $term->name . '<a href="' . esc_url($view_all_link) . '">' . __("View all", 'geodirectory') . '</a></h3>';
     }
     if ($excerpt_type == 'show-reviews') {
         add_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');
@@ -645,7 +645,7 @@ add_action('wp_footer', 'tamzang_category_js');
  */
 function tamzang_category_js()
 {
-    $ajax_nonce = wp_create_nonce("geodir-bestof-nonce");
+    $ajax_nonce = wp_create_nonce("tamzang-category-nonce");
     ?>
     <script type="text/javascript">
         jQuery(document).ready(function () {
@@ -683,8 +683,8 @@ function tamzang_category_js()
                 var add_location_filter = jQuery(widgetBox).find('#bestof_widget_location_filter').val();
 
                 var data = {
-                    'action': 'geodir_bestof',
-                    'geodir_bestof_nonce': '<?php echo $ajax_nonce; ?>',
+                    'action': 'tamzang_category',
+                    'tamzang_category_nonce': '<?php echo $ajax_nonce; ?>',
                     'post_type': post_type,
                     'excerpt_type': excerpt_type,
                     'post_limit': post_limit,
