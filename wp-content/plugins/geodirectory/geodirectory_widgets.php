@@ -1117,7 +1117,7 @@ if (!function_exists('register_geodir_widgets')) {
          */
         include_once('geodirectory-widgets/geodirectory_features_widget.php');
 
-        include_once('geodirectory-widgets/tamzang_category_widget.php');
+        include_once('geodirectory-widgets/tamzang_place_widget.php');
     }
 
 }

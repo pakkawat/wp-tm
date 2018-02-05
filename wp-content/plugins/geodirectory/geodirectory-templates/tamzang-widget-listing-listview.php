@@ -152,7 +152,7 @@ $grid_view_class = 'gridview_onethird ';
   					                            echo "</span>";
   				                            }
                                       do_action( 'geodir_after_favorite_html', $post->ID, 'listing');
-                                      do_action( 'geodir_listing_after_pinpoint', $post->ID ,$post);
+                                      //do_action( 'geodir_listing_after_pinpoint', $post->ID ,$post);
 
                                       ?>
                                 </div>

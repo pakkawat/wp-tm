@@ -12,7 +12,7 @@
  *
  * @since 1.3.9
  */
-class tamzang_category_widget extends WP_Widget
+class tamzang_place_widget extends WP_Widget
 {
     /**
      * Register the best of widget with WordPress.
@@ -22,10 +22,10 @@ class tamzang_category_widget extends WP_Widget
      */
     public function __construct()
     {
-        $widget_ops = array('classname' => 'tamzang_category_widget', 'description' => __('GD > Tamzang Category Widget', 'geodirectory'));
+        $widget_ops = array('classname' => 'tamzang_place_widget', 'description' => __('GD > Tamzang Place Widget', 'geodirectory'));
         parent::__construct(
-            'tamzang_category_widget', // Base ID
-            __('GD > Tamzang Category Widget', 'geodirectory'), // Name
+            'tamzang_place_widget', // Base ID
+            __('GD > Tamzang Place Widget', 'geodirectory'), // Name
             $widget_ops// Args
         );
     }
@@ -51,7 +51,7 @@ class tamzang_category_widget extends WP_Widget
          * @param string $instance ['tab_layout'] Best of widget tab layout name.
          */
         $tab_layout = empty($instance['tab_layout']) ? 'bestof-tabs-on-top' : apply_filters('bestof_widget_tab_layout', $instance['tab_layout']);
-        echo '<div class="tamzang-category-widget-layout">';
+        echo '<div class="tamzang-place-widget-layout">';
         echo $before_widget;
         $loc_terms = geodir_get_current_location_terms();
         if (!empty($loc_terms)) {
@@ -208,9 +208,9 @@ class tamzang_category_widget extends WP_Widget
         echo $before_title . $after_title;
 
         //term navigation - start
-        echo '<div class="geodir-category-list-in clearfix">';
+        echo '<div class="geodir-place-list-in clearfix">';
         echo '<div class="geodir-cat-list clearfix">';
-        echo '<ul class="geodir-popular-cat-list tamzang-category">';
+        echo '<ul class="geodir-popular-cat-list tamzang-place">';
         $final_html = '';
         $nav_html = '';
         $term_icon = geodir_get_term_icon();
@@ -287,7 +287,7 @@ class tamzang_category_widget extends WP_Widget
             if ($excerpt_type == 'show-reviews') {
                 add_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');
             }
-            tamzang_category_places_by_term($query_args);
+            tamzang_place_places_by_term($query_args);
             if ($excerpt_type == 'show-reviews') {
                 remove_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');
             }
@@ -493,7 +493,7 @@ class tamzang_category_widget extends WP_Widget
     }
 } // class geodir_bestof_widget
 
-register_widget('tamzang_category_widget');
+register_widget('tamzang_place_widget');
 
 /**
  * Display the best of widget listings using the given query args.
@@ -508,7 +508,7 @@ register_widget('tamzang_category_widget');
  *
  * @param array $query_args The query array.
  */
-function tamzang_category_places_by_term($query_args)
+function tamzang_place_places_by_term($query_args)
 {
     global $gd_session;
 
@@ -575,8 +575,8 @@ function tamzang_category_places_by_term($query_args)
 }
 
 //Ajax functions
-add_action('wp_ajax_tamzang_category', 'tamzang_category_callback');
-add_action('wp_ajax_nopriv_tamzang_category', 'tamzang_category_callback');
+add_action('wp_ajax_tamzang_place', 'tamzang_place_callback');
+add_action('wp_ajax_nopriv_tamzang_place', 'tamzang_place_callback');
 
 /**
  * Get the best of widget content using ajax.
@@ -586,9 +586,9 @@ add_action('wp_ajax_nopriv_tamzang_category', 'tamzang_category_callback');
  *
  * @return string Html content.
  */
-function tamzang_category_callback()
+function tamzang_place_callback()
 {
-    check_ajax_referer('tamzang-category-nonce', 'tamzang_category_nonce');
+    check_ajax_referer('tamzang-place-nonce', 'tamzang_place_nonce');
     //set variables
     $post_type = strip_tags(esc_sql($_POST['post_type']));
     $post_limit = strip_tags(esc_sql($_POST['post_limit']));
@@ -628,7 +628,7 @@ function tamzang_category_callback()
     if ($excerpt_type == 'show-reviews') {
         add_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');
     }
-    tamzang_category_places_by_term($query_args);
+    tamzang_place_places_by_term($query_args);
     if ($excerpt_type == 'show-reviews') {
         remove_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');
     }
@@ -636,21 +636,21 @@ function tamzang_category_callback()
 }
 
 //Javascript
-add_action('wp_footer', 'tamzang_category_js');
+add_action('wp_footer', 'tamzang_place_js');
 
 /**
  * Adds the javascript in the footer for best of widget.
  *
  * @since 1.3.9
  */
-function tamzang_category_js()
+function tamzang_place_js()
 {
-    $ajax_nonce = wp_create_nonce("tamzang-category-nonce");
+    $ajax_nonce = wp_create_nonce("tamzang-place-nonce");
     ?>
     <script type="text/javascript">
         jQuery(document).ready(function () {
             jQuery('.geodir-popular-cat-list a').on("click change", function (e) {
-                var widgetBox = jQuery(this).closest('.tamzang_category_widget');
+                var widgetBox = jQuery(this).closest('.tamzang_place_widget');
                 var loading = jQuery(widgetBox).find("#geodir-bestof-loading");
                 var container = jQuery(widgetBox).find('#geodir-bestof-places');
 
@@ -683,8 +683,8 @@ function tamzang_category_js()
                 var add_location_filter = jQuery(widgetBox).find('#bestof_widget_location_filter').val();
 
                 var data = {
-                    'action': 'tamzang_category',
-                    'tamzang_category_nonce': '<?php echo $ajax_nonce; ?>',
+                    'action': 'tamzang_place',
+                    'tamzang_place_nonce': '<?php echo $ajax_nonce; ?>',
                     'post_type': post_type,
                     'excerpt_type': excerpt_type,
                     'post_limit': post_limit,
