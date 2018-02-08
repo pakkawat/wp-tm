@@ -113,7 +113,6 @@ class tamzang_place_widget extends WP_Widget
          *
          * @param int $instance ['categ_limit'] No. of categories to display.
          */
-        $categ_limit = empty($instance['categ_limit']) ? '3' : apply_filters('bestof_widget_categ_limit', $instance['categ_limit']);
         $use_viewing_post_type = !empty($instance['use_viewing_post_type']) ? true : false;
 
         /**
@@ -149,7 +148,7 @@ class tamzang_place_widget extends WP_Widget
         $category_taxonomy = geodir_get_taxonomies($post_type);
 
         $term_args = array(
-            'hide_empty' => true,
+            'hide_empty' => false,
             'parent' => 0
         );
 
@@ -163,26 +162,6 @@ class tamzang_place_widget extends WP_Widget
         }
 
         $terms = get_terms($category_taxonomy[0], $term_args);
-
-        $term_reviews = geodir_count_reviews_by_terms();
-        $a_terms = array();
-        foreach ($terms as $term) {
-
-
-            if ($term->count > 0) {
-                if (isset($term_reviews[$term->term_id])) {
-                    $term->review_count = $term_reviews[$term->term_id];
-                } else {
-                    $term->review_count = '0';
-                }
-
-                $a_terms[] = $term;
-            }
-
-        }
-
-
-        $terms = apply_filters('bestof_widget_sort_terms', geodir_sort_terms($a_terms, 'review_count'), $a_terms);
 
         $query_args = array(
             'posts_per_page' => $post_limit,
@@ -207,6 +186,8 @@ class tamzang_place_widget extends WP_Widget
         //echo $before_title . __($title,'geodirectory') . $after_title;
         echo $before_title . $after_title;
 
+        $tamzang_categories = explode(",", $instance['tamzang_categories']);
+        //print_r($tamzang_categories);
         //term navigation - start
         echo '<div class="geodir-place-list-in clearfix">';
         echo '<div class="geodir-cat-list clearfix">';
@@ -216,21 +197,19 @@ class tamzang_place_widget extends WP_Widget
         $term_icon = geodir_get_term_icon();
         $cat_count = 0;
         if (!empty($terms)) {
-          foreach ($terms as $cat) {
-            $cat_count++;
-            if ($cat_count > $categ_limit) {
-              break;
+          foreach ($tamzang_categories as $tamzang_cat) {
+            $tc = array_search($tamzang_cat, array_column($terms, 'name'));
+            if($tc){
+              $cat = $terms[$tc];
+              $term_icon_url = !empty($term_icon) && isset($term_icon[$cat->term_id]) ? $term_icon[$cat->term_id] : '';
+              $nav_html .= '<li class="geodir-popular-cat-list"><a data-termid="' . $cat->term_id . '" href="' . get_term_link($cat, $cat->taxonomy) . '">';
+              $nav_html .= '<img alt="' . $cat->name . ' icon" style="height:20px;vertical-align:middle;" src="' . $term_icon_url . '"/> ';
+              $nav_html .= '<span class="cat-link">'.$cat->name . '</span> <span class="geodir_term_class geodir_link_span geodir_category_class_' . $post_type . '_' . $cat->term_id . '"></span></a></li>';
             }
-            $term_icon_url = !empty($term_icon) && isset($term_icon[$cat->term_id]) ? $term_icon[$cat->term_id] : '';
-            $nav_html .= '<li class="geodir-popular-cat-list"><a data-termid="' . $cat->term_id . '" href="' . get_term_link($cat, $cat->taxonomy) . '">';
-            $nav_html .= '<img alt="' . $cat->name . ' icon" style="height:20px;vertical-align:middle;" src="' . $term_icon_url . '"/> ';
-            $nav_html .= '<span class="cat-link">'.$cat->name . '</span> <span class="geodir_term_class geodir_link_span geodir_category_class_' . $post_type . '_' . $cat->term_id . '"></span></a></li>';
           }
+          $final_html .= $nav_html;
         }
-        $final_html .= $nav_html;
-        if ($terms) {
-            echo $final_html;
-        }
+        echo $final_html;
         echo '</ul>';
         echo '</div>';
         echo '</div>';
@@ -239,7 +218,13 @@ class tamzang_place_widget extends WP_Widget
         //first term listings by default - start
         $first_term = '';
         if ($terms) {
-            $first_term = $terms[0];
+            foreach ($tamzang_categories as $tamzang_cat) {
+              $tc = array_search($tamzang_cat, array_column($terms, 'name'));
+              if($tc){
+                $first_term = $terms[$tc];
+                break;
+              }
+            }
             $tax_query = array(
                 'taxonomy' => $category_taxonomy[0],
                 'field' => 'id',
@@ -317,10 +302,10 @@ class tamzang_place_widget extends WP_Widget
         $instance['title'] = strip_tags($new_instance['title']);
         $instance['post_type'] = strip_tags($new_instance['post_type']);
         $instance['post_limit'] = strip_tags($new_instance['post_limit']);
-        $instance['categ_limit'] = strip_tags($new_instance['categ_limit']);
         $instance['character_count'] = $new_instance['character_count'];
-        $instance['tab_layout'] = $new_instance['tab_layout'];
+        $instance['tab_layout'] = 'bestof-tabs-on-top';
         $instance['excerpt_type'] = $new_instance['excerpt_type'];
+        $instance['tamzang_categories'] = strip_tags($new_instance['tamzang_categories']);
         if (isset($new_instance['add_location_filter']) && $new_instance['add_location_filter'] != '')
             $instance['add_location_filter'] = strip_tags($new_instance['add_location_filter']);
         else
@@ -344,23 +329,23 @@ class tamzang_place_widget extends WP_Widget
                 'title' => '',
                 'post_type' => '',
                 'post_limit' => '5',
-                'categ_limit' => '3',
                 'character_count' => '20',
                 'add_location_filter' => '1',
                 'tab_layout' => 'bestof-tabs-on-top',
                 'excerpt_type' => 'show-desc',
-                'use_viewing_post_type' => ''
+                'use_viewing_post_type' => '',
+                'tamzang_categories' => ''
             )
         );
         $title = strip_tags($instance['title']);
         $post_type = strip_tags($instance['post_type']);
         $post_limit = strip_tags($instance['post_limit']);
-        $categ_limit = strip_tags($instance['categ_limit']);
         $character_count = strip_tags($instance['character_count']);
-        $tab_layout = strip_tags($instance['tab_layout']);
+        $tab_layout = 'bestof-tabs-on-top';
         $excerpt_type = strip_tags($instance['excerpt_type']);
         $add_location_filter = strip_tags($instance['add_location_filter']);
         $use_viewing_post_type = isset($instance['use_viewing_post_type']) && $instance['use_viewing_post_type'] ? true : false;
+        $tamzang_categories = strip_tags($instance['tamzang_categories']);
 
         ?>
         <p>
@@ -417,11 +402,11 @@ class tamzang_place_widget extends WP_Widget
         <p>
 
             <label
-                for="<?php echo $this->get_field_id('categ_limit'); ?>"><?php _e('Number of categories:', 'geodirectory');?>
+                for="<?php echo $this->get_field_id('tamzang_categories'); ?>"><?php _e('Categories:', 'geodirectory');?>
 
-                <input class="widefat" id="<?php echo $this->get_field_id('categ_limit'); ?>"
-                       name="<?php echo $this->get_field_name('categ_limit'); ?>" type="text"
-                       value="<?php echo esc_attr($categ_limit); ?>"/>
+                <input class="widefat" id="<?php echo $this->get_field_id('tamzang_categories'); ?>"
+                       name="<?php echo $this->get_field_name('tamzang_categories'); ?>" type="text"
+                       value="<?php echo esc_attr($tamzang_categories); ?>"/>
             </label>
         </p>
 
@@ -431,26 +416,6 @@ class tamzang_place_widget extends WP_Widget
                 <input class="widefat" id="<?php echo $this->get_field_id('character_count'); ?>"
                        name="<?php echo $this->get_field_name('character_count'); ?>" type="text"
                        value="<?php echo esc_attr($character_count); ?>"/>
-            </label>
-        </p>
-        <p>
-            <label
-                for="<?php echo $this->get_field_id('tab_layout'); ?>"><?php _e('Tab Layout:', 'geodirectory');?>
-
-                <select class="widefat" id="<?php echo $this->get_field_id('tab_layout'); ?>"
-                        name="<?php echo $this->get_field_name('tab_layout'); ?>">
-
-                    <option <?php if ($tab_layout == 'bestof-tabs-on-top') {
-                        echo 'selected="selected"';
-                    } ?> value="bestof-tabs-on-top"><?php _e('Tabs on Top', 'geodirectory'); ?></option>
-                    <option <?php if ($tab_layout == 'bestof-tabs-on-left') {
-                        echo 'selected="selected"';
-                    } ?> value="bestof-tabs-on-left"><?php _e('Tabs on Left', 'geodirectory'); ?></option>
-                    <option <?php if ($tab_layout == 'bestof-tabs-as-dropdown') {
-                        echo 'selected="selected"';
-                    } ?>
-                        value="bestof-tabs-as-dropdown"><?php _e('Tabs as Dropdown', 'geodirectory'); ?></option>
-                </select>
             </label>
         </p>
 
