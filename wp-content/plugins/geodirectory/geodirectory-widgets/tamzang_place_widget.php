@@ -190,7 +190,7 @@ class tamzang_place_widget extends WP_Widget
         //print_r($tamzang_categories);
         //term navigation - start
         echo '<div class="geodir-place-list-in clearfix">';
-        echo '<div class="geodir-cat-list clearfix">';
+        echo '<div class="geodir-cat-list clearfix" style="border-bottom: 1px solid #ccc;">';
         echo '<ul class="geodir-popular-cat-list tamzang-place">';
         $final_html = '';
         $nav_html = '';
@@ -250,7 +250,7 @@ class tamzang_place_widget extends WP_Widget
                } ?>">
         <input type="hidden" id="bestof_widget_char_count" name="bestof_widget_char_count"
                value="<?php echo $character_count; ?>">
-        <div class="geo-bestof-contentwrap geodir-tabs-content" style="position: relative; z-index: 0;">
+        <div class="tamzang-contentwrap" style="position: relative; z-index: 0;">
             <p id="geodir-bestof-loading" class="geodir-bestof-loading"><i class="fa fa-cog fa-spin"></i></p>
             <?php
             echo '<div id="geodir-bestof-places">';
@@ -267,7 +267,8 @@ class tamzang_place_widget extends WP_Widget
                  */
                 $view_all_link = apply_filters('geodir_bestof_widget_view_all_link', $view_all_link, $post_type, $first_term);
 
-                echo '<h3 class="bestof-cat-title">' . $first_term->name . '<a href="' . esc_url($view_all_link) . '">' . __("View all", 'geodirectory') . '</a></h3>';
+                //echo '<h3 class="bestof-cat-title">' . $first_term->name . '<a href="' . esc_url($view_all_link) . '">' . __("View all", 'geodirectory') . '</a></h3>';
+                echo '<a href="' . esc_url($view_all_link) . '"><h3 class="tamzang-cat-title">' . $first_term->name . '</h3></a>';
             }
             if ($excerpt_type == 'show-reviews') {
                 add_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');
@@ -588,7 +589,8 @@ function tamzang_place_callback()
         /** This filter is documented in geodirectory-widgets/geodirectory_bestof_widget.php */
         $view_all_link = apply_filters('geodir_bestof_widget_view_all_link', $view_all_link, $post_type, $term);
 
-        echo '<h3 class="bestof-cat-title">' . $term->name . '<a href="' . esc_url($view_all_link) . '">' . __("View all", 'geodirectory') . '</a></h3>';
+        //echo '<h3 class="bestof-cat-title">' . $term->name . '<a href="' . esc_url($view_all_link) . '">' . __("View all", 'geodirectory') . '</a></h3>';
+        echo '<a href="' . esc_url($view_all_link) . '"><h3 class="tamzang-cat-title">' . $term->name . '</h3></a>';
     }
     if ($excerpt_type == 'show-reviews') {
         add_filter('get_the_excerpt', 'tamzang_best_of_show_review_in_excerpt');

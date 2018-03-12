@@ -480,6 +480,9 @@ function geodir_edit_post_link()
             $editlink = geodir_getlink($postlink, array('pid' => $post_id), false);
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . esc_url($editlink) . '">' . __('Edit this Post', 'geodirectory') . '</a></p>';
         }
+        else{
+          echo ' <p class="edit_link"><i class="fa fa-pencil"></i> ' . do_shortcode( '[popup_anything id="2157"]' ) . '</p>';
+        }
     }// end of if, if its a preview or not
     /**
      * This is called after the edit post link html in the function geodir_edit_post_link()

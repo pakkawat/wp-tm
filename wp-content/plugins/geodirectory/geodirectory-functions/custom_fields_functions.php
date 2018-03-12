@@ -1262,7 +1262,12 @@ function geodir_get_custom_fields_html($package_id = '', $default = 'custom', $p
         $name = $val['name'];
         $type = $val['type'];
         $is_default = $val['is_default'];
-
+        //echo $name.'---<br>';
+        if (!isset($_REQUEST['pid']) && $_REQUEST['pid'] == ''){
+          if($name == 'geodir_timing' || $name == 'geodir_contact' || $name == 'geodir_website' || $name == 'geodir_twitter' || $name == 'geodir_facebook' || $name == 'geodir_special_offers'){
+            continue;
+          }
+        }
         /* field available to site admin only for edit */
         $for_admin_use = isset($val['for_admin_use']) && (int)$val['for_admin_use'] == 1 ? true : false;
         if ($for_admin_use && !is_super_admin()) {

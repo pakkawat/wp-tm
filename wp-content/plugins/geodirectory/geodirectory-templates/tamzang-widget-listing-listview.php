@@ -24,7 +24,7 @@ global $gridview_columns_widget, $gd_session;
 // }
 $grid_view_class = 'gridview_onethird ';
 ?>
-    <ul class="geodir_category_list_view whoop-view clearfix">
+    <ul class="geodir_category_list_view whoop-view clearfix tamzang-cat-list-wrapper">
         <?php
         if (!empty($widget_listings)) {
             /** This action is documented in geodirectory-templates/listing-listview.php */
@@ -49,13 +49,13 @@ $grid_view_class = 'gridview_onethird ';
                 <li class="clearfix <?php echo 'geodir-gridview ' . $grid_view_class; ?>
                   <?php if ($post_view_class) {
                     echo $post_view_class;
-                } ?>"
+                } ?> tamzang-place-arrange-30" style="border:none;"
                 <?php
                 echo " data-post-id='$post->ID' ";
                 /** This action is documented in geodirectory-templates/listing-listview.php */
                 do_action('geodir_listview_inside_li', $post, 'widget');
                 ?>>
-                    <article class="geodir-category-listing">
+                    <article class="geodir-category-listing tamzang-place-border">
                         <div class="geodir-post-img">
                             <?php if ($fimage = geodir_show_featured_image($post->ID, 'list-thumb', true, false, $post->featured_image)) { ?>
                                 <a href="<?php the_permalink(); ?>"><?php echo $fimage; ?></a>
