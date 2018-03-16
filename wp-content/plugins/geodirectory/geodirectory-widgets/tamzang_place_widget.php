@@ -42,6 +42,8 @@ class tamzang_place_widget extends WP_Widget
      */
     public function widget($args, $instance)
     {
+        if ( wp_is_mobile() )
+          return;
         extract($args);
         /**
          * Filter the best of widget tab layout.
