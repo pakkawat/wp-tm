@@ -21,6 +21,6 @@ function custom_add_form_tag_buttonLatLong() {
 function custom_buttonLatLong_tag_handler( $tag ) {
   $scriptSrc = get_stylesheet_directory_uri() . '/js/getLaLong.js';
   wp_enqueue_script( 'myhandle', $scriptSrc , array(), '1.0',  false );
-  return '<button id="myLatLong">Click me</button><p id="geoStatus"></p>';
+  return '<div style="width: 130px;"><button id="myLatLong">แนบที่อยู่</button><div id="geoStatus" style="float: right;"></div></div>';
 }
 ?>

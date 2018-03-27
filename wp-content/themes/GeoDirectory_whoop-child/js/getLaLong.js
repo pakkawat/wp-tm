@@ -14,12 +14,14 @@ jQuery(document).ready(function($){
         };
         Latphp = position.coords.latitude;
         Lngphp = position.coords.longitude;
-        console.log("Lat is"+Latphp);
-        console.log("Long is"+Lngphp);
+        //console.log("Lat is"+Latphp);
+        //console.log("Long is"+Lngphp);
 
-        document.getElementById("mylatitude").value = Latphp;
-        document.getElementById("mylongitude").value = Lngphp;
-        $('#geoStatus').prepend('<img id="errorImg" src="https://www.tamzang.com/Test02/wp-content/themes/GeoDirectory_whoop-child/js/pass.png" /> ')
+        //document.getElementById("mylatitude").value = Latphp;
+        //document.getElementById("mylongitude").value = Lngphp;
+        $("#mylatitude").val(Latphp);
+        $("#mylongitude").val(Lngphp);
+        $('#geoStatus').html('<img src="https://www.tamzang.com/Test02/wp-content/themes/GeoDirectory_whoop-child/js/pass.png" /> ')
         }, function() {
         //handleLocationError(true, infoWindow, map.getCenter());
       });
@@ -28,7 +30,7 @@ jQuery(document).ready(function($){
 
       $("#geoStatus").css("color", "red") ;
       $('#geoStatus').html('Browser doesn\'t support Geolocation');
-      $('#geoStatus').prepend('<img id="errorImg" src="https://www.tamzang.com/Test02/wp-content/themes/GeoDirectory_whoop-child/js/error.png" /> ')
+      $('#geoStatus').prepend('<img src="https://www.tamzang.com/Test02/wp-content/themes/GeoDirectory_whoop-child/js/error.png" /> ')
     }
   });
 

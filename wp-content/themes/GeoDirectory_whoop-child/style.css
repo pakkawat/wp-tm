@@ -131,7 +131,7 @@ header nav {
   justify-content: center;
 }
 
-.geodir_price_package_row {display: none;}
+.geodir_price_package_row,.whoop-share-button {display: none;}
 #geodir_post_tags_row,
 #geodir_post_latitude_row,
 #geodir_post_longitude_row {
