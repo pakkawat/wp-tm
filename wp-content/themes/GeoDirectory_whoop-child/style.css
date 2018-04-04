@@ -12,6 +12,9 @@ Tags: left-sidebar, right-sidebar, one-column, two-columns, theme-options, custo
 Update URL: https://wpgeodirectory.com
 Update ID: 65902
 */
+body{
+  background-color:#f5f5f1;
+}
 .tamzang_header{
   /* url("images/test.jpg");*/
   padding-top: 30px;
@@ -139,3 +142,8 @@ header nav {
 }
 
 .paoc-popup-modal-cnt{ background-color: #FFF; padding: 20px;}
+
+.pagination .active a,.pagination .active a:hover{
+  background-color:#ed6d62;
+  border-color:#ed6d62;
+}

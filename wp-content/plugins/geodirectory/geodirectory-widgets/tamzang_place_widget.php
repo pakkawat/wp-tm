@@ -42,7 +42,7 @@ class tamzang_place_widget extends WP_Widget
      */
     public function widget($args, $instance)
     {
-        if ( wp_is_mobile() )
+        if ( wp_is_mobile() && is_front_page() )
           return;
         extract($args);
         /**

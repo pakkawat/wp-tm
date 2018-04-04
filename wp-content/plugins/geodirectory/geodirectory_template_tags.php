@@ -451,25 +451,46 @@ function geodir_pagination($before = '', $after = '', $prelabel = '', $nxtlabel 
                 }
             }
             
-            echo "$before <div class='Navi gd-navi'>";
-            if ($paged >= ($pages_to_show - 1)) {
-                echo '<a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link()) . '">&laquo;</a>';
-            }
-            previous_posts_link($prelabel);
-            for ($i = $paged - $half_pages_to_show; $i <= $paged + $half_pages_to_show; $i++) {
-                if ($i >= 1 && $i <= $max_page) {
-                    if ($i == $paged) {
-                        echo "<strong class='on'>$i</strong>";
-                    } else {
-                        echo ' <a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link($i)) . '">' . $i . '</a> ';
-                    }
-                }
-            }
-            next_posts_link($nxtlabel, $max_page);
-            if (($paged + $half_pages_to_show) < ($max_page)) {
-                echo '<a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link($max_page)) . '">&raquo;</a>';
-            }
-            echo "</div> $after";
+            // echo "$before <div class='Navi gd-navi'>";
+            // if ($paged >= ($pages_to_show - 1)) {
+            //     echo '<a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link()) . '">&laquo;</a>';
+            // }
+            // previous_posts_link($prelabel);
+            // for ($i = $paged - $half_pages_to_show; $i <= $paged + $half_pages_to_show; $i++) {
+            //     if ($i >= 1 && $i <= $max_page) {
+            //         if ($i == $paged) {
+            //             echo "<strong class='on'>$i</strong>";
+            //         } else {
+            //             echo ' <a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link($i)) . '">' . $i . '</a> ';
+            //         }
+            //     }
+            // }
+            // next_posts_link($nxtlabel, $max_page);
+            // if (($paged + $half_pages_to_show) < ($max_page)) {
+            //     echo '<a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link($max_page)) . '">&raquo;</a>';
+            // }
+            // echo "</div> $after";
+            //$testt = previous_posts_link($prelabel);
+            echo "$before <ul class='pagination pagination-lg'>";
+            if ($paged >= ($pages_to_show - 1)) {
+                echo ' <li class="page-item"><a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link()) . '">&laquo;</a></li>';
+            }
+            echo '<li class="page-item">'.get_previous_posts_link($prelabel).'</li>';
+            for ($i = $paged - $half_pages_to_show; $i <= $paged + $half_pages_to_show; $i++) {
+                if ($i >= 1 && $i <= $max_page) {
+                    if ($i == $paged) {
+                        echo "<li class='page-item active'><a href='#'>$i</a></li>";
+                    } else {
+                        echo ' <li class="page-item"><a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link($i)) . '">' . $i . '</a></li> ';
+                    }
+                }
+            }
+            echo '<li class="page-item">'.get_next_posts_link($nxtlabel, $max_page).'</li>';
+            if (($paged + $half_pages_to_show) < ($max_page)) {
+                echo '<li class="page-item"><a href="' . str_replace('&paged', '&amp;paged', get_pagenum_link($max_page)) . '">&raquo;</a></li>';
+            }
+            echo "</ul> $after";
+
         }
         
         if (function_exists('geodir_location_geo_home_link')) {
