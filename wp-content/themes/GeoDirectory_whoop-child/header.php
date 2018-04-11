@@ -26,7 +26,7 @@
 <body <?php body_class(); ?>>
 <div id="container">
   <?php if ( is_front_page() ) { ?>
-    <header class="tamzang_header" style="background-image: url(<?php echo get_stylesheet_directory_uri().'/images/'.rand(1,12).'.jpg'; ?>)">
+    <header class="tamzang_header" style="background-image: url(<?php echo get_stylesheet_directory_uri().'/images/'.rand(1,93).'.jpg'; ?>)">
       <a class="mobile-left" href="#mobile-navigation-left"><i class="fa fa-bars"></i></a>
       <div class="tamzang_header_content">
         <div class="tamzang_login_wrapper">

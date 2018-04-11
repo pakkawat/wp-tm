@@ -147,3 +147,22 @@ header nav {
   background-color:#ed6d62;
   border-color:#ed6d62;
 }
+
+.locations_list{
+  float: left;
+}
+
+ul .region{
+  margin-top: 10px;
+}
+
+.locations_list li{
+  margin-right: 10px;
+  padding: 0px;
+  width: 180px;
+  line-height: 20px;
+}
+
+.registration_form_r{
+  width: 35%;
+}

@@ -107,7 +107,20 @@ if (isset($_GET['redirect_to']) && $_GET['redirect_to'] != '') {
              *
              * @since 1.0.0
              */
-            do_action('social_connect_form'); ?>
+              do_action('social_connect_form');
+            ?>
+              <div id="geodir_accept_term_condition_row" class="geodir_form_row clearfix">
+                  <label>&nbsp;</label>
+                  <div style="float:left;">
+              <span style="display:block">
+              <input class="main_list_selecter" type="checkbox" field_type="checkbox"
+                    name="geodir_accept_term_condition" id="geodir_accept_term_condition"
+                    class="geodir_textfield" value="1"
+                    style="display:inline-block"/><a href="https://tamzang.com/ข้อตกลงการใช้งาน" target="_blank">โปรดยอมรับข้อกำหนดในการให้บริการของเรา</a>
+              </span>
+                  </div>
+              </div>
+
             <input type="submit" name="registernow" value="<?php echo REGISTER_NOW_TEXT; ?>" class="geodir_button"/>
         </form>
     </div>

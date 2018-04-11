@@ -298,7 +298,11 @@ function geodir_register_new_user($user_login, $user_email)
         $user_email = '';
     } elseif (email_exists($user_email))
         $errors->add('email_exists', __('<strong>ERROR</strong>: This email is already registered, please choose another one.', 'geodirectory'));
-
+
+    $geodir_accept_term_condition = $_REQUEST['geodir_accept_term_condition'];
+    if($geodir_accept_term_condition == '' || $geodir_accept_term_condition != '1')
+      $errors->add('accept_term_condition', __('กรุณายอมรับเงื่อนไขการใช้บริการ', 'geodirectory'));
+
     /**
      * Called when registering a new user.
      *

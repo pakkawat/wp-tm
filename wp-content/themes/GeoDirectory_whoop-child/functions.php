@@ -32,4 +32,46 @@ function custom_buttonLatLong_tag_handler( $tag ) {
   wp_enqueue_script( 'myhandle', $scriptSrc , array(), '1.0',  false );
   return '<div style="width: 130px;color:white;"><button id="myLatLong">แนบที่อยู่</button><div id="geoStatus" style="float: right;"></div></div>';
 }
+
+function get_all_regions($atts){
+  //set default attributes and values
+  $values = shortcode_atts( array(
+      'records'   	=> '10',
+  ), $atts );
+  $records = intval($values['records']);
+  $region_args = array(
+    'what' => 'region',
+    'city_val' => '',
+    'region_val' => '',
+    'country_val' => '',
+    'compare_operator' =>'in',
+    'country_column_name' => 'country',
+    'region_column_name' => 'region',
+    'city_column_name' => 'city',
+    'location_link_part' => true,
+    'order_by' => ' asc ',
+    'no_of_records' => $no_of_records,
+    'format' => array('type' => 'array')
+  );
+  $region_loc_array = geodir_get_location_array($region_args);
+  $i = 0;
+  ?>
+  <ul class="locations_list">
+  <?php
+  foreach($region_loc_array as $region_item) {
+    if($i % $records == 0) echo '</ul><ul class="locations_list">';
+    ?>
+    <li class="region">
+      <a href="<?php echo home_url('/places/').$region_item->location_link;?>"><?php echo __( $region_item->region, 'geodirectory' ) ;?></a>
+    </li>
+    <?php
+    $i += 1;
+  }
+  ?>
+  </ul>
+  <?php
+}
+
+add_shortcode('all_regions', 'get_all_regions');
+
 ?>
