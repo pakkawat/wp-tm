@@ -201,7 +201,8 @@ class tamzang_place_widget extends WP_Widget
         if (!empty($terms)) {
           foreach ($tamzang_categories as $tamzang_cat) {
             $tc = array_search($tamzang_cat, array_column($terms, 'name'));
-            if($tc){
+            //echo gettype($tc).'-'.json_encode($tc).' || ';
+            if(gettype($tc) == 'integer'){
               $cat = $terms[$tc];
               $term_icon_url = !empty($term_icon) && isset($term_icon[$cat->term_id]) ? $term_icon[$cat->term_id] : '';
               $nav_html .= '<li class="geodir-popular-cat-list"><a data-termid="' . $cat->term_id . '" href="' . get_term_link($cat, $cat->taxonomy) . '">';
@@ -222,7 +223,7 @@ class tamzang_place_widget extends WP_Widget
         if ($terms) {
             foreach ($tamzang_categories as $tamzang_cat) {
               $tc = array_search($tamzang_cat, array_column($terms, 'name'));
-              if($tc){
+              if(gettype($tc) == 'integer'){
                 $first_term = $terms[$tc];
                 break;
               }

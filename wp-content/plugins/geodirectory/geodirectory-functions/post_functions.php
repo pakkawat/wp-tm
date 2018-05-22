@@ -982,7 +982,7 @@ if (!function_exists('geodir_save_post_images')) {
                 $split_img_file_path = isset($split_img_path[1]) ? $split_img_path[1] : '';
 
 
-                if (!$find_image = $wpdb->get_var($wpdb->prepare("SELECT ID FROM " . GEODIR_ATTACHMENT_TABLE . " WHERE file=%s AND post_id = %d", array($split_img_file_path, $post_id)))) {
+                if (!$find_image = $wpdb->get_var($wpdb->prepare("SELECT ID FROM product_images WHERE file=%s AND post_id = %d", array($split_img_file_path, $post_id)))) {
 
                     /* --------- end ------- */
                     $curr_img_url = $post_image[$m];

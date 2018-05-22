@@ -1391,7 +1391,15 @@ function geodir_detail_page_tabs_array() {
 		'is_display'    => apply_filters( 'geodir_detail_page_tab_is_display', true, 'related_listing' ),
 		'tab_content'   => ''
 	);
-
+
+	$arr_tabs['product_list'] = array(
+		'heading_text'  => __( 'รายการสินค้า', 'geodirectory' ),
+		'is_active_tab' => false,
+		'is_display'    => true,
+		'tab_content'   => ''
+	);
+
+
 	/**
 	 * Filter the tabs array.
 	 *
@@ -1524,6 +1532,17 @@ function geodir_show_detail_page_tabs() {
 		$map_args['enable_map_direction']     = true;
 		$map_args['map_class_name']           = 'geodir-map-detail-page';
 		$map_args['maptype']                  = ( ! empty( $post->post_mapview ) ) ? $post->post_mapview : 'ROADMAP';
+
+		$arrProducts = tamzang_get_all_products($post->ID);
+
+		$product_html = '';
+		if (!empty($arrProducts)) {
+			foreach ( $arrProducts as $product ){
+				$product_html .= tamzang_get_product($product);
+			}
+			$product_html = '<div class="tamzang-flex">'.$product_html.'</div>';
+		}
+
 	} else if ( geodir_is_page( 'preview' ) ) {
 		$video          = isset( $post->geodir_video ) ? $post->geodir_video : '';
 		$special_offers = isset( $post->geodir_special_offers ) ? $post->geodir_special_offers : '';
@@ -1747,6 +1766,9 @@ function geodir_show_detail_page_tabs() {
 							case 'related_listing':
 								echo $related_listing;
 								break;
+							case 'product_list':
+								echo $product_html;
+								break;
 							default: {
 								if ( ( isset( $post->{$tab_index} ) || ( ! isset( $post->{$tab_index} ) && ( strpos( $tab_index, 'gd_tab_' ) !== false || $tab_index == 'link_business' ) ) ) && ! empty( $detail_page_tab['tab_content'] ) ) {
 									echo $detail_page_tab['tab_content'];
@@ -1807,6 +1829,7 @@ function geodir_show_detail_page_tabs() {
 			 */
 			do_action( 'geodir_add_tab_content' ); ?>
 		</ul>
+		<?php do_action('tamzang_add_product_modal',$post->ID); ?>
 		<!--gd-tabs-content ul end-->
 	</div>
 	<?php if ( ! $tab_list ) { ?>

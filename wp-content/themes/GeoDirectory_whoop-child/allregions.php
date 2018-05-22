@@ -154,7 +154,7 @@
               <a href="<?php echo home_url('/places/').'ประเทศไทย/มหาสารคาม/';?>">มหาสารคาม</a>
             </li>
             <li class="region">
-              <a href="<?php echo home_url('/places/').'ประเทศไทย//';?>">มุกดาหาร</a>
+              <a href="<?php echo home_url('/places/').'ประเทศไทย/มุกดาหาร/';?>">มุกดาหาร</a>
             </li>
             <li class="region">
               <a href="<?php echo home_url('/places/').'ประเทศไทย/แม่ฮ่องสอน/';?>">แม่ฮ่องสอน</a>

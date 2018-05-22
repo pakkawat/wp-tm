@@ -2432,12 +2432,12 @@ function geodir_action_add_listing_form()
             }
 
             $listing_type = $post->listing_type;
-
+
         } elseif (isset($_REQUEST['pid']) && $_REQUEST['pid'] != '') {
             $post = geodir_get_post_info((int)$_REQUEST['pid']);
             $listing_type = $post->post_type;
             $thumb_img_arr = geodir_get_images($_REQUEST['pid']);
-
+
         } else {
             $listing_type = sanitize_text_field($_REQUEST['listing_type']);
         }

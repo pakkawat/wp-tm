@@ -162,3 +162,104 @@ ul .region{
   width: 180px;
   line-height: 20px;
 }
+
+
+
+
+
+/* Tamzang Product list css */
+.tamzang-flex {
+  display: flex;
+  flex-wrap: wrap;
+  /*justify-content: center; /* Or space-between or space-around */
+}
+
+.tamzang-flex > section {
+  align-items: center;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  text-align: center;
+  min-width: 250px;
+  max-width: 250px;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #CCCCCC;
+  border-radius: 5px;
+}
+
+.tamzang-flex > section > p {
+  flex-grow: 1;
+}
+
+/* This rule ist just because of the responsive images */
+@media (max-width: 1600px) {
+  .tamzang-flex > section {
+    max-width: 250px;
+  }
+}
+
+.tamzang-flex ul {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tamzang-flex aside {
+  width: 100%;
+}
+
+/* Basic styling for UI */
+
+.tamzang-product-featured-img {
+  width: 400px;
+  border-radius: 2px;
+}
+
+@media (max-width: 1600px) {
+  .tamzang-product-featured-img{
+    width: 250px;
+  }
+}
+
+.flex > section {
+  background: #fff;
+  padding: 1em;
+  margin: 0.5em;
+  border-radius: 4px;
+}
+
+.tamzang-cart-button {
+  background: #e34f43 url(http://i.imgur.com/RWKrr8S.png);
+  background-repeat: no-repeat;
+  background-position: 2em 50%;
+  background-size: 2em;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #FFF;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 1.5em 3em;
+  padding-left: 6em;
+  text-transform: uppercase;
+  display: block;
+  width: 100%;
+}
+
+.tamzang-cart-button:hover {
+  background-color: #ed6d62;
+  background-size: 3em;
+  background-position: 1.5em 50%;
+}
+
+.tamzang-flex ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.tamzang-flex li {
+  background: #eee;
+  font-weight: 700;
+  padding: 0.3em 0.6em;
+  border-radius: 1em;
+}
