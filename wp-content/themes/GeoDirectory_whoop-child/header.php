@@ -322,6 +322,12 @@
               </div>
           <?php
           }?>
+          <?php if ( is_user_logged_in() ) { ?>
+            <div style="float:right;position:relative;margin-top:60px;">
+              <span id="tamzang_cart_count"><?php echo tamzang_cart_count(); ?></span>
+              <img src="<?php echo get_stylesheet_directory_uri().'/cart.png'; ?>">
+            </div>
+          <?php } ?>
       </div>
     </header>
 <?php } ?>

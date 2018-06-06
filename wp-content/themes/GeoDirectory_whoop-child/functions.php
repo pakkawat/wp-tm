@@ -27,6 +27,8 @@ function my_theme_enqueue_styles() {
       wp_enqueue_script('jquery-ui-sortable');
       wp_register_script('geodirectory-plupload-script', get_stylesheet_directory_uri() . '/js/geodirectory-plupload.min.js#asyncload', array(), GEODIRECTORY_VERSION,true);
       wp_enqueue_script('geodirectory-plupload-script');
+      wp_enqueue_script( 'tamzang_jquery_validate', get_stylesheet_directory_uri() . '/js/jquery.validate.min.js' , array(), '1.0',  false );
+      wp_enqueue_script( 'tamzang_product_validation', get_stylesheet_directory_uri() . '/js/product_validation.js' , array(), '1.0',  false );
       // SCRIPT FOR UPLOAD END
 
       // check_ajax_referer function is used to make sure no files are uplaoded remotly but it will fail if used between https and non https so we do the check below of the urls
@@ -74,6 +76,8 @@ function my_theme_enqueue_styles() {
 
       wp_localize_script('geodirectory-plupload-script', 'gd_plupload', $gd_plupload_init);
 
+    }elseif (is_page_template( 'product_list.php' )) {
+      wp_enqueue_script( 'tamzang_delete_product', get_stylesheet_directory_uri() . '/js/tamzang_delete_product.js' , array(), '1.0',  false );
     }
 
     if (is_single()) {
@@ -518,7 +522,7 @@ function tamzang_get_all_products($post_id){
   global $wpdb;
   $arrProducts = $wpdb->get_results(
       $wpdb->prepare(
-          "SELECT * FROM products", array($post_id)
+          "SELECT * FROM products where post_id = %d", array($post_id)
       )
   );
   return $arrProducts;
@@ -543,7 +547,7 @@ function create_product_modal($post_id){
       $html .= '</div>';
       $html .= '<div class="modal-body">';
       //$html .= json_encode(tamzang_get_product_images($product->id));
-      $html .= create_product_carousel($product->id, tamzang_get_product_images($product->id));
+      $html .= create_product_carousel($product, tamzang_get_product_images($product->id));
       $html .= '<div class="sp-quantity">';
       $html .= '<div class="input-group">';
       $html .= '<span class="input-group-btn">';
@@ -580,47 +584,13 @@ function create_product_modal($post_id){
     }
     $testtext = '#aaa, #bbb';
     ?>
-    <script>
-    jQuery(document).ready(function($){
-      $( "#sortable1, #sortable2" ).sortable({
-        connectWith: ".list-group"
-      }).disableSelection();
-    } );
-    </script>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">
-          Panel Default</h3>
-      </div>
-      <ul id="sortable1" class="list-group">
-        <li class="list-group-item">Item 1</li>
-        <li class="list-group-item">Item 2</li>
-        <li class="list-group-item">Item 3</li>
-        <li class="list-group-item">Item 4</li>
-        <li class="list-group-item">Item 5</li>
-      </ul>
-    </div>
-
-    <div class="panel panel-primary">
-      <div class="panel-heading">
-        <h3 class="panel-title">
-          Panel primary</h3>
-      </div>
-<ul id="sortable2" class="list-group">
-  <li class="list-group-item">Item 1</li>
-  <li class="list-group-item">Item 2</li>
-  <li class="list-group-item">Item 3</li>
-  <li class="list-group-item">Item 4</li>
-  <li class="list-group-item">Item 5</li>
-</ul>
-</div>
     <?php
   }
 
 }
 
-function create_product_carousel($product_id, $arr_images = array()){
+function create_product_carousel($product, $arr_images = array()){
   $html = '';
   $total_image = count($arr_images);
 
@@ -629,7 +599,7 @@ function create_product_carousel($product_id, $arr_images = array()){
   $is_first = true;
   $x = 0;
   foreach ($arr_images as $image){
-    $indicators .= '<li data-target="#ProductCarousel_'.$product_id.'" data-slide-to="'.$x.'" '.($is_first ? 'class="active"' : '').' ></li>';
+    $indicators .= '<li data-target="#ProductCarousel_'.$product->id.'" data-slide-to="'.$x.'" '.($is_first ? 'class="active"' : '').' ></li>';
 
     $slides .= '<div class="item '.($is_first ? 'active' : '').'">';
     $slides .= '<img src="'.$image->src.'" >';
@@ -638,19 +608,19 @@ function create_product_carousel($product_id, $arr_images = array()){
     $is_first = false;
   }
 
-
-  $html .= '<div id="ProductCarousel_'.$product_id.'" class="carousel slide" data-ride="carousel">';
+  $html .= '<p align="left" style = "font-size:18px">'.$product->long_desc.'</p>';
+  $html .= '<div id="ProductCarousel_'.$product->id.'" class="carousel slide" data-ride="carousel">';
   $html .= '<ol class="carousel-indicators">';
   $html .= $indicators;
   $html .= '</ol>';
   $html .= '<div class="carousel-inner">';
   $html .= $slides;
   $html .= '</div>';
-  $html .= '<a class="left carousel-control" href="#ProductCarousel_'.$product_id.'" data-slide="prev">';
+  $html .= '<a class="left carousel-control" href="#ProductCarousel_'.$product->id.'" data-slide="prev">';
   $html .= '<span class="glyphicon glyphicon-chevron-left"></span>';
   $html .= '<span class="sr-only">Previous</span>';
   $html .= '</a>';
-  $html .= '<a class="right carousel-control" href="#ProductCarousel_'.$product_id.'" data-slide="next">';
+  $html .= '<a class="right carousel-control" href="#ProductCarousel_'.$product->id.'" data-slide="next">';
   $html .= '<span class="glyphicon glyphicon-chevron-right"></span>';
   $html .= '<span class="sr-only">Next</span>';
   $html .= '</a>';
@@ -700,4 +670,64 @@ function add_to_cart_callback(){
   wp_send_json_success($data);
   //return $data;
 }
+
+
+//Ajax functions
+add_action('wp_ajax_delete_product', 'delete_product_callback');
+
+function delete_product_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'delete_product_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $product_id = $data['id'];
+
+  try {
+
+    $images = tamzang_get_product_images($product_id);
+
+    // check wp_user_id ด้วยว่าตรงไหม
+
+    if (!empty($images))
+        geodir_remove_attachments($images);
+
+    $wpdb->query($wpdb->prepare("DELETE FROM product_images WHERE product_id = %d", $product_id));
+
+    $wpdb->query($wpdb->prepare("DELETE FROM products WHERE id = %d", $product_id));
+
+    $wpdb->query($wpdb->prepare("DELETE FROM shopping_cart WHERE product_id = %d", $product_id));
+
+    wp_send_json_success($data);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+
+  //return $data;
+}
+
+function tamzang_cart_count()
+{
+  global $wpdb, $current_user;
+  $cart_item = 0;
+
+  $cart_item = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT sum(qty) FROM shopping_cart where wp_user_id = %d", array($current_user->ID)
+      )
+  );
+
+  return $cart_item;
+}
+
+
+
 ?>

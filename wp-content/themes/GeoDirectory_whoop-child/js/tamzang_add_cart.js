@@ -19,27 +19,35 @@ jQuery(document).ready(function($){
     var submit = $("input[type=submit]",this);
     //console.log(submit);
     //$("input[type=submit]",this).prop('value', '...');
-    submit.prop('value', 'รอสักครู่...').prop('disabled', true);
+    //submit.prop('value', 'รอสักครู่...').prop('disabled', true);
 
     //var qty = $("input[name=qty]",this).val();
+    var $modalDiv = $(this).closest('.modal');
+    $modalDiv.addClass('loading');
 
+    var cart = parseInt($("#tamzang_cart_count").text());
+    //console.log("cart="+cart);
+    var qty = parseInt($('input[name="qty"]',this).val());
+    //console.log("qty="+qty);
+    var total = cart+qty;
+    $.ajax({
+      type: "POST",
+      url: geodir_var.geodir_ajax_url,
+      data: $(clikedForm).serialize(),
+      success: function(msg){
+            console.log( "Data Saved: " + JSON.stringify(msg) );
+            $modalDiv.modal('hide').removeClass('loading');
 
-
-      $.ajax({
-        type: "POST",
-        url: geodir_var.geodir_ajax_url,
-        data: $(clikedForm).serialize(),
-        success: function(msg){
-              console.log( "Data Saved: " + JSON.stringify(msg) );
-              submit.prop('value', 'เพิ่มสินค้า').prop('disabled', false);
-              //console.log( "Data Saved: " + msg );
-              //console.log(tamzang_ajax_settings.ajaxurl);
-              // ถ้า msg = 0 แสดงว่าไม่ได้ login
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-           console.log(textStatus);
-        }
-      });
+            $("#tamzang_cart_count").html(total);
+            //submit.prop('value', 'เพิ่มสินค้า').prop('disabled', false);
+            //console.log( "Data Saved: " + msg );
+            //console.log(tamzang_ajax_settings.ajaxurl);
+            // ถ้า msg = 0 แสดงว่าไม่ได้ login
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+         console.log(textStatus);
+      }
+    });
 
   });
 
