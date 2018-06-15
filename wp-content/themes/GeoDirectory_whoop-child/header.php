@@ -323,10 +323,12 @@
           <?php
           }?>
           <?php if ( is_user_logged_in() ) { ?>
+            <a href="<?php echo home_url('/cart/'); ?>">
             <div style="float:right;position:relative;margin-top:60px;">
               <span id="tamzang_cart_count"><?php echo tamzang_cart_count(); ?></span>
               <img src="<?php echo get_stylesheet_directory_uri().'/cart.png'; ?>">
             </div>
+            </a>
           <?php } ?>
       </div>
     </header>

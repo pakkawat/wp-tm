@@ -645,25 +645,44 @@ function add_to_cart_callback(){
   //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
 
   // check the nonce
-  // if ( check_ajax_referer( 'add_to_cart_' . $data['post_id'], 'nonce', false ) == false ) {
-  //     wp_send_json_error();
-  // }
-
-
-  $cart = array();
-  $cart['wp_user_id'] = $current_user->ID;
-  $cart['product_id'] = $data['product_id'];
-  $cart['qty'] = $data['qty'];
-
-  $cart_set = '';
-
-  foreach ($cart as $key => $val) {
-      if ($val != '')
-          $cart_set .= $key . " = '" . $val . "', ";
+  if ( check_ajax_referer( 'add_to_cart_' . $data['post_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
   }
-  $cart_set = trim($cart_set, ", ");
-  $wpdb->query("INSERT INTO shopping_cart SET " . $cart_set);
 
+  try {
+    $product = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT product_id,qty FROM shopping_cart where product_id = %d AND wp_user_id = %d ", array($data['product_id'], $current_user->ID)
+        )
+    );
+
+    if($wpdb->num_rows > 0)
+    {
+      $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE shopping_cart SET qty = %d where product_id = %d AND wp_user_id =%d",
+              array((int)$product->qty + (int)$data['qty'], $product->product_id, $current_user->ID)
+          )
+      );
+    }else{
+      $cart = array();
+      $cart['wp_user_id'] = $current_user->ID;
+      $cart['product_id'] = $data['product_id'];
+      $cart['qty'] = $data['qty'];
+
+      $cart_set = '';
+
+      foreach ($cart as $key => $val) {
+          if ($val != '')
+              $cart_set .= $key . " = '" . $val . "', ";
+      }
+      $cart_set = trim($cart_set, ", ");
+      $wpdb->query("INSERT INTO shopping_cart SET " . $cart_set);
+    }
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
   //$valid_file_ids[] = $wpdb->insert_id;
 
 
@@ -717,7 +736,6 @@ function delete_product_callback(){
 function tamzang_cart_count()
 {
   global $wpdb, $current_user;
-  $cart_item = 0;
 
   $cart_item = $wpdb->get_var(
       $wpdb->prepare(
@@ -725,9 +743,97 @@ function tamzang_cart_count()
       )
   );
 
+  if($cart_item == NULL)
+    $cart_item = "0";
+
   return $cart_item;
 }
 
+function tamzang_get_all_products_in_cart($user_id){
+  global $wpdb;
+  $arrProducts = $wpdb->get_results(
+      $wpdb->prepare(
+          "SELECT p.id as product_id,p.post_id,p.name,p.short_desc,p.featured_image,p.price,s.qty FROM products p INNER JOIN shopping_cart s on p.id = s.product_id AND s.wp_user_id = %d ORDER BY p.post_id ", array($user_id)
+      )
+  );
+  return $arrProducts;
+}
 
+
+//Ajax functions
+add_action('wp_ajax_update_product_cart', 'update_product_cart_callback');
+
+function update_product_cart_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'update_product_cart_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $product_id = $data['id'];
+  $qty = $data['qty'];
+
+  try {
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE shopping_cart SET qty = %d where product_id = %d AND wp_user_id =%d",
+            array($qty, $product_id, $current_user->ID)
+        )
+    );
+
+    $total = tamzang_cart_count();
+    wp_send_json_success($total);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+
+  //return $data;
+}
+
+
+//Ajax functions
+add_action('wp_ajax_delete_product_cart', 'delete_product_cart_callback');
+
+function delete_product_cart_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'delete_product_cart_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $product_id = $data['id'];
+
+  try {
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM shopping_cart WHERE product_id = %d AND wp_user_id =%d",
+            array($product_id, $current_user->ID)
+        )
+    );
+
+    $total = tamzang_cart_count();
+    wp_send_json_success($total);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+
+  //return $data;
+}
 
 ?>

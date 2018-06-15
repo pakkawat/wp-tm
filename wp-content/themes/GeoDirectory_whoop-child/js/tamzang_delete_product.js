@@ -7,7 +7,7 @@ jQuery(document).ready(function($){
     //console.log(id);
     // $.ajax({url: '/api/record/' + id, type: 'DELETE'})
     // $.post('/api/record/' + id).then()
-
+    $modalDiv.addClass('loading');
     var send_data = 'action=delete_product&id='+id+'&nonce='+nonce;
     $.ajax({
       type: "POST",
@@ -16,19 +16,21 @@ jQuery(document).ready(function($){
       success: function(msg){
             console.log( "Data deleted: " + JSON.stringify(msg) );
             $('#' + id).remove();
+            $modalDiv.modal('hide').removeClass('loading');
             //console.log( "Data Saved: " + msg );
             //console.log(tamzang_ajax_settings.ajaxurl);
             // ถ้า msg = 0 แสดงว่าไม่ได้ login
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
          console.log(textStatus);
+         $modalDiv.modal('hide').removeClass('loading');
       }
     });
 
-    $modalDiv.addClass('loading');
-    setTimeout(function() {
-        $modalDiv.modal('hide').removeClass('loading');
-    }, 1000)
+
+    // setTimeout(function() {
+    //     $modalDiv.modal('hide').removeClass('loading');
+    // }, 1000)
 
     //console.log(id);
     });

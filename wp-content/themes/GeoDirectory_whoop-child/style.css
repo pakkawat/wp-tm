@@ -295,3 +295,49 @@ form .error {
   color: black;
   text-align: center;
 }
+
+.modal2 {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 )
+                url('http://sampsonresume.com/labs/pIkfp.gif')
+                50% 50%
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal2 {
+    display: block;
+}
+
+.wrapper-loading {
+    position: relative;
+}
+.cart-loading:before {
+  content: 'รอสักครู่...';
+  text-align: center;
+  line-height: 155px;
+  font-size: 20px;
+  background: rgba(0, 0, 0, .8);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #EEE;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+}
