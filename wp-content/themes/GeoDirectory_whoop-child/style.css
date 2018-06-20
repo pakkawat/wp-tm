@@ -296,7 +296,7 @@ form .error {
   text-align: center;
 }
 
-.modal2 {
+/* .modal2 {
     display:    none;
     position:   fixed;
     z-index:    1000;
@@ -308,19 +308,19 @@ form .error {
                 url('http://sampsonresume.com/labs/pIkfp.gif')
                 50% 50%
                 no-repeat;
-}
+} */
 
 /* When the body has the loading class, we turn
    the scrollbar off with overflow:hidden */
-body.loading {
+/* body.loading {
     overflow: hidden;
-}
+} */
 
 /* Anytime the body has the loading class, our
    modal element will be visible */
-body.loading .modal2 {
+/* body.loading .modal2 {
     display: block;
-}
+} */
 
 .wrapper-loading {
     position: relative;
@@ -340,4 +340,45 @@ body.loading .modal2 {
   z-index: 1000;
   width: 100%;
   height: 100%;
+}
+
+.tamzang_cart{
+  width:400px;
+  float:right;
+  background-color:white;
+  position: absolute;
+  right: 0;
+  /* top: 125px; */
+}
+
+@media only screen and (min-width: 400){
+  .tamzang_cart{
+    top: 286px;
+  }
+}
+
+@media only screen and (min-width: 635){
+  .tamzang_cart{
+    top: 228px;
+  }
+}
+
+@media only screen and (min-width: 768px){
+  .tamzang_cart{
+    top: 145px;
+  }
+}
+
+@media only screen and (min-width: 1040px){
+  .tamzang_cart{
+    top: 125px;
+  }
+}
+
+
+
+.tamzang-cart-fixed{
+  position: fixed;
+  top:0px;
+  margin-left: 1500px;
 }

@@ -548,23 +548,23 @@ function create_product_modal($post_id){
       $html .= '<div class="modal-body">';
       //$html .= json_encode(tamzang_get_product_images($product->id));
       $html .= create_product_carousel($product, tamzang_get_product_images($product->id));
-      $html .= '<div class="sp-quantity">';
-      $html .= '<div class="input-group">';
-      $html .= '<span class="input-group-btn">';
-      $html .= '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  data-type="minus">';
-      $html .= '<span class="glyphicon glyphicon-minus"></span>';
-      $html .= '</button>';
-      $html .= '</span>';
-      $html .= '<div class="sp-input">';
-      $html .= '<input type="text" class="quntity-input form-control" name="qty" value="1">';
-      $html .= '</div>';
-      $html .= '<span class="input-group-btn">';
-      $html .= '<button type="button" class="btn-tamzang-quantity btn-quantity quantity-right-plus btn btn-success btn-number" data-type="plus">';
-      $html .= '<span class="glyphicon glyphicon-plus"></span>';
-      $html .= '</button>';
-      $html .= '</span>';
-      $html .= '</div>';
-      $html .= '</div>';
+      // $html .= '<div class="sp-quantity">';
+      // $html .= '<div class="input-group">';
+      // $html .= '<span class="input-group-btn">';
+      // $html .= '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  data-type="minus">';
+      // $html .= '<span class="glyphicon glyphicon-minus"></span>';
+      // $html .= '</button>';
+      // $html .= '</span>';
+      // $html .= '<div class="sp-input">';
+      $html .= '<input type="hidden" class="quntity-input form-control" name="qty" value="1">';
+      // $html .= '</div>';
+      // $html .= '<span class="input-group-btn">';
+      // $html .= '<button type="button" class="btn-tamzang-quantity btn-quantity quantity-right-plus btn btn-success btn-number" data-type="plus">';
+      // $html .= '<span class="glyphicon glyphicon-plus"></span>';
+      // $html .= '</button>';
+      // $html .= '</span>';
+      // $html .= '</div>';
+      // $html .= '</div>';
 
       $html .= '<input type="hidden" name="post_id" value="'.$post_id.'"  />';
       $html .= '<input type="hidden" name="product_id" value="'.$product->id.'"  />';
@@ -749,11 +749,13 @@ function tamzang_cart_count()
   return $cart_item;
 }
 
-function tamzang_get_all_products_in_cart($user_id){
+function tamzang_get_all_products_in_cart($user_id, $post_id){
   global $wpdb;
   $arrProducts = $wpdb->get_results(
       $wpdb->prepare(
-          "SELECT p.id as product_id,p.post_id,p.name,p.short_desc,p.featured_image,p.price,s.qty FROM products p INNER JOIN shopping_cart s on p.id = s.product_id AND s.wp_user_id = %d ORDER BY p.post_id ", array($user_id)
+          "SELECT p.id as product_id,p.post_id,p.name,p.short_desc,p.featured_image,p.price,s.qty
+          FROM products p INNER JOIN shopping_cart s
+          on p.id = s.product_id AND s.wp_user_id = %d AND p.post_id = %d ORDER BY s.id ", array($user_id, $post_id)
       )
   );
   return $arrProducts;
@@ -836,4 +838,13 @@ function delete_product_cart_callback(){
   //return $data;
 }
 
+//Ajax functions
+add_action('wp_ajax_load_tamzang_cart', 'load_tamzang_cart_callback');
+
+function load_tamzang_cart_callback(){
+  $data = $_GET;
+  set_query_var( 'post_id', $data['post_id'] );
+  get_template_part( 'ajax-cart' );
+  wp_die();
+}
 ?>
