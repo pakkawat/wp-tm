@@ -5,7 +5,7 @@ global $current_user;
 
 $post_id = isset($post_id) ? $post_id : get_the_ID();
 $arrProducts = tamzang_get_all_products_in_cart($current_user->ID, $post_id);
-echo $mypage;
+
 ?>
 
 <table class="table table-hover">

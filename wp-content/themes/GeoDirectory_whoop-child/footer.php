@@ -175,9 +175,12 @@ if ( is_single() ) {
         <?php get_template_part( 'ajax-cart' ); ?>
       </div>
       <div style="float:right;">
-        <button type="button" class="btn btn-success">
-            สั่งเลย <span class="glyphicon glyphicon-play"></span>
-        </button>
+        <form action="<?php echo home_url('/my-order/'); ?>" method="post" name="product_form">
+          <input type="hidden" name="post_id" value="<?php echo get_the_ID(); ?>"/>
+          <button type="submit" class="btn btn-success">
+              สั่งเลย <span class="glyphicon glyphicon-play"></span>
+          </button>
+        </form>
       </div>
     </div>
 

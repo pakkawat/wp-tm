@@ -9,6 +9,10 @@ jQuery(document).ready(function($){
   //  event.preventDefault();
   //  console.log( "Handler for .submit() called." );
   //});
+  $('form[name="product_form"]').on('submit', function (e) {
+    $(this).submit();
+  });
+
   $('form').on('submit', function (e) {
     var clikedForm = $(this);
     //var name = clikedForm.find("[name='field1']").val()

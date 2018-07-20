@@ -91,6 +91,16 @@ function my_theme_enqueue_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
 
+add_action('wp_enqueue_scripts','scripts_transfer_slip_picture');
+function scripts_transfer_slip_picture(){
+    if ( is_page_template('my_order.php') ) {
+        wp_enqueue_script( 'uploader-script', get_stylesheet_directory_uri() . '/js/uploader/jquery.dm-uploader.min.js' , array(), '1.0',  false );
+        //wp_enqueue_script( 'uploader-ui1', get_stylesheet_directory_uri() . '/js/uploader/ui/ui-main.js' , array(), '1.0',  false );
+        //wp_enqueue_script( 'uploader-ui2', get_stylesheet_directory_uri() . '/js/uploader/ui/ui-single.js' , array(), '1.0',  false );
+    }
+}
+
+
 add_action( 'wpcf7_init', 'custom_add_form_tag_buttonLatLong' );
 
 function custom_add_form_tag_buttonLatLong() {
@@ -847,4 +857,109 @@ function load_tamzang_cart_callback(){
   get_template_part( 'ajax-cart' );
   wp_die();
 }
+
+
+//Ajax functions
+add_action('wp_ajax_update_order_status', 'update_order_status_callback');
+
+function update_order_status_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  //check the nonce
+  if ( check_ajax_referer( 'update_order_status_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $order_id = $data['id'];
+  $status = $data['status'];
+  //get_post_field( 'post_author', $order->post_id )
+  try {
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE orders SET status = %d where id = %d ",
+            array($status, $order_id)
+        )
+    );
+
+    wp_send_json_success($data);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+  //wp_send_json_success($data);
+  //return $data;
+}
+
+//Ajax functions
+add_action('wp_ajax_load_order_status', 'load_order_status_callback');
+
+function load_order_status_callback(){
+  $data = $_GET;
+  set_query_var( 'order_status', $data['order_status'] );
+  get_template_part( 'ajax-order-status' );
+  wp_die();
+}
+
+
+//Ajax functions
+add_action('wp_ajax_add_transfer_slip_picture', 'add_transfer_slip_picture_callback');
+
+function add_transfer_slip_picture_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+
+  //check the nonce
+  if ( check_ajax_referer( 'add_transfer_slip_picture_' . $data['order_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+
+  $owner = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT wp_user_id FROM orders where id = %d AND status != 99 ", array($data['order_id'])
+      )
+  );
+
+  if($current_user->ID == $owner)
+  {
+    //$target_dir = '/home/tamzang/domains/tamzang.com/public_html/Test02/wp-content/themes/GeoDirectory_whoop-child/images/upload/';
+    $uploads = wp_upload_dir();
+    $uploads_dir = $uploads['path'].'/slip/'; //C:/path/to/wordpress/wp-content/uploads/2010/05/slip
+    if (!file_exists($uploads_dir))
+    {
+      mkdir($uploads_dir);
+    }
+
+
+    $old_file_name = basename($_FILES["file"]["name"]);
+    $imageFileType = strtolower(pathinfo($old_file_name,PATHINFO_EXTENSION));
+    $target_file = $uploads_dir . $data['order_id'] .'.'. $imageFileType;
+    $image = $uploads['subdir'].'/slip/'.$data['order_id'] .'.'. $imageFileType;
+    move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE orders SET image_slip = %s where id = %d ",
+            array($image, $data['order_id'])
+        )
+    );
+
+    $return = array(
+        'image' => $uploads['url'].'/slip/'.$data['order_id'] .'.'. $imageFileType,
+        'order_id'      => $data['order_id']
+    );
+
+    wp_send_json_success($return);
+  }else{
+    wp_send_json_error();
+  }
+  //wp_send_json_success();
+}
+
 ?>

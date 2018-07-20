@@ -480,6 +480,7 @@ function geodir_edit_post_link()
             $editlink = geodir_getlink($postlink, array('pid' => $post_id), false);
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/add-product/') . '?pid='.$post_id . '">เพิ่มสินค้า</a></p>';
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/product-list/') . '?pid='.$post_id . '">แก้ไขสินค้า</a></p>';
+            echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/shop-order/') . '?pid='.$post_id . '">รายการสั่งซื้อของร้าน</a></p>';
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . esc_url($editlink) . '">' . __('Edit this Post', 'geodirectory') . '</a></p>';
         }
         else{

@@ -93,6 +93,11 @@
                       <?php if ( class_exists( 'BuddyPress' ) ) { ?>
                       <ul class="whoop-dd-menu-group whoop-bold">
                               <li class="whoop-dd-menu-link">
+                                  <a href="<?php echo home_url('/my-order/'); ?>">
+                                      <i class="fa fa-user"></i> <?php echo 'รายการสั่งซื้อสินค้าของฉัน'; ?>
+                                  </a>
+                              </li>
+                              <li class="whoop-dd-menu-link">
                                   <a href="<?php echo $user_link; ?>">
                                       <i class="fa fa-user"></i> <?php echo __('About Me', GEODIRECTORY_FRAMEWORK); ?>
                                   </a>
@@ -288,6 +293,11 @@
                     </div>
                     <?php if ( class_exists( 'BuddyPress' ) ) { ?>
                     <ul class="whoop-dd-menu-group whoop-bold">
+                            <li class="whoop-dd-menu-link">
+                                <a href="<?php echo home_url('/my-order/'); ?>">
+                                    <i class="fa fa-user"></i> <?php echo 'รายการสั่งซื้อสินค้าของฉัน'; ?>
+                                </a>
+                            </li>
                             <li class="whoop-dd-menu-link">
                                 <a href="<?php echo $user_link; ?>">
                                     <i class="fa fa-user"></i> <?php echo __('About Me', GEODIRECTORY_FRAMEWORK); ?>
