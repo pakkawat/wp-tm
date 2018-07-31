@@ -70,7 +70,7 @@ function pagination($count, $href, $PERPAGE_LIMIT) {
 
 
 
-global $current_user, $gd_session;
+global $current_user;
 
 $is_current_user_owner = false;
 $PERPAGE_LIMIT = 5;

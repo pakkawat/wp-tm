@@ -1,7 +1,78 @@
 <?php /* Template Name: My order */ ?>
 <?php
 
+function get_my_orders($PERPAGE_LIMIT) {
+  global $wpdb, $current_user;
+
+  $sql = "SELECT * FROM orders where wp_user_id = ".$current_user->ID." ";
+  $sql2 = "SELECT count(id) FROM orders where wp_user_id = ".$current_user->ID." ";
+  //$sql = "SELECT * FROM wp_terms ";
+  //$sql2 = "SELECT count(term_id) FROM wp_terms ";
+
+  // getting parameters required for pagination
+  $currentPage = 1;
+  if(isset($_GET['pageNumber'])){
+    $currentPage = $_GET['pageNumber'];
+  }
+  $startPage = ($currentPage-1)*$PERPAGE_LIMIT;
+  if($startPage < 0) $startPage = 0;
+
+
+  //adding limits to select query
+  $sql .= " ORDER BY id DESC limit " . $startPage . "," . $PERPAGE_LIMIT . " ";
+  $result  = $wpdb->get_results( $sql );
+  $count   = $wpdb->get_var( $sql2 );
+  //file_put_contents( dirname(__FILE__).'/debug/debug_insert_images_.log', var_export( $count, true));
+  //echo '<h1>'.$sql.'</h1>';
+  return array($result, $count);
+}
+
+function pagination($count, $PERPAGE_LIMIT) {
+  $output = '';
+  $href = home_url('/my-order/').'?';
+  if(!isset($_REQUEST["pageNumber"])) $_REQUEST["pageNumber"] = 1;
+  if($PERPAGE_LIMIT != 0)
+    $pages  = ceil($count/$PERPAGE_LIMIT);
+
+  $output .= '<ul class="pagination pagination-lg">';
+  //if pages exists after loop's lower limit
+  if($pages>1) {
+    if(($_REQUEST["pageNumber"]-3)>0) {
+      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber=1">1</a></li>';
+    }
+    if(($_REQUEST["pageNumber"]-3)>1) {
+      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.($_REQUEST["pageNumber"]-1).'"><strong>&lt;</strong></a></li>';
+    }
+
+    //Loop for provides links for 2 pages before and after current page
+    for($i=($_REQUEST["pageNumber"]-2); $i<=($_REQUEST["pageNumber"]+2); $i++)	{
+      if($i<1) continue;
+      if($i>$pages) break;
+      if($_REQUEST["pageNumber"] == $i)
+        $output = $output . '<li class="page-item active"><a href="#">'.$i.'</a></li>';
+      else
+        $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.$i .'">'.$i.'</a></li>';
+    }
+
+    //if pages exists after loop's upper limit
+    if(($pages-($_REQUEST["pageNumber"]+2))>1) {
+      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.($_REQUEST["pageNumber"]+1).'"><strong>&gt;</strong></a></li>';
+    }
+    if(($pages-($_REQUEST["pageNumber"]+2))>0) {
+      if($_REQUEST["pageNumber"] == $pages)
+        $output = $output . '<li class="page-item active"><a href="#">' . ($pages) .'</a></li>';
+      else
+        $output = $output . '<li class="page-item"><a href="' . $href .'pageNumber='.($pages) .'">' . ($pages) .'</a></li>';
+    }
+
+  }
+  $output .= '</ul>';
+  return $output;
+}
+
+
 global $wpdb, $current_user;
+$PERPAGE_LIMIT = 5;
 
 if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['post_id'])){// สร้าง order
   $arrProducts = tamzang_get_all_products_in_cart($current_user->ID, $_POST['post_id']);
@@ -384,12 +455,7 @@ jQuery(document).ready(function($){
 
           <?php
 
-          $arrOrders  = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM orders where wp_user_id =%d ORDER BY id DESC ",
-                array($current_user->ID)
-            )
-          );
+          list($arrOrders, $count) = get_my_orders($PERPAGE_LIMIT);
 
           foreach ($arrOrders as $order) {
             set_query_var( 'order_status', $order->status );
@@ -502,7 +568,7 @@ jQuery(document).ready(function($){
         <?php }//end foreach ($arrOrders as $order) ?>
         </section>
         <?php // end article section ?>
-        <footer class="article-footer cf"> </footer>
+        <footer class="article-footer cf"><?php echo pagination($count, $PERPAGE_LIMIT); ?></footer>
       </article>
 
     </div>
