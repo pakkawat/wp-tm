@@ -67,11 +67,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (isset($_POST['post_images']) && $_POST['post_images'] != '') {
           $newArr = explode(',', $_POST['post_images']);
-          $images = tamzang_save_images($product_id, $newArr);
+          tamzang_save_images($product_id, $newArr);
         }
 
-        //file_put_contents( dirname(__FILE__).'/debug/debug' . time() . '.log', var_export( $newArr, true));
-        //file_put_contents( dirname(__FILE__).'/debug/debug_insert_images_.log', var_export( $images, true));
+        //file_put_contents( dirname(__FILE__).'/debug/debug' . time() . '.log', var_export( $_POST['post_images'], true));
+        //file_put_contents( dirname(__FILE__).'/debug/debug_insert_images_.log', var_export( $newArr, true));
         wp_redirect(get_permalink($pid).'/#product_list');
       }
       //file_put_contents( 'debug' . time() . '.log', var_export( $_POST, true));
