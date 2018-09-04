@@ -135,38 +135,39 @@ if (isset($pid) && $pid != 0){
                   </div>
               </div>
           </div>
+          <div class="table-responsive">
+            <table id="product_table" class="table">
+              <thead>
+                <th>ชื่อ</th>
+                <th>ราคา</th>
+                <th>รายละเอียดแบบย่อ</th>
+                <th>จำนวน</th>
+                <th>ไม่จำกัดจำนวน</th>
+                <th>แก้ไขล่าสุดเมื่อ</th>
+                <th>แก้ไข</th>
+                <th>ลบ</th>
+              </thead>
+              <tbody>
+              <?php
 
-          <table id="product_table" class="table table-bordred table-striped">
-            <thead>
-              <th>ชื่อ</th>
-              <th>ราคา</th>
-              <th>รายละเอียดแบบย่อ</th>
-              <th>จำนวน</th>
-              <th>ไม่จำกัดจำนวน</th>
-              <th>แก้ไขล่าสุดเมื่อ</th>
-              <th>แก้ไข</th>
-              <th>ลบ</th>
-            </thead>
-            <tbody>
-            <?php
+                foreach ($arrProducts as $product) {
+                  echo '<tr id="'.$product->id.'">';
+                  echo '<td style="text-align:center;">'.$product->name.'</td>';
+                  echo '<td style="text-align:center;">'.$product->price.'</td>';
+                  echo '<td>'.$product->short_desc.'</td>';
+                  echo '<td style="text-align:center;">'.$product->stock.'</td>';
+                  echo '<td style="text-align:center;">'.($product->unlimited == '1' ? 'ใช่' : 'ไม่').'</td>';
+                  $date = date_create($product->update_date);
+                  echo '<td>'.date_format($date, 'd-m-Y H:i:s').'</td>';
+                  echo '<td style="text-align:center;"><a class="btn btn-primary btn-xs" href="'. home_url('/add-product/') . '?pid='.$pid .'&product_id='.$product->id.'">แก้ไข</a></td>';
+                  echo '<td style="text-align:center;"><a class="btn btn-danger btn-xs" href="#" data-record-id="'.$product->id.'" data-record-title="'.$product->name.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $product->id ).'" data-toggle="modal" data-target="#confirm-delete" >ลบ</a></td>';
+                  echo '</tr>';
+                }
 
-              foreach ($arrProducts as $product) {
-                echo '<tr id="'.$product->id.'">';
-                echo '<td style="text-align:center;">'.$product->name.'</td>';
-                echo '<td style="text-align:center;">'.$product->price.'</td>';
-                echo '<td>'.$product->short_desc.'</td>';
-                echo '<td style="text-align:center;">'.$product->stock.'</td>';
-                echo '<td style="text-align:center;">'.($product->unlimited == '1' ? 'ใช่' : 'ไม่').'</td>';
-                $date = date_create($product->update_date);
-                echo '<td>'.date_format($date, 'd-m-Y H:i:s').'</td>';
-                echo '<td style="text-align:center;"><a class="btn btn-primary btn-xs" href="'. home_url('/add-product/') . '?pid='.$pid .'&product_id='.$product->id.'"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></td>';
-                echo '<td style="text-align:center;"><a class="btn btn-danger btn-xs" href="#" data-record-id="'.$product->id.'" data-record-title="'.$product->name.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $product->id ).'" data-toggle="modal" data-target="#confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a></td>';
-                echo '</tr>';
-              }
-
-  		      ?>
-            </tbody>
-          </table>
+    		      ?>
+              </tbody>
+            </table>
+          </div>
         </section>
         <?php // end article section ?>
 

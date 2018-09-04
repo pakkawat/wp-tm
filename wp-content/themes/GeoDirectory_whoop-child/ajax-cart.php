@@ -8,7 +8,7 @@ $arrProducts = tamzang_get_all_products_in_cart($current_user->ID, $post_id);
 
 ?>
 
-<table class="table table-hover">
+<table id="tb-cart" class="table table-hover">
   <thead>
     <tr>
       <th>สินค้า</th>

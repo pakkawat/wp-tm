@@ -4,7 +4,7 @@ function my_theme_enqueue_styles() {
     $parent_style = 'whoop'; // This is 'twentyfifteen-style' for the Twenty Fifteen theme.
     wp_enqueue_style( 'bootstrap',
     get_stylesheet_directory_uri() . '/bootstrap.min.css',
-    array( 'whoop' ),
+    array(  ),
     wp_get_theme()->get('Version')
     );
     wp_enqueue_style( 'bootstrap-theme',
@@ -548,7 +548,7 @@ function create_product_modal($post_id){
       $html .= '<div class="modal fade" id="product_'.$product->id.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">';
       $html .= '<div class="modal-dialog" role="document">';
       $html .= '<div class="modal-content">';
-      $html .= '<form method="POST" id="add_cart_' . $product->id . '">';
+      $html .= '<form method="POST" id="add_cart_' . $product->id . '" name="modal_add_cart">';
       $html .= '<div class="modal-header">';
       $html .= '<h5 class="modal-title" id="exampleModalLabel">'.$product->name.'</h5>';
       $html .= '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
@@ -961,5 +961,374 @@ function add_transfer_slip_picture_callback(){
   }
   //wp_send_json_success();
 }
+
+
+//Ajax functions
+add_action('wp_ajax_load_address_form', 'load_address_form_callback');
+
+function load_address_form_callback(){
+  global $wpdb, $current_user;
+  $data = $_GET;
+
+  $address_id = $data['address_id'];
+  if (isset($address_id) && $address_id != ''){
+
+    $owner = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT wp_user_id FROM user_address where id = %d ", array($address_id)
+        )
+    );
+
+    if($current_user->ID == $owner)
+      set_query_var( 'address_id', $data['address_id'] );
+
+  }
+
+  get_template_part( 'address/myaddress', 'form' );
+  wp_die();
+}
+
+//Ajax functions
+add_action('wp_ajax_load_address_list', 'load_address_list_callback');
+
+function load_address_list_callback(){
+  //$data = $_GET;
+  //set_query_var( 'address_id', $data['address_id'] );
+  get_template_part( 'address/myaddress', 'list' );
+  wp_die();
+}
+
+//Ajax functions
+add_action('wp_ajax_get_province', 'get_province_callback');
+
+function get_province_callback(){
+  global $wpdb;
+
+  $arrProvince = $wpdb->get_results("SELECT DISTINCT region FROM ".POST_LOCATION_TABLE." ORDER BY region ");
+
+  $return_arr = array();
+  if (!empty($arrProvince)) {
+    foreach ( $arrProvince as $province ){
+      $arr_province = array();
+      $arr_province['province'] = $province->region;
+
+      $return_arr[] = (object)$arr_province;
+    }
+  }
+
+  wp_send_json_success($return_arr);
+
+  // $response= array(
+  //       'message'   => 'Saved',
+  //       'ID'        => POST_LOCATION_TABLE
+  //   );
+  //   wp_send_json_success($response);
+
+}
+
+add_action('wp_ajax_get_district', 'get_district_callback');
+
+function get_district_callback(){
+  global $wpdb;
+  $data = $_GET;
+
+  $arrDistrict = $wpdb->get_results(
+      $wpdb->prepare(
+          "SELECT DISTINCT city FROM ".POST_LOCATION_TABLE." WHERE region=%s ORDER BY city ", array($data['region'])
+      )
+  );
+
+  $return_arr = array();
+  if (!empty($arrDistrict)) {
+    foreach ( $arrDistrict as $district ){
+      $arr_district = array();
+      $arr_district['district'] = $district->city;
+
+      $return_arr[] = (object)$arr_district;
+    }
+  }
+
+  wp_send_json_success($return_arr);
+
+}
+
+add_action('wp_ajax_add_user_address', 'add_user_address_callback');
+
+function add_user_address_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+
+  if ( check_ajax_referer( 'add_user_address_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try {
+
+    $user_address = array();
+
+    $user_address['name'] = $data['name'];
+    $user_address['address'] = $data['address'];
+    $user_address['district'] = $data['dd_district'];
+    $user_address['province'] = $data['dd_province'];
+    $user_address['postcode'] = $data['tb_postcode'];
+    $user_address['phone'] = $data['phone'];
+
+
+    $address_id = $data['address_id'];
+    $sql = '';
+    $where = '';
+    if (isset($address_id) && $address_id != ''){ // update user_address
+      $sql = "UPDATE user_address SET ";
+      $where = " WHERE id=".$address_id;
+    }else{ // insert user_address
+      $count = $wpdb->get_var(
+          $wpdb->prepare(
+              "SELECT count(id) FROM user_address where wp_user_id = %d", array($current_user->ID)
+          )
+      );
+
+      if($count == 0){
+        $user_address['shipping_address'] = true;
+        $user_address['billing_address'] = true;
+      }
+      $user_address['wp_user_id'] = $current_user->ID;
+      $sql = "INSERT INTO user_address SET ";
+    }
+
+    $sql_set = '';
+
+    foreach ($user_address as $key => $val) {
+        if ($val != '')
+            $sql_set .= $key . " = '" . $val . "', ";
+    }
+    $sql_set = trim($sql_set, ", ");
+    $wpdb->query($sql . $sql_set . $where);
+
+    wp_send_json_success();
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+
+//Ajax functions
+add_action('wp_ajax_delete_user_address', 'delete_user_address_callback');
+
+function delete_user_address_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'delete_user_address_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $address_id = $data['id'];
+
+  try {
+
+    $owner = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT wp_user_id FROM user_address where id = %d ", array($address_id)
+        )
+    );
+
+    if($current_user->ID == $owner){
+      $wpdb->query(
+          $wpdb->prepare(
+              "DELETE FROM user_address WHERE id = %d ", array($address_id)
+          )
+      );
+    }
+
+    wp_send_json_success();
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+
+  //return $data;
+}
+
+//Ajax functions
+add_action('wp_ajax_load_billing_address', 'load_billing_address_callback');
+
+function load_billing_address_callback(){
+  //$data = $_GET;
+  //set_query_var( 'address_id', $data['address_id'] );
+  get_template_part( 'address/myaddress', 'billing' );
+  wp_die();
+}
+
+//Ajax functions
+add_action('wp_ajax_update_billing_address', 'update_billing_address_callback');
+
+function update_billing_address_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'update_billing_address_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $address_id = $data['billing_address'];
+
+  try {
+
+    $owner = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT wp_user_id FROM user_address where id = %d ", array($address_id)
+        )
+    );
+
+    if($current_user->ID == $owner){
+
+      $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE user_address SET billing_address = true where id = %d AND wp_user_id = %d ",
+              array($address_id, $current_user->ID)
+          )
+      );
+
+      $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE user_address SET billing_address = false where id != %d AND wp_user_id = %d ",
+              array($address_id, $current_user->ID)
+          )
+      );
+    }
+
+    wp_send_json_success();
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+
+//Ajax functions
+add_action('wp_ajax_load_shipping_address', 'load_shipping_address_callback');
+
+function load_shipping_address_callback(){
+  //$data = $_GET;
+  //set_query_var( 'address_id', $data['address_id'] );
+  get_template_part( 'address/myaddress', 'shipping' );
+  wp_die();
+}
+
+//Ajax functions
+add_action('wp_ajax_update_shipping_address', 'update_shipping_address_callback');
+
+function update_shipping_address_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'update_shipping_address_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $address_id = $data['shipping_address'];
+
+  try {
+
+    $owner = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT wp_user_id FROM user_address where id = %d ", array($address_id)
+        )
+    );
+
+    if($current_user->ID == $owner){
+
+      $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE user_address SET shipping_address = true where id = %d AND wp_user_id = %d ",
+              array($address_id, $current_user->ID)
+          )
+      );
+
+      $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE user_address SET shipping_address = false where id != %d AND wp_user_id = %d ",
+              array($address_id, $current_user->ID)
+          )
+      );
+    }
+
+    wp_send_json_success();
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+
+function tamzang_bp_user_address_nav_adder()
+{
+    global $bp;
+    if (bp_is_user()) {
+        $user_id = $bp->displayed_user->id;
+    } else {
+        $user_id = 0;
+    }
+    if ($user_id == 0) {
+        return;
+    }
+
+    //$screen_function = tamzang_user_address();
+
+    bp_core_new_nav_item(
+        array(
+            'name' => 'สมุดที่อยู่',
+            'slug' => 'address',
+            'position' => 100,
+            'show_for_displayed_user' => false,
+            'screen_function' => 'tamzang_user_address_screen',
+            'item_css_id' => 'lists',
+            'default_subnav_slug' => 'address'
+        ));
+}
+
+add_action('bp_setup_nav', 'tamzang_bp_user_address_nav_adder',100);
+
+function tamzang_user_address_screen()
+{
+  //add_action( 'bp_template_title', 'tamzang_user_address_screen_title' );
+  add_action( 'bp_template_content', 'tamzang_user_address_screen_content' );
+  bp_core_load_template(apply_filters('bp_core_template_plugin', 'members/single/plugins'));
+}
+
+function tamzang_user_address_screen_title()
+{
+  ?>
+  <h1>สมุดที่อยู่</h1>
+
+  <?php
+}
+
+function tamzang_user_address_screen_content()
+{
+  wp_enqueue_script( 'tamzang_jquery_validate', get_stylesheet_directory_uri() . '/js/jquery.validate.min.js' , array(), '1.0',  false );
+  ?>
+  <div id="address-content" class="wrapper-loading">
+    <?php get_template_part( 'address/myaddress', 'list' ); ?>
+  </div>
+  <?php
+}
+
 
 ?>

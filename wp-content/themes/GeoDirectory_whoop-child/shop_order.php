@@ -158,7 +158,30 @@ jQuery(document).ready(function($){
 		      ?>
 
           <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>" >
-            <div class="panel-heading">Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a></div>
+            <div class="panel-heading">
+              <div class="order-col-3">
+                Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
+              </div>
+              <div class="order-col-9">
+
+                <?php
+
+                $shipping_address = $wpdb->get_row(
+                    $wpdb->prepare(
+                        "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
+                    )
+                );
+
+                if($wpdb->num_rows > 0)
+                {
+                  echo "เบอร์โทรศัพท์: ".$shipping_address->phone." ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
+                }
+
+                ?>
+
+              </div>
+              <div class="order-clear"></div>
+            </div>
             <div class="panel-body">
 
               <?php
@@ -228,14 +251,20 @@ jQuery(document).ready(function($){
                         <option <?php if ($order->status == '3') echo ' selected="selected" '; ?> value="3">ทำการจัดส่งแล้ว</option>
                     </select>
                   </div>
-                  <div class="order-col-4" style="text-align:center;min-height:1px;">
-                    <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
-                      id="flip"
-                    >แสดงรูปภาพ</button>
-                  </div>
-                  <div class="order-col-4" style="text-align:right;min-height:1px;">
+                  <?php if($order->payment_type == 2){ ?>
+                    <div class="order-col-6" style="text-align:center;min-height:1px;">
+                      <h2>เก็บเงินปลายทาง</h2>
+                    </div>
+                  <?php } else { ?>
+                    <div class="order-col-4" style="text-align:center;min-height:1px;">
+                      <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
+                        id="flip"
+                      >แสดงรูปภาพ</button>
+                    </div>
+                    <div class="order-col-4" style="text-align:right;min-height:1px;">
 
-                  </div>
+                    </div>
+                  <?php } ?>
                 </div>
                 <div class="order-clear"></div>
 
