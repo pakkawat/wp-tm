@@ -3,19 +3,8 @@
 
 if ( is_single() ) {
   if ( is_user_logged_in() ){
-    global $wpdb, $current_user;
-    $user_has_address = false;
-    $user_address = $wpdb->get_row(
-        $wpdb->prepare(
-            "SELECT id FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array($current_user->ID)
-        )
-    );
-
-    if($wpdb->num_rows > 0)
-    {
-      $user_has_address = true;
-    }
-
+    //global $current_user;
+    //$arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
     ?>
     <script>
     jQuery(document).ready(function($){
@@ -143,43 +132,9 @@ if ( is_single() ) {
             $('.title', this).text(data.recordTitle);
             $('.btn-ok', this).data('recordId', data.recordId);
             $('.btn-ok', this).data('recordNonce', data.recordNonce);
+            //console.log(data);
         });
 
-
-        // $('#select-payment-type').on('click', '.btn-ok', function(e) {
-        //   if($('input[name=payment-type]:checked').length<=0)
-        //   {
-        //     $("#payment-error").show();
-        //   }
-        //   else
-        //   {
-        //     var $modalDiv = $(e.delegateTarget);
-        //     var id = $(this).data('recordId');
-        //     console.log(id);
-        //     var payment_type = $("input[name=payment-type]:checked").val();
-        //     console.log("payment_type: "+payment_type);
-        //   }
-        // });
-
-
-        // $('#select-payment-type').on('show.bs.modal', function(e) {
-        //     var data = $(e.relatedTarget).data();
-        //     $('.btn-ok', this).data('recordId', data.recordId);
-        //
-        //     console.log("Modal show!! "+id);
-        // });
-
-        $("#place_order").click(function(){
-          $("#payment-error").hide();
-          var rowCount = $('#tb-cart >tbody >tr').length;
-          console.log(rowCount);
-          if (rowCount > 1){
-            $("#select-payment-type").modal();
-          }
-          else {
-            $("#no-item").modal();
-          }
-        });
 
         // check where the shoppingcart-div is
         var offset = $('#tamzang-shopping-cart').offset();
@@ -188,25 +143,10 @@ if ( is_single() ) {
             // check the visible top of the browser
             if (offset.top<scrollTop) {
                 $('#tamzang-shopping-cart').addClass('tamzang-cart-fixed');
-                $('#tamzang-shopping-cart-button').addClass('tamzang-cart-button-fixed');
             } else {
                 $('#tamzang-shopping-cart').removeClass('tamzang-cart-fixed');
-                $('#tamzang-shopping-cart-button').removeClass('tamzang-cart-button-fixed');
             }
         });
-
-        function HideShop() {
-          var x = document.getElementById("tamzang-shopping-cart");
-          if (x.style.display === "none") {
-              x.style.display = "block";
-          }
-        	else if (x.style.display === "block"){
-          	x.style.display = "none";
-          }
-          else {
-            x.style.display = "block";
-          }
-        }
 
     });
     </script>
@@ -230,95 +170,17 @@ if ( is_single() ) {
         </div>
     </div>
 
-    <div class="modal fade" id="no-item" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">ข้อความ</h4>
-                </div>
-                <div class="modal-body">
-                    <p>กรุณาเลือกสินค้า</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">ตกลง</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="select-payment-type" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">กรุณาเลือกวิธีชำระเงิน</h4>
-                </div>
-                <form action="<?php echo home_url('/my-order/'); ?>" method="post" name="place_order_form">
-                  <div class="modal-body">
-                      <p>
-                        <div>
-                          <input class="form-check-input" type="radio" name="payment-type" value="1" id="pt-radio1">
-                          <label class="form-check-label" for="pt-radio1">
-                            โอนเงิน
-                          </label>
-                        </div>
-                        <div>
-                          <input class="form-check-input" type="radio" name="payment-type" value="2" id="pt-radio2">
-                          <label class="form-check-label" for="pt-radio2">
-                            เก็บเงินปลายทาง
-                          </label>
-                        </div>
-                      </p>
-                      <p><label id="payment-error" style="color:red;display:none;">กรุณาเลือกวิธีชำระเงิน</label></p>
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
-                      <input type="hidden" name="post_id" value="<?php echo get_the_ID(); ?>"/>
-                      <button type="submit" class="btn btn-success btn-ok">ตกลง</button>
-                  </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <?php if(!$user_has_address){ ?>
-    <div class="modal fade" id="no-address" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">ข้อความ</h4>
-                </div>
-                <div class="modal-body">
-                    <p>คุณยังไม่ได้เพิ่มที่อยู่ในการจัดส่งกรุณา <a href="<?php echo bp_get_loggedin_user_link().'address/';?>">คลิก</a> เพื่อเพิ่มที่อยู่ในการจัดส่ง</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">ตกลง</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php } ?>
-
-    <button class = 'tamzang-shopping-cart-button' id="tamzang-shopping-cart-button" onclick="HideShop()">Try it</button>
     <div class="tamzang_cart" id="tamzang-shopping-cart">
       <div class="wrapper-loading" id="table-my-cart">
         <?php get_template_part( 'ajax-cart' ); ?>
       </div>
       <div style="float:right;">
-        <?php if($user_has_address){ ?>
-          <button class="btn btn-success" id="place_order"
-            ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
-        <?php }else{ ?>
-
-
-
-          <button class="btn btn-success" data-toggle="modal" data-target="#no-address"
-            ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
-
-
-        <?php } ?>
+        <form action="<?php echo home_url('/my-order/'); ?>" method="post" name="product_form">
+          <input type="hidden" name="post_id" value="<?php echo get_the_ID(); ?>"/>
+          <button type="submit" class="btn btn-success">
+              สั่งเลย <span class="glyphicon glyphicon-play"></span>
+          </button>
+        </form>
       </div>
     </div>
 

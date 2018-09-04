@@ -79,32 +79,9 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['post_id'])){// สร
   if(!empty($arrProducts))
   {
     $current_date = date("Y-m-d H:i:s");
-    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ",
-      array($current_user->ID, $_POST['post_id'], $current_date, 0, 1, $_POST['payment-type'])));
+    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d ",
+      array($current_user->ID, $_POST['post_id'], $current_date, 0, 1)));
     $order_id = $wpdb->insert_id;
-
-    $shipping_id = 0;
-    $billing_id = 0;
-
-    $shipping_address = $wpdb->get_row(
-        $wpdb->prepare(
-            "SELECT * FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array($current_user->ID)
-        )
-    );
-    $wpdb->query($wpdb->prepare("INSERT INTO shipping_address SET order_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s ",
-      array($order_id, $shipping_address->name, $shipping_address->address, $shipping_address->district, $shipping_address->province, $shipping_address->postcode, $shipping_address->phone)));
-    $shipping_id = $wpdb->insert_id;
-
-    $billing_address = $wpdb->get_row(
-        $wpdb->prepare(
-            "SELECT * FROM user_address where wp_user_id = %d AND billing_address = 1 ", array($current_user->ID)
-        )
-    );
-    $wpdb->query($wpdb->prepare("INSERT INTO billing_address SET order_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s ",
-      array($order_id, $billing_address->name, $billing_address->address, $billing_address->district, $billing_address->province, $billing_address->postcode, $billing_address->phone)));
-    $billing_id = $wpdb->insert_id;
-
-
 
     $sum = 0;
 
@@ -128,8 +105,8 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['post_id'])){// สร
 
     $wpdb->query(
         $wpdb->prepare(
-            "UPDATE orders SET total_amt = %d, shipping_id = %d, billing_id = %d where id =%d",
-            array($sum, $shipping_id, $billing_id, $order_id)
+            "UPDATE orders SET total_amt = %d where id =%d",
+            array($sum, $order_id)
         )
     );
   }// end if !empty
@@ -405,6 +382,7 @@ jQuery(document).ready(function($){
         <?php // end article header ?>
         <section class="entry-content cf" itemprop="articleBody">
 
+
           <div class="modal fade" id="add-transfer-slip" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                   <div class="modal-content">
@@ -453,6 +431,9 @@ jQuery(document).ready(function($){
               </div>
           </div>
 
+
+
+
           <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                   <div class="modal-content">
@@ -481,27 +462,7 @@ jQuery(document).ready(function($){
 		      ?>
 
           <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>">
-            <div class="panel-heading">
-              <div class="order-col-3">
-                Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
-              </div>
-              <div class="order-col-9" style="text-align:right;">
-                <?php
-
-                $shipping_address = $wpdb->get_row(
-                    $wpdb->prepare(
-                        "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
-                    )
-                );
-
-                if($wpdb->num_rows > 0)
-                {
-                  echo "ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
-                }
-
-                ?>
-              </div>
-              <div class="order-clear"></div>
+            <div class="panel-heading">Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
             </div>
             <div class="panel-body">
 
@@ -572,25 +533,19 @@ jQuery(document).ready(function($){
                         data-toggle="modal" data-target="#confirm-delete" >ยกเลิกคำสั่งซื้อ</button>
                     <?php } ?>
                   </div>
-                  <?php if($order->payment_type == 2){ ?>
-                    <div class="order-col-6" style="text-align:center;min-height:1px;">
-                      <h2>เก็บเงินปลายทาง</h2>
-                    </div>
-                  <?php } else { ?>
-                    <div class="order-col-4" style="text-align:center;min-height:1px;">
-                      <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
-                        id="flip"
-                      >แสดงรูปภาพ</button>
-                    </div>
-                    <div class="order-col-4" style="text-align:right;min-height:1px;">
-                      <?php if($order->status == 1){ ?>
-                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
-                          data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
-                          data-toggle="modal" data-target="#add-transfer-slip"
-                        >อัพโหลดรูปภาพ</button>
-                      <?php } ?>
-                    </div>
-                  <?php } ?>
+                  <div class="order-col-4" style="text-align:center;min-height:1px;">
+                    <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
+                      id="flip"
+                    >แสดงรูปภาพ</button>
+                  </div>
+                  <div class="order-col-4" style="text-align:right;min-height:1px;">
+                    <?php if($order->status == 1){ ?>
+                      <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                        data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
+                        data-toggle="modal" data-target="#add-transfer-slip"
+                      >อัพโหลดรูปภาพ</button>
+                    <?php } ?>
+                  </div>
                 </div>
                 <div class="order-clear"></div>
 

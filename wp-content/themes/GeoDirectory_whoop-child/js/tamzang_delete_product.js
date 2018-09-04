@@ -15,8 +15,7 @@ jQuery(document).ready(function($){
       data: send_data,
       success: function(msg){
             console.log( "Data deleted: " + JSON.stringify(msg) );
-            if(msg.success)
-              $('#' + id).remove();
+            $('#' + id).remove();
             $modalDiv.modal('hide').removeClass('loading');
             //console.log( "Data Saved: " + msg );
             //console.log(tamzang_ajax_settings.ajaxurl);

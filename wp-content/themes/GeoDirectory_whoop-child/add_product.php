@@ -43,8 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         tamzang_save_images($product_id, $newArr);
       }
 
-      //wp_redirect(get_permalink($pid).'/#product_list');
-      wp_redirect(home_url('/add-product/') . '?pid='.$pid.'&product_id='.$product_id);
+      wp_redirect(get_permalink($pid).'/#product_list');
+      wp_redirect(home_url('/add-product/') . '?pid='.$post_id.'&product_id='.$product_id);
     }
     else{ // เพิ่ม Product
       $price = $_POST['price'];
@@ -149,7 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="geodir_form_row clearfix gd-fieldset-details" style="margin-top:10px;">
               <label>รายละเอียดสินค้า</label>
-              <textarea field_type="textarea" name="long_desc" id="long_desc" class="geodir_textarea"><?php echo $long_desc; ?></textarea>
+              <textarea field_type="textarea" name="long_desc" id="long_desc" class="geodir_textarea" maxlength="100"><?php echo $long_desc; ?></textarea>
             </div>
             <div class="geodir_form_row clearfix gd-fieldset-details" style="margin-top:10px;">
               <label>จำนวนสินค้า</label>
