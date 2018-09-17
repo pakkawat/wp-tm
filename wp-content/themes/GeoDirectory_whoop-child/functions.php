@@ -93,10 +93,8 @@ add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
 
 add_action('wp_enqueue_scripts','scripts_transfer_slip_picture');
 function scripts_transfer_slip_picture(){
-    if ( is_page_template('my_order.php') ) {
+    if ( is_page_template('my_order.php') || is_page_template('shop_order.php') ) {
         wp_enqueue_script( 'uploader-script', get_stylesheet_directory_uri() . '/js/uploader/jquery.dm-uploader.min.js' , array(), '1.0',  false );
-        //wp_enqueue_script( 'uploader-ui1', get_stylesheet_directory_uri() . '/js/uploader/ui/ui-main.js' , array(), '1.0',  false );
-        //wp_enqueue_script( 'uploader-ui2', get_stylesheet_directory_uri() . '/js/uploader/ui/ui-single.js' , array(), '1.0',  false );
     }
 }
 
@@ -952,6 +950,60 @@ function add_transfer_slip_picture_callback(){
 
     $return = array(
         'image' => $uploads['url'].'/slip/'.$data['order_id'] .'.'. $imageFileType,
+        'order_id'      => $data['order_id']
+    );
+
+    wp_send_json_success($return);
+  }else{
+    wp_send_json_error();
+  }
+  //wp_send_json_success();
+}
+
+add_action('wp_ajax_add_tracking_image', 'add_tracking_image_callback');
+
+function add_tracking_image_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+
+  //check the nonce
+  if ( check_ajax_referer( 'add_tracking_image_' . $data['order_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+
+  $post_id = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT post_id FROM orders where id = %d AND status != 99 ", array($data['order_id'])
+      )
+  );
+
+  if(geodir_listing_belong_to_current_user((int)$post_id))
+  {
+    //$target_dir = '/home/tamzang/domains/tamzang.com/public_html/Test02/wp-content/themes/GeoDirectory_whoop-child/images/upload/';
+    $uploads = wp_upload_dir();
+    $uploads_dir = $uploads['path'].'/tracking/'; //C:/path/to/wordpress/wp-content/uploads/2010/05/tracking
+    if (!file_exists($uploads_dir))
+    {
+      mkdir($uploads_dir);
+    }
+
+
+    $old_file_name = basename($_FILES["file"]["name"]);
+    $imageFileType = strtolower(pathinfo($old_file_name,PATHINFO_EXTENSION));
+    $target_file = $uploads_dir . $data['order_id'] .'.'. $imageFileType;
+    $image = $uploads['subdir'].'/tracking/'.$data['order_id'] .'.'. $imageFileType;
+    move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE orders SET tracking_image = %s where id = %d ",
+            array($image, $data['order_id'])
+        )
+    );
+
+    $return = array(
+        'image' => $uploads['url'].'/tracking/'.$data['order_id'] .'.'. $imageFileType,
         'order_id'      => $data['order_id']
     );
 

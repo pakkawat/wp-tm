@@ -150,7 +150,8 @@ jQuery(document).ready(function($){
     {
       ui_single_update_status(element, 'อัพโหลดเรียบร้อย', 'success');
       $('#slip_pic_'+data.data.order_id).attr('src', data.data.image);
-      $('#slip_pic_'+data.data.order_id).css("display", "inline");
+      $('#slip_pic_'+data.data.order_id).attr('data-src', data.data.image);
+      $('#div_slip_pic_'+data.data.order_id).css("display", "inline");
     }else
     {
       ui_single_update_status(element, 'อัพโหลดไม่ถูกต้อง', 'danger');
@@ -386,9 +387,27 @@ jQuery(document).ready(function($){
         $("#toggle_pic_"+id).slideToggle("slow");
     });
 
+    $('#image-modal').on('show.bs.modal', function(e) {
+        var data = $(e.relatedTarget).data();
+        $('#img-content').attr('src', data.src);
+    });
 
 });
 </script>
+
+<style>
+.img2 {
+    border: 1px solid #ddd; /* Gray border */
+    border-radius: 4px;  /* Rounded border */
+    padding: 5px; /* Some padding */
+    width: 150px; /* Set a small width */
+}
+
+/* Add a hover effect (blue shadow) */
+.img2:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+</style>
 
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
@@ -470,6 +489,16 @@ jQuery(document).ready(function($){
                       </div>
                   </div>
               </div>
+          </div>
+
+          <div id="image-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-body">
+                      <img id="img-content" src="">
+                  </div>
+              </div>
+            </div>
           </div>
 
           <?php
@@ -595,11 +624,24 @@ jQuery(document).ready(function($){
                 <div class="order-clear"></div>
 
                 <div class="order-row" id="toggle_pic_<?php echo $order->id; ?>" style="display:none;text-align:center;">
-                  <?php if($order->image_slip != ''){ ?>
-                    <img id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" />
-                  <?php }else{ ?>
-                    <img id="slip_pic_<?php echo $order->id; ?>" src="" style="display:none;" />
-                  <?php } ?>
+                  <div class="order-col-6">
+                    <?php if($order->image_slip != ''){ ?>
+                      <h2>หลักฐานการโอนเงิน</h2>
+                      <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" />
+                    <?php }else{ ?>
+                      <div id="div_slip_pic_<?php echo $order->id; ?>" style="display:none;">
+                        <h2>หลักฐานการโอนเงิน</h2>
+                        <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="" data-toggle="modal" data-target="#image-modal"  data-src="" />
+                      </div>
+                    <?php } ?>
+                  </div>
+                  <div class="order-col-6">
+                    <?php if($order->tracking_image != ''){ ?>
+                      <h2>หลักฐานการจัดส่ง</h2>
+                      <img class="img2" data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>"
+                      id="tracking_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>" />
+                    <?php } ?>
+                  </div>
                 </div>
                 <div class="order-clear"></div>
              </div>

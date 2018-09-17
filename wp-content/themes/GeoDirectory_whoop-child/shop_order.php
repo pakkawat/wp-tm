@@ -88,6 +88,166 @@ get_header(); ?>
 <script>
 jQuery(document).ready(function($){
 
+
+
+  function after_upload(element, data)
+  {
+    if(data.success)
+    {
+      ui_single_update_status(element, 'อัพโหลดเรียบร้อย', 'success');
+      $('#tracking_pic_'+data.data.order_id).attr('src', data.data.image);
+      $('#tracking_pic_'+data.data.order_id).attr('data-src', data.data.image);
+      $('#div_tracking_pic_'+data.data.order_id).css("display", "inline");
+    }else
+    {
+      ui_single_update_status(element, 'อัพโหลดไม่ถูกต้อง', 'danger');
+    }
+  }
+
+  function ui_single_update_active(element, active)
+  {
+    element.find('div.progress').toggleClass('d-none', !active);
+    element.find('input[type="text"]').toggleClass('d-none', active);
+
+    element.find('input[type="file"]').prop('disabled', active);
+    element.find('.btn').toggleClass('disabled', active);
+
+    element.find('.btn i').toggleClass('fa-circle-o-notch fa-spin', active);
+    element.find('.btn i').toggleClass('fa-folder-o', !active);
+  }
+
+  function ui_single_update_progress(element, percent, active)
+  {
+    active = (typeof active === 'undefined' ? true : active);
+
+    var bar = element.find('div.progress-bar');
+
+    bar.width(percent + '%').attr('aria-valuenow', percent);
+    bar.toggleClass('progress-bar-striped progress-bar-animated', active);
+
+    if (percent === 0){
+      bar.html('');
+    } else {
+      bar.html(percent + '%');
+    }
+  }
+
+  function ui_single_update_status(element, message, color)
+  {
+    color = (typeof color === 'undefined' ? 'muted' : color);
+
+    element.find('small.status').prop('class','status text-' + color).html(message);
+  }
+
+  $('#drag-and-drop-zone').dmUploader({ //
+    url: ajaxurl+'?action=add_tracking_image',
+    maxFileSize: 3000000, // 3 Megs max
+    multiple: false,
+    allowedTypes: 'image/*',
+    extFilter: ['jpg','jpeg','png'],
+    dataType: 'json',
+    extraData: function() {
+     return {
+       "order_id": $('#order_id').val(),
+       "nonce": $('#nonce').val()
+     };
+    },
+    onDragEnter: function(){
+      // Happens when dragging something over the DnD area
+      this.addClass('active');
+    },
+    onDragLeave: function(){
+      // Happens when dragging something OUT of the DnD area
+      this.removeClass('active');
+    },
+    onInit: function(){
+      // Plugin is ready to use
+      //this.find('input[type="text"]').val('');
+    },
+    onComplete: function(){
+      // All files in the queue are processed (success or error)
+
+    },
+    onNewFile: function(id, file){
+      // When a new file is added using the file selector or the DnD area
+
+
+      if (typeof FileReader !== "undefined"){
+        var reader = new FileReader();
+        var img = this.find('img');
+
+        reader.onload = function (e) {
+          img.attr('src', e.target.result);
+        }
+        reader.readAsDataURL(file);
+        img.css("display", "inline");
+      }
+    },
+    onBeforeUpload: function(id){
+      // about tho start uploading a file
+
+      ui_single_update_progress(this, 0, true);
+      //ui_single_update_active(this, true);
+
+      ui_single_update_status(this, 'Uploading...');
+    },
+    onUploadProgress: function(id, percent){
+      // Updating file progress
+      ui_single_update_progress(this, percent);
+    },
+    onUploadSuccess: function(id, data){
+      //var response = JSON.stringify(data);
+
+      // A file was successfully uploaded
+
+      //ui_single_update_active(this, false);
+
+      // You should probably do something with the response data, we just show it
+      //this.find('input[type="text"]').val(response);
+      after_upload(this, data);
+
+    },
+    onUploadError: function(id, xhr, status, message){
+      // Happens when an upload error happens
+      //ui_single_update_active(this, false);
+      ui_single_update_status(this, 'Error: ' + message, 'danger');
+    },
+    onFallbackMode: function(){
+      // When the browser doesn't support this plugin :(
+
+    },
+    onFileSizeError: function(file){
+      ui_single_update_status(this, 'ขนาดรูปภาพเกิน 3MB', 'danger');
+
+    },
+    onFileTypeError: function(file){
+      ui_single_update_status(this, 'ไฟล์ที่อัพโหลดต้องเป็นไฟล์รูปภาพเท่านั้น', 'danger');
+
+    },
+    onFileExtError: function(file){
+      ui_single_update_status(this, 'File extension not allowed', 'danger');
+
+    }
+  });
+
+  $('#add-tracking-pic').on('show.bs.modal', function(e) {
+      var data = $(e.relatedTarget).data();
+      $('.title', this).text(data.id);
+      //$('.btn-default', this).data('orderId', data.orderId);
+      $('#nonce', this).val(data.nonce);
+      $('#order_id', this).val(data.id);
+      //console.log($(this).find('.title').text());
+      var bar = $('#drag-and-drop-zone').find('div.progress-bar');
+      bar.width(0 + '%').attr('aria-valuenow', 0);
+      bar.html(0 + '%');
+
+      $('#drag-and-drop-zone', this).find('small.status').html('');
+      $('img', this).css("display", "none");
+  });
+
+
+
+
   jQuery(document).on("change", ".order-status", function(){
     var order_status = $(this).val();
     var order_id = $(this).data('id');
@@ -131,8 +291,28 @@ jQuery(document).ready(function($){
       $("#toggle_pic_"+id).slideToggle("slow");
   });
 
+
+  $('#image-modal').on('show.bs.modal', function(e) {
+      var data = $(e.relatedTarget).data();
+      $('#img-content').attr('src', data.src);
+  });
+
 });
 </script>
+
+<style>
+.img2 {
+    border: 1px solid #ddd; /* Gray border */
+    border-radius: 4px;  /* Rounded border */
+    padding: 5px; /* Some padding */
+    width: 150px; /* Set a small width */
+}
+
+/* Add a hover effect (blue shadow) */
+.img2:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+</style>
 
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
@@ -148,6 +328,70 @@ jQuery(document).ready(function($){
         </header>
         <?php // end article header ?>
         <section class="entry-content cf" itemprop="articleBody">
+
+
+
+          <div class="modal fade" id="add-tracking-pic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                          <h4 class="modal-title" id="myModalLabel">ยืนยันการจัดส่งสินค้า</h4>
+                      </div>
+                      <div class="modal-body">
+                          <p>กรุณาอัพโหลดรูปภาพหลักฐานการจัดส่งสินค้า #<b><i class="title"></i></b></p>
+
+                          <form class="mb-3 dm-uploader" id="drag-and-drop-zone">
+                            <div class="form-row">
+                              <div class="col-md-10 col-sm-12">
+                                <div class="from-group mb-2">
+                                  <div class="progress mb-2 d-none">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                      role="progressbar"
+                                      style="width: 0%;"
+                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="0">
+                                      0%
+                                    </div>
+                                  </div>
+
+                                </div>
+                                <div class="form-group">
+                                  <label for="file-upload" class="btn btn-primary">
+                                      <i class="fa fa-cloud-upload"></i> กรุณาเลือกไฟล์
+                                  </label>
+                                  <input id="file-upload" type="file" style="display:none;"/>
+                                  <small class="status text-muted">Select a file or drag it over this area..</small>
+                                </div>
+                              </div>
+                              <div class="col-md-2  d-md-block  d-sm-none">
+                                <img src="" >
+                              </div>
+                            </div>
+                            <input type="hidden" id="order_id" value="" />
+                            <input type="hidden" id="nonce" value="" />
+                          </form>
+
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+
+
+          <div id="image-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-body">
+                      <img id="img-content" src="">
+                  </div>
+              </div>
+            </div>
+          </div>
+
+
 
           <?php
 
@@ -262,18 +506,37 @@ jQuery(document).ready(function($){
                       >แสดงรูปภาพ</button>
                     </div>
                     <div class="order-col-4" style="text-align:right;min-height:1px;">
-
+                      <?php if($order->image_slip != ''){ ?>
+                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                          data-nonce="<?php echo wp_create_nonce( 'add_tracking_image_'.$order->id); ?>"
+                          data-toggle="modal" data-target="#add-tracking-pic"
+                        >อัพโหลดรูปภาพ</button>
+                      <?php } ?>
                     </div>
                   <?php } ?>
                 </div>
                 <div class="order-clear"></div>
 
                 <div class="order-row" id="toggle_pic_<?php echo $order->id; ?>" style="display:none;text-align:center;">
-                  <?php if($order->image_slip != ''){ ?>
-                    <img id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" />
-                  <?php }else{ ?>
-                    <img id="slip_pic_<?php echo $order->id; ?>" src="" style="display:none;" />
-                  <?php } ?>
+                  <div class="order-col-6">
+                    <?php if($order->image_slip != ''){ ?>
+                      <h2>หลักฐานการโอนเงิน</h2>
+                      <img class="img2" data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$order->image_slip; ?>"
+                      id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" />
+                    <?php }?>
+                  </div>
+                  <div class="order-col-6">
+                    <?php if($order->tracking_image != ''){ ?>
+                      <h2>หลักฐานการจัดส่ง</h2>
+                      <img class="img2" data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>"
+                      id="tracking_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>" />
+                    <?php }else{ ?>
+                      <div id="div_tracking_pic_<?php echo $order->id; ?>" style="display:none;">
+                        <h2>หลักฐานการจัดส่ง</h2>
+                        <img class="img2" id="tracking_pic_<?php echo $order->id; ?>"  src="" data-toggle="modal" data-target="#image-modal"  data-src="" />
+                      </div>
+                    <?php } ?>
+                  </div>
                 </div>
                 <div class="order-clear"></div>
              </div>
