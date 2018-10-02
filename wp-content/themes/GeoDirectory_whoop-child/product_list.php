@@ -96,7 +96,6 @@ if (isset($pid) && $pid != 0){
 
 <?php get_header(); ?>
 
-<style type="text/css" media="screen">a:visited { color:white; text-decoration: none; } a:hover{color:white;text-decoration:none;}</style>
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -108,7 +107,7 @@ if (isset($pid) && $pid != 0){
             <div style="width:50%;float:left;">
               <?php the_title(); ?>
             </div>
-            <a class="geodir_button" style="float:right;" href="<?php echo get_permalink($pid) ?>">ร้านค้า</a>
+            <a class="geodir_button" style="float:right;" href="<?php echo get_permalink($pid) ?>"><span style="color: #ffffff !important;" >ร้านค้า</span></a>
           </h1>
           <?php /*<p class="byline vcard"> <?php printf( __( 'Posted <time class="updated" datetime="%1$s" >%2$s</time> by <span class="author">%3$s</span>', GEODIRECTORY_FRAMEWORK ), get_the_time('c'), get_the_time(get_option('date_format')), get_the_author_link( get_the_author_meta( 'ID' ) )); ?> </p> */?>
         </header>
@@ -159,8 +158,8 @@ if (isset($pid) && $pid != 0){
                   echo '<td style="text-align:center;">'.($product->unlimited == '1' ? 'ใช่' : 'ไม่').'</td>';
                   $date = date_create($product->update_date);
                   echo '<td>'.date_format($date, 'd-m-Y H:i:s').'</td>';
-                  echo '<td style="text-align:center;"><a class="btn btn-primary btn-xs" href="'. home_url('/add-product/') . '?pid='.$pid .'&product_id='.$product->id.'">แก้ไข</a></td>';
-                  echo '<td style="text-align:center;"><a class="btn btn-danger btn-xs" href="#" data-record-id="'.$product->id.'" data-record-title="'.$product->name.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $product->id ).'" data-toggle="modal" data-target="#confirm-delete" >ลบ</a></td>';
+                  echo '<td style="text-align:center;"><a class="btn btn-primary btn-block" href="'. home_url('/add-product/') . '?pid='.$pid .'&product_id='.$product->id.'"><span style="color: #ffffff !important;" >แก้ไข</span></a></td>';
+                  echo '<td style="text-align:center;"><a class="btn btn-danger btn-block" href="#" data-record-id="'.$product->id.'" data-record-title="'.$product->name.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $product->id ).'" data-toggle="modal" data-target="#confirm-delete" ><span style="color: #ffffff !important;" >ลบ</span></a></td>';
                   echo '</tr>';
                 }
 

@@ -195,7 +195,11 @@ if ( is_single() ) {
             }
         });
 
-        function HideShop() {
+
+
+    });
+
+	function HideShop() {
           var x = document.getElementById("tamzang-shopping-cart");
           if (x.style.display === "none") {
               x.style.display = "block";
@@ -204,11 +208,9 @@ if ( is_single() ) {
           	x.style.display = "none";
           }
           else {
-            x.style.display = "block";
+            x.style.display = "none";
           }
         }
-
-    });
     </script>
 
     <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

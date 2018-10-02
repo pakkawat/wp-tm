@@ -548,10 +548,10 @@ function create_product_modal($post_id){
       $html .= '<div class="modal-content">';
       $html .= '<form method="POST" id="add_cart_' . $product->id . '" name="modal_add_cart">';
       $html .= '<div class="modal-header">';
-      $html .= '<h5 class="modal-title" id="exampleModalLabel">'.$product->name.'</h5>';
-      $html .= '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+      $html .= '<div class="order-col-9"><h3 class="modal-title" id="exampleModalLabel">'.$product->name.'</h3></div>';
+      $html .= '<div class="order-col-3"><button type="button" class="close" data-dismiss="modal" aria-label="Close">';
       $html .= '<span aria-hidden="true">&times;</span>';
-      $html .= '</button>';
+      $html .= '</button></div>';
       $html .= '</div>';
       $html .= '<div class="modal-body">';
       //$html .= json_encode(tamzang_get_product_images($product->id));
@@ -580,9 +580,12 @@ function create_product_modal($post_id){
       $html .= '<input type="hidden" name="action" value="add_to_cart"  />';
       $html .= '</div>';
       $html .= '<div class="modal-footer">';
-      //$html .= '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>';
+      $html .= '<div class="order-col-6" style="text-align: left;">';
+      $html .= '<h3>ราคา: '.$product->price.' บาท</h3>';
+      $html .= '</div>';
+      $html .= '<div class="order-col-6">';
       $html .= '<input type="submit" value="เพิ่มสินค้า" class="btn btn-primary"></input>';
-
+      $html .= '</div>';
       $html .= '</div>';
       $html .= '</form>';
       $html .= '</div>';

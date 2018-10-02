@@ -394,7 +394,33 @@ jQuery(document).ready(function($){
 
 });
 </script>
+<?php
+if(wp_is_mobile()){ // if mobile browser
+?>
+<style>
+@media only screen and (orientation: portrait){
+.page-id-225149 #container {
+   
+    height: 100vw;
 
+
+    -webkit-transform: rotate(90deg);
+
+    -moz-transform: rotate(90deg);
+
+    -o-transform: rotate(90deg);
+
+    -ms-transform: rotate(90deg);
+
+    transform: rotate(90deg);
+
+  }
+}
+</style>
+<?php
+}
+else { // desktop browser
+?>
 <style>
 .img2 {
     border: 1px solid #ddd; /* Gray border */
@@ -408,6 +434,12 @@ jQuery(document).ready(function($){
     box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
 </style>
+<?php
+}
+?>
+
+
+
 
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
@@ -508,8 +540,9 @@ jQuery(document).ready(function($){
           foreach ($arrOrders as $order) {
             set_query_var( 'order_status', $order->status );
 		      ?>
-
-          <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>">
+          <div style="padding:0; margin:0; width:auto; height:auto;">
+		  <!-- bank change div panel into 100% from 900px -->
+          <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>" style="width:100%;">
             <div class="panel-heading">
               <div class="order-col-3">
                 Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
@@ -648,7 +681,7 @@ jQuery(document).ready(function($){
           <?php } ?>
 
           </div>
-
+          </div>
 
 
 

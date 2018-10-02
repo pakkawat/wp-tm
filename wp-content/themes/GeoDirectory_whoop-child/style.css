@@ -368,6 +368,16 @@ form .error {
   /* top: 125px; */
 }
 
+/*20180806 bank Add hide button for shopping cart */
+.tamzang-shopping-cart-button{
+	  position: absolute;
+      right: 0;
+	  top: 12%;
+	  z-index :1;
+}
+
+/*
+
 @media only screen and (min-width: 400){
   .tamzang_cart{
     top: 286px;
@@ -391,12 +401,90 @@ form .error {
     top: 125px;
   }
 }
+*/
 
+/* VERY small Phone Screen */
+@media only screen and (max-width: 330px){
+	.tamzang_cart{
+    top: 335px;
+    display: none;
+  }
+  .tamzang-shopping-cart-button{
+	  top: 335px;
+  }
+}
+/* Iphone X/ 6/7/8 normal */
+/*  small Phone Screen */
+@media only screen and (min-width: 331px) and (max-width: 400px){
+	.tamzang_cart{
+    top: 287px;
+    display: none;
+
+  }
+  .tamzang-shopping-cart-button{
+	  top: 287px;
+  }
+}
+/* I phone 6/7/8 plus */
+/*  Normal Phone Screen */
+@media only screen and (min-width: 401px) and (max-width: 480px){
+	.tamzang_cart{
+    top: 287px;
+    display: none;
+  }
+  .tamzang-shopping-cart-button{
+	  top: 287px;
+  }
+}
+/*  Big Phone Screen */
+@media only screen and (min-width: 481px) and (max-width: 660px){
+	.tamzang_cart{
+    top: 287px;
+    display: none;
+  }
+  .tamzang-shopping-cart-button{
+	  top: 287px;
+  }
+}
+/*  Big phone */
+@media only screen and (min-width: 661px) and (max-width: 760px){
+	.tamzang_cart{
+    top: 235px;
+    display: none;
+  }
+  .tamzang-shopping-cart-button{
+	  top: 235px;
+  }
+}
+/*  iPad */
+@media only screen and (min-width: 761px) and (max-width: 860px){
+  .tamzang_cart{
+    top: 145px;
+  }
+   .tamzang-shopping-cart-button{
+	  top: 145px;
+  }
+}
+/*  PC Screen */
+@media only screen and (min-width: 861px) {
+  .tamzang_cart{
+    top: 125px;
+  }
+  .tamzang-shopping-cart-button{
+	  top: 125px;
+  }
+}
 
 .tamzang-cart-fixed{
   position: fixed;
   top:0px;
   margin-left: 1500px;
+}
+
+/*20180806 bank Add hide button for shopping cart */
+.tamzang-cart-button-fixed{
+  position: fixed;
+  top:0px;
 }
 
 
