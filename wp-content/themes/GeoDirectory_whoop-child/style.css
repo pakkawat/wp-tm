@@ -586,3 +586,13 @@ form .error {
   padding-right: 15px;
   padding-left: 15px;
 }
+
+
+/* Get direction on Google maps */
+#direction_button{
+    position: relative;
+    right: 40%;	 
+}
+.leaflet-top.leaflet-right{
+	display: none;
+}
