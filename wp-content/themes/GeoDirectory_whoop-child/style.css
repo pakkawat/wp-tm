@@ -464,9 +464,27 @@ form .error {
    .tamzang-shopping-cart-button{
 	  top: 145px;
   }
+  .geodir-listing-map-box-div {
+    position: relative;
+    top: 40px;
+    right: 230px;
+}
+.direction_button{
+		position: relative;
+    top: 60px;
+}
+}
+/* IPAD PRO*/
+@media only screen and (min-width: 861px)and (max-width: 1024px) {
+.direction_button{
+    position: relative;
+    top: 60px;
+    right: 290px;
+}
+	
 }
 /*  PC Screen */
-@media only screen and (min-width: 861px) {
+@media only screen and (min-width: 1025px) {
   .tamzang_cart{
     top: 125px;
   }
@@ -588,11 +606,13 @@ form .error {
 }
 
 
-/* Get direction on Google maps */
-#direction_button{
-    position: relative;
-    right: 40%;	 
-}
+/* hide top left of map */
+
 .leaflet-top.leaflet-right{
 	display: none;
+}
+
+/* hide static map from google */
+.geodir-listing-map-box-div img{
+	display: none!important;	
 }
