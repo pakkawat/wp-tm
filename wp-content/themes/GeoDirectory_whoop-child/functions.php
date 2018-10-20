@@ -1399,7 +1399,8 @@ function geodirectory_detail_page_google_map_link( $options ) {
         <?php
     }
 }
-add_action( 'geodir-whoop-listing-slider-div', 'geodirectory_detail_page_google_map_link',10,2);
+//add_action( 'geodir-whoop-listing-slider-div', 'geodirectory_detail_page_google_map_link',10,2);
+add_action( 'whoop_detail_page_hide_map', 'geodirectory_detail_page_google_map_link',10,2);
 
 
 ?>
