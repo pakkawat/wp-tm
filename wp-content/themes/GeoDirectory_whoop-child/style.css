@@ -616,3 +616,8 @@ form .error {
 .geodir-listing-map-box-div img{
 	display: none!important;	
 }
+
+/*hide Full Screen Map button */
+#detail_page_map_canvas_triggermap.triggermap.gd-triggered-map{
+	display: none;
+}
