@@ -464,15 +464,36 @@ form .error {
    .tamzang-shopping-cart-button{
 	  top: 145px;
   }
+  .geodir-listing-map-box-div {
+    position: relative;
+    top: 40px;
+    right: 230px;
+}
+.direction_button{
+		position: relative;
+    top: 60px;
+}
+}
+/* IPAD PRO*/
+@media only screen and (min-width: 861px)and (max-width: 1024px) {
+.direction_button{
+    position: relative;
+    top: 60px;
+    right: 290px;
+}
+	
 }
 /*  PC Screen */
-@media only screen and (min-width: 861px) {
+@media only screen and (min-width: 1025px) {
   .tamzang_cart{
     top: 125px;
   }
   .tamzang-shopping-cart-button{
 	  top: 125px;
   }
+  .tp-row-3 {
+    column-count: 3;
+    column-gap: 3em;
 }
 
 .tamzang-cart-fixed{
@@ -585,4 +606,21 @@ form .error {
   position: relative;
   padding-right: 15px;
   padding-left: 15px;
+}
+
+
+/* hide top left of map */
+
+.leaflet-top.leaflet-right{
+	display: none;
+}
+
+/* hide static map from google */
+.geodir-listing-map-box-div img{
+	display: none!important;	
+}
+
+/*hide Full Screen Map button */
+#detail_page_map_canvas_triggermap.triggermap.gd-triggered-map{
+	display: none;
 }
