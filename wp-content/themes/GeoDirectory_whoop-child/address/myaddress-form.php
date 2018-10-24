@@ -113,17 +113,18 @@ jQuery(document).ready(function($){
         url: ajaxurl,
         data: clikedForm.serialize(),
         success: function(msg){
+              if(msg.success){
+                $( "#address-content").load( ajaxurl+"?action=load_address_list", function( response, status, xhr ) {
+                  if ( status == "error" ) {
+                    var msg = "Sorry but there was an error: ";
+                    $( "#address-content" ).html( msg + xhr.status + " " + xhr.statusText );
+                  }
 
-              $( "#address-content").load( ajaxurl+"?action=load_address_list", function( response, status, xhr ) {
-                if ( status == "error" ) {
-                  var msg = "Sorry but there was an error: ";
-                  $( "#address-content" ).html( msg + xhr.status + " " + xhr.statusText );
-                }
-                $( "#address-content" ).toggleClass('order-status-loading');
-                console.log("Response: "+status);
-              });
+                  console.log("Response: "+status);
+                });
+              }
 
-
+              $( "#address-content" ).toggleClass('order-status-loading');
               //$('.wrapper-loading').toggleClass('cart-loading');
 
         },

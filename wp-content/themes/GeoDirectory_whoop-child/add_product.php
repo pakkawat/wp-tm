@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 <?php get_header(); ?>
-<style type="text/css" media="screen">a:visited { color:white; text-decoration: none; } a:hover{color:white;text-decoration:none;}</style>
+
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -122,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div style="width:50%;float:left;">
               <?php the_title(); ?>
             </div>
-            <a class="geodir_button" style="float:right;" href="<?php echo home_url('/product-list/').'?pid='.$pid ?>">หน้ารายการสินค้า</a>
+            <a class="geodir_button" style="float:right;" href="<?php echo home_url('/product-list/').'?pid='.$pid ?>"><span style="color: #ffffff !important;" >หน้ารายการสินค้า</span></a>
           </h1>
           <?php /*<p class="byline vcard"> <?php printf( __( 'Posted <time class="updated" datetime="%1$s" >%2$s</time> by <span class="author">%3$s</span>', GEODIRECTORY_FRAMEWORK ), get_the_time('c'), get_the_time(get_option('date_format')), get_the_author_link( get_the_author_meta( 'ID' ) )); ?> </p> */?>
         </header>

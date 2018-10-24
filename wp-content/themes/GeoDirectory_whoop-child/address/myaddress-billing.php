@@ -38,16 +38,17 @@ jQuery(document).ready(function($){
         data: clikedForm.serialize(),
         success: function(msg){
               //console.log( "user address Added: " + JSON.stringify(msg) );
-
-              $( "#address-content").load( ajaxurl+"?action=load_address_list", function( response, status, xhr ) {
-                if ( status == "error" ) {
-                  var msg = "Sorry but there was an error: ";
-                  $( "#address-content" ).html( msg + xhr.status + " " + xhr.statusText );
-                }
-                //console.log( "load_address_list: " + status );
-                $( "#address-content" ).toggleClass('order-status-loading');
-              });
-
+              if(msg.success){
+                $( "#address-content").load( ajaxurl+"?action=load_address_list", function( response, status, xhr ) {
+                  if ( status == "error" ) {
+                    var msg = "Sorry but there was an error: ";
+                    $( "#address-content" ).html( msg + xhr.status + " " + xhr.statusText );
+                  }
+                  //console.log( "load_address_list: " + status );
+                  
+                });
+              }
+              $( "#address-content" ).toggleClass('order-status-loading');
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
            //console.log(textStatus);

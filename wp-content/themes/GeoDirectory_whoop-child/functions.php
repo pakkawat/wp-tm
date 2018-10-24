@@ -499,8 +499,8 @@ function tamzang_get_product ($product = array()){
   if (!empty($product)){
     $html .= '<section>';
     if($product->featured_image != '')
-      $html .= '<img src="'.$uploads['baseurl'].$product->featured_image.'" />';
-    $html .= '<h2>'.$product->name.'</h2>';
+      $html .= '<img src="'.$uploads['baseurl'].$product->featured_image.'" style="width250px;height:250px;" />';
+    $html .= '<h3>'.$product->name.'</h3>';
     $html .= '<p>'.$product->short_desc.'</p>';
     $html .= '<aside>';
     $html .= '<ul>';
@@ -892,6 +892,53 @@ function update_order_status_callback(){
   } catch (Exception $e) {
       wp_send_json_error($e->getMessage());
   }
+
+  //wp_send_json_success($data);
+  //return $data;
+}
+
+//Ajax functions
+add_action('wp_ajax_user_received_product', 'user_received_product_callback');
+
+function user_received_product_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  //check the nonce
+  if ( check_ajax_referer( 'user_received_product_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  $order_id = $data['id'];
+  $order_owner = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT wp_user_id FROM orders where id = %d", array($order_id)
+      )
+  );
+
+  if($current_user->ID == $order_owner)
+  {
+    try {
+
+      $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE orders SET status = %d where id = %d ",
+              array(4, $order_id)
+          )
+      );
+
+      wp_send_json_success($data);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+  }else{
+    wp_send_json_error();
+  }
+
 
   //wp_send_json_success($data);
   //return $data;
@@ -1384,6 +1431,120 @@ function tamzang_user_address_screen_content()
   </div>
   <?php
 }
+
+function tamzang_bp_user_shop_nav_adder()
+{
+    global $bp;
+    if (bp_is_user()) {
+        $user_id = $bp->displayed_user->id;
+    } else {
+        $user_id = 0;
+    }
+    if ($user_id == 0) {
+        return;
+    }
+
+    //$screen_function = tamzang_user_address();
+
+    bp_core_new_nav_item(
+        array(
+            'name' => 'ร้านค้าของฉัน',
+            'slug' => 'myshop',
+            'position' => 101,
+            'show_for_displayed_user' => false,
+            'screen_function' => 'tamzang_user_shop_screen',
+            'item_css_id' => 'lists',
+            'default_subnav_slug' => 'myshop'
+        ));
+}
+
+add_action('bp_setup_nav', 'tamzang_bp_user_shop_nav_adder',101);
+
+function tamzang_user_shop_screen()
+{
+  //add_action( 'bp_template_title', 'tamzang_user_shop_screen_title' );
+  add_action( 'bp_template_content', 'tamzang_user_shop_screen_content' );
+  bp_core_load_template(apply_filters('bp_core_template_plugin', 'members/single/plugins'));
+}
+
+function tamzang_user_shop_screen_title()
+{
+  ?>
+  <h1>ร้านค้าของฉัน</h1>
+
+  <?php
+}
+
+function tamzang_user_shop_screen_content()
+{
+  global $wpdb, $current_user;
+
+  $args = array(
+    'author'        =>  $current_user->ID,
+    'orderby'       =>  'post_date',
+    'order'         =>  'ASC',
+    'post_per_page' => '-1',
+  );
+
+
+  $my_shops = get_posts( $args );
+  //$my_shops = get_posts(array('author'=>$current_user->ID));
+
+  $my_query = new WP_Query( array(
+      'post_type' => 'gd_place',
+      'order'             => 'ASC',
+      'orderby'           => 'title',
+      'author' => $current_user->ID,
+      'post_per_page' => -1,
+      'nopaging' => true
+  ) );
+
+  if ( $my_query->have_posts() ) {
+
+    ?>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <th>ชื่อร้านค้า</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </thead>
+        <tbody>
+
+        <?php
+
+        while ( $my_query->have_posts() ) {
+
+            $my_query->the_post();
+            echo '<tr>';
+            echo '<td>';
+            echo '<a href="' .get_permalink(). ' ">';
+            the_title();
+            echo '</a>';
+            echo '</td>';
+            echo '<td style="text-align:center;"><a class="btn btn-info btn-block" href="'. home_url('/shop-order/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >รายการสั่งซื้อของร้าน</span></a></td>';
+            echo '<td style="text-align:center;"><a class="btn btn-success btn-block" href="'. home_url('/add-product/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >เพิ่มสินค้า</span></a></td>';
+            echo '<td style="text-align:center;"><a class="btn btn-primary btn-block" href="'. home_url('/product-list/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >แก้ไขสินค้า</span></a></td>';
+            echo '</tr>';
+
+        }
+
+
+        ?>
+
+        </tbody>
+      </table>
+    </div>
+
+    <?php
+
+
+  }
+
+}
+
 
 
 ?>

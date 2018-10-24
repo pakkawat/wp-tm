@@ -98,6 +98,11 @@
                                   </a>
                               </li>
                               <li class="whoop-dd-menu-link">
+                                  <a href="<?php echo bp_get_loggedin_user_link().'myshop/'; ?>">
+                                      <i class="fa fa-user"></i> <?php echo 'ร้านค้าของฉัน'; ?>
+                                  </a>
+                              </li>
+                              <li class="whoop-dd-menu-link">
                                   <a href="<?php echo $user_link; ?>">
                                       <i class="fa fa-user"></i> <?php echo __('About Me', GEODIRECTORY_FRAMEWORK); ?>
                                   </a>
@@ -296,6 +301,11 @@
                             <li class="whoop-dd-menu-link">
                                 <a href="<?php echo home_url('/my-order/'); ?>">
                                     <i class="fa fa-user"></i> <?php echo 'รายการสั่งซื้อสินค้าของฉัน'; ?>
+                                </a>
+                            </li>
+                            <li class="whoop-dd-menu-link">
+                                <a href="<?php echo bp_get_loggedin_user_link().'myshop/'; ?>">
+                                    <i class="fa fa-user"></i> <?php echo 'ร้านค้าของฉัน'; ?>
                                 </a>
                             </li>
                             <li class="whoop-dd-menu-link">

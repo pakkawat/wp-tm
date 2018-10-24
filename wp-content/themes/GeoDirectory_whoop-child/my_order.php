@@ -1,11 +1,11 @@
 <?php /* Template Name: My order */ ?>
 <?php
 
-function get_my_orders($PERPAGE_LIMIT) {
+function get_my_orders($PERPAGE_LIMIT, $filter) {
   global $wpdb, $current_user;
 
-  $sql = "SELECT * FROM orders where wp_user_id = ".$current_user->ID." ";
-  $sql2 = "SELECT count(id) FROM orders where wp_user_id = ".$current_user->ID." ";
+  $sql = "SELECT * FROM orders where wp_user_id = ".$current_user->ID." ".($filter != '' ? 'AND status='.$filter : '');
+  $sql2 = "SELECT count(id) FROM orders where wp_user_id = ".$current_user->ID." ".($filter != '' ? 'AND status='.$filter : '');
   //$sql = "SELECT * FROM wp_terms ";
   //$sql2 = "SELECT count(term_id) FROM wp_terms ";
 
@@ -23,11 +23,12 @@ function get_my_orders($PERPAGE_LIMIT) {
   $result  = $wpdb->get_results( $sql );
   $count   = $wpdb->get_var( $sql2 );
   //file_put_contents( dirname(__FILE__).'/debug/debug_insert_images_.log', var_export( $count, true));
-  //echo '<h1>'.$sql.'</h1>';
+  //echo '<h1>sql: '.$sql.'</h1>';
+  //echo '<h1>sql2: '.$sql2.'</h1>';
   return array($result, $count);
 }
 
-function pagination($count, $PERPAGE_LIMIT) {
+function pagination($count, $PERPAGE_LIMIT, $filter) {
   $output = '';
   $href = home_url('/my-order/').'?';
   if(!isset($_REQUEST["pageNumber"])) $_REQUEST["pageNumber"] = 1;
@@ -38,10 +39,10 @@ function pagination($count, $PERPAGE_LIMIT) {
   //if pages exists after loop's lower limit
   if($pages>1) {
     if(($_REQUEST["pageNumber"]-3)>0) {
-      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber=1">1</a></li>';
+      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber=1'.($filter != '' ? '&status='.$filter : '').'">1</a></li>';
     }
     if(($_REQUEST["pageNumber"]-3)>1) {
-      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.($_REQUEST["pageNumber"]-1).'"><strong>&lt;</strong></a></li>';
+      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.($_REQUEST["pageNumber"]-1).($filter != '' ? '&status='.$filter : '').'"><strong>&lt;</strong></a></li>';
     }
 
     //Loop for provides links for 2 pages before and after current page
@@ -51,18 +52,18 @@ function pagination($count, $PERPAGE_LIMIT) {
       if($_REQUEST["pageNumber"] == $i)
         $output = $output . '<li class="page-item active"><a href="#">'.$i.'</a></li>';
       else
-        $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.$i .'">'.$i.'</a></li>';
+        $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.$i .($filter != '' ? '&status='.$filter : '').'">'.$i.'</a></li>';
     }
 
     //if pages exists after loop's upper limit
     if(($pages-($_REQUEST["pageNumber"]+2))>1) {
-      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.($_REQUEST["pageNumber"]+1).'"><strong>&gt;</strong></a></li>';
+      $output = $output . '<li class="page-item"><a href="' . $href . 'pageNumber='.($_REQUEST["pageNumber"]+1).($filter != '' ? '&status='.$filter : '').'"><strong>&gt;</strong></a></li>';
     }
     if(($pages-($_REQUEST["pageNumber"]+2))>0) {
       if($_REQUEST["pageNumber"] == $pages)
         $output = $output . '<li class="page-item active"><a href="#">' . ($pages) .'</a></li>';
       else
-        $output = $output . '<li class="page-item"><a href="' . $href .'pageNumber='.($pages) .'">' . ($pages) .'</a></li>';
+        $output = $output . '<li class="page-item"><a href="' . $href .'pageNumber='.($pages) .($filter != '' ? '&status='.$filter : '').'">' . ($pages) .'</a></li>';
     }
 
   }
@@ -73,6 +74,16 @@ function pagination($count, $PERPAGE_LIMIT) {
 
 global $wpdb, $current_user;
 $PERPAGE_LIMIT = 5;
+if(isset($_GET['status'])){
+  $filter = $_GET['status'];
+  $array_status = array(1, 2, 3, 4, 99);
+  if(!in_array($filter, $array_status)){
+    $filter = '';
+  }
+}
+else{
+  $filter = '';
+}
 
 if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['post_id'])){// สร้าง order
   $arrProducts = tamzang_get_all_products_in_cart($current_user->ID, $_POST['post_id']);
@@ -299,45 +310,33 @@ jQuery(document).ready(function($){
       $('img', this).css("display", "none");
   });
 
-
-
-
-
-
-
-  jQuery(document).on("change", ".order-status", function(){
-    var order_status = $(this).val();
+  jQuery(document).on("click", ".received-product", function(){
     var order_id = $(this).data('id');
     var nonce = $(this).data('nonce');
-    console.log(order_status+"--"+order_id+"--"+nonce);
 
-
-    $('.wrapper-loading').toggleClass('cart-loading');
-    var send_data = 'action=update_order_status&id='+order_id+'&nonce='+nonce+'&status='+order_status;
+    $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
+    var send_data = 'action=user_received_product&id='+order_id+'&nonce='+nonce;
 
     $.ajax({
       type: "POST",
       url: ajaxurl,
       data: send_data,
       success: function(msg){
-            console.log( "Updated status callback: " + JSON.stringify(msg) );
+            //console.log( "Updated status callback: " + JSON.stringify(msg) );
+            if(msg.success){
+              $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+4, function( response, status, xhr ) {
+                if ( status == "error" ) {
+                  var msg = "Sorry but there was an error: ";
+                  $( "#status_"+order_id ).html( msg + xhr.status + " " + xhr.statusText );
+                }
 
-            $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+order_status, function( response, status, xhr ) {
-              if ( status == "error" ) {
-                var msg = "Sorry but there was an error: ";
-                $( "#status_"+order_id ).html( msg + xhr.status + " " + xhr.statusText );
-              }
-              console.log( "load_order_status: " + status );
-              $('.wrapper-loading').toggleClass('cart-loading');
-            });
-
-
-            //$('.wrapper-loading').toggleClass('cart-loading');
-
+              });
+            }
+            $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
          console.log(textStatus);
-         $('.wrapper-loading').toggleClass('cart-loading');
+         $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
       }
     });
 
@@ -350,8 +349,6 @@ jQuery(document).ready(function($){
     var nonce = $(this).data('nonce');
     console.log( "ยกเลิก order: " + order_id );
 
-
-
     var send_data = 'action=update_order_status&id='+order_id+'&nonce='+nonce+'&status='+99;
     $.ajax({
         type: "POST",
@@ -359,9 +356,11 @@ jQuery(document).ready(function($){
         data: send_data,
         success: function(msg){
               console.log( "Order cancel: " + JSON.stringify(msg) );
-              $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
-              $( "#panel_"+order_id ).find(".panel-footer").remove();
-              $( "#status_"+order_id ).html('<div class="order-row" style="text-align:center;"><h1>ยกเลิก</h1></div>');
+              if(msg.success){
+                $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
+                $( "#panel_"+order_id ).find(".panel-footer").remove();
+                $( "#status_"+order_id ).html('<div class="order-row" style="text-align:center;"><h1>ยกเลิก</h1></div>');
+              }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
            console.log(textStatus);
@@ -400,7 +399,7 @@ if(wp_is_mobile()){ // if mobile browser
 <style>
 @media only screen and (orientation: portrait){
 .page-id-225149 #container {
-   
+
     height: 100vw;
 
 
@@ -448,9 +447,32 @@ else { // desktop browser
 
       <article role="article">
         <header class="article-header">
-          <h1 class="page-title entry-title" itemprop="headline">
-            <?php the_title(); ?>
-          </h1>
+          <div class="order-row">
+            <div class="order-col-6">
+              <h1 class="page-title entry-title" itemprop="headline">
+                <?php the_title(); ?>
+              </h1>
+            </div>
+            <div class="order-col-6">
+              <div class="order-col-3" style="text-align:righ;">
+                สถานะ:
+              </div>
+              <div class="order-col-9">
+                <form name="status">
+                  <select name="menu" onChange="window.document.location.href=this.options[this.selectedIndex].value;" value="GO">
+                      <option value="<?php echo home_url('/my-order/');?>" selected="selected">ทั้งหมด</option>
+                      <option value="<?php echo home_url('/my-order/').'?status=1';?>" <?php if ($filter == 1) echo ' selected="selected" '; ?>>รอการจ่ายเงิน</option>
+                      <option value="<?php echo home_url('/my-order/').'?status=2';?>" <?php if ($filter == 2) echo ' selected="selected" '; ?>>ยืนยันการจ่ายเงิน</option>
+                      <option value="<?php echo home_url('/my-order/').'?status=3';?>" <?php if ($filter == 3) echo ' selected="selected" '; ?>>ทำการจัดส่งแล้ว</option>
+                      <option value="<?php echo home_url('/my-order/').'?status=4';?>" <?php if ($filter == 4) echo ' selected="selected" '; ?>>ได้รับสินค้าแล้ว</option>
+                      <option value="<?php echo home_url('/my-order/').'?status=99';?>" <?php if ($filter == 99) echo ' selected="selected" '; ?>>ยกเลิก</option>
+                  </select>
+                </form>
+              </div>
+              <div class="order-clear"></div>
+            </div>
+          </div>
+          <div class="order-clear"></div>
           <?php /*<p class="byline vcard"> <?php printf( __( 'Posted <time class="updated" datetime="%1$s" >%2$s</time> by <span class="author">%3$s</span>', GEODIRECTORY_FRAMEWORK ), get_the_time('c'), get_the_time(get_option('date_format')), get_the_author_link( get_the_author_meta( 'ID' ) )); ?> </p> */?>
         </header>
         <?php // end article header ?>
@@ -535,10 +557,12 @@ else { // desktop browser
 
           <?php
 
-          list($arrOrders, $count) = get_my_orders($PERPAGE_LIMIT);
+          list($arrOrders, $count) = get_my_orders($PERPAGE_LIMIT, $filter);
 
           foreach ($arrOrders as $order) {
             set_query_var( 'order_status', $order->status );
+            set_query_var( 'my_order', true );
+            set_query_var( 'id', $order->id );
 		      ?>
           <div style="padding:0; margin:0; width:auto; height:auto;">
 		  <!-- bank change div panel into 100% from 900px -->
@@ -688,7 +712,7 @@ else { // desktop browser
         <?php }//end foreach ($arrOrders as $order) ?>
         </section>
         <?php // end article section ?>
-        <footer class="article-footer cf"><?php echo pagination($count, $PERPAGE_LIMIT); ?></footer>
+        <footer class="article-footer cf"><?php echo pagination($count, $PERPAGE_LIMIT, $filter); ?></footer>
       </article>
 
     </div>

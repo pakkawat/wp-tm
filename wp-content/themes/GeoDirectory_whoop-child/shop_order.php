@@ -264,18 +264,17 @@ jQuery(document).ready(function($){
       data: send_data,
       success: function(msg){
             console.log( "Updated status callback: " + JSON.stringify(msg) );
+            if(msg.success){
+              $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+order_status, function( response, status, xhr ) {
+                if ( status == "error" ) {
+                  var msg = "Sorry but there was an error: ";
+                  $( "#status_"+order_id ).html( msg + xhr.status + " " + xhr.statusText );
+                }
+                console.log( "load_order_status: " + status );
 
-            $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+order_status, function( response, status, xhr ) {
-              if ( status == "error" ) {
-                var msg = "Sorry but there was an error: ";
-                $( "#status_"+order_id ).html( msg + xhr.status + " " + xhr.statusText );
-              }
-              console.log( "load_order_status: " + status );
-              $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
-            });
-
-
-            //$('.wrapper-loading').toggleClass('cart-loading');
+              });
+            }
+            $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
 
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {

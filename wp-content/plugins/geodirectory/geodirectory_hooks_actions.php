@@ -484,7 +484,7 @@ function geodir_edit_post_link()
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . esc_url($editlink) . '">' . __('Edit this Post', 'geodirectory') . '</a></p>';
         }
         else{
-          echo ' <p class="edit_link"><i class="fa fa-pencil"></i> ' . do_shortcode( '[popup_anything id="2157"]' ) . '</p>';
+          echo ' <p class="edit_link"><i class="fa fa-pencil"></i> ' . do_shortcode( '[popup_anything id="34987"]' ) . '</p>';
         }
     }// end of if, if its a preview or not
     /**

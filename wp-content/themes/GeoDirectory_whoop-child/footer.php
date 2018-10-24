@@ -46,24 +46,26 @@ if ( is_single() ) {
             url: geodir_var.geodir_ajax_url,
             data: send_data,
             success: function(msg){
-                  var total = msg;
-                  console.log( "Data deleted: " + JSON.stringify(msg) );
-                  console.log( "Data deleted: " + total.data );
-                  $("#tamzang_cart_count").html(total.data);
-                  $button.closest('.sp-quantity').find("input.quntity-input").val(newVal);
-                  $("#"+id+"-total").text(parseInt($("#"+id+"-price").text())*parseInt(newVal));
+                  if(msg.success){
+                    var total = msg;
+                    console.log( "Data deleted: " + JSON.stringify(msg) );
+                    console.log( "Data deleted: " + total.data );
+                    $("#tamzang_cart_count").html(total.data);
+                    $button.closest('.sp-quantity').find("input.quntity-input").val(newVal);
+                    $("#"+id+"-total").text(parseInt($("#"+id+"-price").text())*parseInt(newVal));
 
-                  columnTh = $("table th:contains('ทั้งหมด')");
-                  columnIndex = columnTh.index() + 1;
-                  var sum = 0;
-                  $('table tr td:nth-child(' + columnIndex + ')').each(function() {
-                    //var column = $(this).html();
-                    var total = $("[id$='-total']", $(this).html());
-                    if (typeof total.html() !== "undefined")
-                      sum += parseInt(total.html());
-                    //console.log( found.html() );
-                  });
-                  $("#sum").text(sum);
+                    columnTh = $("table th:contains('ทั้งหมด')");
+                    columnIndex = columnTh.index() + 1;
+                    var sum = 0;
+                    $('table tr td:nth-child(' + columnIndex + ')').each(function() {
+                      //var column = $(this).html();
+                      var total = $("[id$='-total']", $(this).html());
+                      if (typeof total.html() !== "undefined")
+                        sum += parseInt(total.html());
+                      //console.log( found.html() );
+                    });
+                    $("#sum").text(sum);
+                  }
 
                   $('.wrapper-loading').toggleClass('cart-loading');
                   //console.log( "Data Saved: " + msg );
@@ -101,23 +103,24 @@ if ( is_single() ) {
           url: geodir_var.geodir_ajax_url,
           data: send_data,
           success: function(msg){
-                console.log( "Data deleted: " + JSON.stringify(msg) );
-                $('#' + id).remove();
-                var total = msg;
-                $("#tamzang_cart_count").html(total.data);
+                if(msg.success){
+                  console.log( "Data deleted: " + JSON.stringify(msg) );
+                  $('#' + id).remove();
+                  var total = msg;
+                  $("#tamzang_cart_count").html(total.data);
 
-                columnTh = $("table th:contains('ทั้งหมด')");
-                columnIndex = columnTh.index() + 1;
-                var sum = 0;
-                $('table tr td:nth-child(' + columnIndex + ')').each(function() {
-                  //var column = $(this).html();
-                  var total = $("[id$='-total']", $(this).html());
-                  if (typeof total.html() !== "undefined")
-                    sum += parseInt(total.html());
-                  //console.log( found.html() );
-                });
-                $("#sum").text(sum);
-
+                  columnTh = $("table th:contains('ทั้งหมด')");
+                  columnIndex = columnTh.index() + 1;
+                  var sum = 0;
+                  $('table tr td:nth-child(' + columnIndex + ')').each(function() {
+                    //var column = $(this).html();
+                    var total = $("[id$='-total']", $(this).html());
+                    if (typeof total.html() !== "undefined")
+                      sum += parseInt(total.html());
+                    //console.log( found.html() );
+                  });
+                  $("#sum").text(sum);
+                }
 
                 $modalDiv.modal('hide').removeClass('loading');
                 //console.log( "Data Saved: " + msg );
