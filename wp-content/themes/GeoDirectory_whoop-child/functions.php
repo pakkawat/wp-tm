@@ -1432,6 +1432,7 @@ function tamzang_user_address_screen_content()
   <?php
 }
 
+<<<<<<< HEAD
 function tamzang_bp_user_shop_nav_adder()
 {
     global $bp;
@@ -1545,6 +1546,8 @@ function tamzang_user_shop_screen_content()
 
 }
 
+=======
+>>>>>>> d75f8e95e43af9fac49db0fed208ce8422818145
 
 
 ?>
