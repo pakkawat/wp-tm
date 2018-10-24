@@ -491,6 +491,9 @@ form .error {
   .tamzang-shopping-cart-button{
 	  top: 125px;
   }
+  .tp-row-3 {
+    column-count: 3;
+    column-gap: 3em;
 }
 
 .tamzang-cart-fixed{
