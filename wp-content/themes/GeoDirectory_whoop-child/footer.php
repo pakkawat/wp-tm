@@ -306,7 +306,9 @@ if ( is_single() ) {
     </div>
     <?php } ?>
 
-    <button class = 'tamzang-shopping-cart-button' id="tamzang-shopping-cart-button" onclick="HideShop()">Try it</button>
+    <p class="tamzang-shopping-cart-button" id="tamzang-shopping-cart-button" onclick="HideShop()">
+      <img src="https://www.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/images/shop2.png" alt="ตามสั่ง">
+    </p>
     <div class="tamzang_cart" id="tamzang-shopping-cart">
       <div class="wrapper-loading" id="table-my-cart">
         <?php get_template_part( 'ajax-cart' ); ?>

@@ -1480,17 +1480,6 @@ function tamzang_user_shop_screen_content()
 {
   global $wpdb, $current_user;
 
-  $args = array(
-    'author'        =>  $current_user->ID,
-    'orderby'       =>  'post_date',
-    'order'         =>  'ASC',
-    'post_per_page' => '-1',
-  );
-
-
-  $my_shops = get_posts( $args );
-  //$my_shops = get_posts(array('author'=>$current_user->ID));
-
   $my_query = new WP_Query( array(
       'post_type' => 'gd_place',
       'order'             => 'ASC',
@@ -1546,7 +1535,7 @@ function tamzang_user_shop_screen_content()
 
 }
 
-
+	// Make Google map direction
 function geodirectory_detail_page_google_map_link( $options ) {
     global $post;
 
@@ -1556,7 +1545,9 @@ function geodirectory_detail_page_google_map_link( $options ) {
                         'sll' => $post->post_latitude . ',' . $post->post_longitude,
                     ), 'http://maps.google.com/' );
         ?>
+        <div class="direction_button">
         <p><a href="<?php echo $maps_url; ?>" target="_blank"><input type=button id=direction_button value='Get Directions on Google Maps'></a></p>
+        </div>
         <?php
     }
 }
