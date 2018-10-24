@@ -486,7 +486,8 @@ form .error {
 /*  PC Screen */
 @media only screen and (min-width: 1025px) {
   .tamzang_cart{
-    top: 125px;
+    top: 150px;
+   /* width: 385px;*/
   }
   .tamzang-shopping-cart-button{
 	  top: 125px;
@@ -622,5 +623,11 @@ form .error {
 
 /*hide Full Screen Map button */
 #detail_page_map_canvas_triggermap.triggermap.gd-triggered-map{
+	display: none;
+}
+
+/* hide link website*/
+.geodir_more_info.geodir_website
+{
 	display: none;
 }
