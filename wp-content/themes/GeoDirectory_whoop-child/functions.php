@@ -1432,7 +1432,7 @@ function tamzang_user_address_screen_content()
   <?php
 }
 
-<<<<<<< HEAD
+
 function tamzang_bp_user_shop_nav_adder()
 {
     global $bp;
@@ -1546,8 +1546,7 @@ function tamzang_user_shop_screen_content()
 
 }
 
-=======
-// Make Google map direction
+
 function geodirectory_detail_page_google_map_link( $options ) {
     global $post;
 
@@ -1563,7 +1562,7 @@ function geodirectory_detail_page_google_map_link( $options ) {
 }
 //add_action( 'geodir-whoop-listing-slider-div', 'geodirectory_detail_page_google_map_link',10,2);
 add_action( 'whoop_detail_page_hide_map', 'geodirectory_detail_page_google_map_link',10,2);
->>>>>>> d75f8e95e43af9fac49db0fed208ce8422818145
+
 
 
 ?>
