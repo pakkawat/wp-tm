@@ -412,6 +412,16 @@ form .error {
   .tamzang-shopping-cart-button{
 	  top: 335px;
   }
+  .whoop-btn-group{
+	top: -50px;
+    position: relative;
+    left: 110px;
+}
+	.direction_button{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+  
 }
 /* Iphone X/ 6/7/8 normal */
 /*  small Phone Screen */
@@ -419,11 +429,21 @@ form .error {
 	.tamzang_cart{
     top: 287px;
     display: none;
-
-  }
+}
   .tamzang-shopping-cart-button{
 	  top: 287px;
-  }
+}
+
+	.whoop-btn-group{
+	top: -50px;
+    position: relative;
+    left: 110px;
+}
+	.direction_button{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 }
 /* I phone 6/7/8 plus */
 /*  Normal Phone Screen */
@@ -435,6 +455,15 @@ form .error {
   .tamzang-shopping-cart-button{
 	  top: 287px;
   }
+  	.whoop-btn-group{
+	top: -50px;
+    position: relative;
+    left: 110px;
+}
+	.direction_button{
+	padding-left: 10px;
+	padding-right: 10px;
+}
 }
 /*  Big Phone Screen */
 @media only screen and (min-width: 481px) and (max-width: 660px){
@@ -442,9 +471,26 @@ form .error {
     top: 287px;
     display: none;
   }
-  .tamzang-shopping-cart-button{
+	.tamzang-shopping-cart-button{
 	  top: 287px;
   }
+	.geodir-big-header-ratings{
+	height: 50px;
+}
+	.whoop-btn-group{
+	top: -50px;
+    position: relative;
+    left: 110px;
+}
+	.geodir-big-header-buttons{
+	width: 300px;
+    height: 50px;
+}
+	.direction_button{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 }
 /*  Big phone */
 @media only screen and (min-width: 661px) and (max-width: 760px){
@@ -455,6 +501,34 @@ form .error {
   .tamzang-shopping-cart-button{
 	  top: 235px;
   }
+  .direction_button.p{
+	margin: 0;
+}
+	.direction_button{
+	position: relative;
+    top: 150px;
+    left: 0px;
+}
+	.geodir-listing-map-inner-div{
+		position: relative;
+    top: 10px;
+		margin: 10px;
+		width: 300px;
+	}
+	.geodir-listing-map-div.geodir-common.clearfix{
+		height: 362px;
+	}
+	.whoop-photo{
+		position: absolute!important;
+		margin: -15px;
+	}
+	.whoop-photo.whoop-photo-2{
+		right: -23px
+	}
+	.whoop-photo.whoop-photo-3{
+		left:440px;
+	}
+  
 }
 /*  iPad */
 @media only screen and (min-width: 761px) and (max-width: 860px){
@@ -470,9 +544,12 @@ form .error {
     right: 230px;
 }
 .direction_button{
-		position: relative;
-    top: 60px;
+	position: relative;
+    top: 150px;
+    left: 0px;
 }
+
+
 }
 /* IPAD PRO*/
 @media only screen and (min-width: 861px)and (max-width: 1024px) {
