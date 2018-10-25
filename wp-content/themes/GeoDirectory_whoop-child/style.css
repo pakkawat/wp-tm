@@ -518,6 +518,9 @@ form .error {
     left:350px
 }
 */
+#direction_button{
+    top: 55px;
+}
 	.geodir-listing-map-inner-div{
 		position: relative;
     top: 10px;
