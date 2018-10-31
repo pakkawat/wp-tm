@@ -422,6 +422,10 @@ form .error {
 	padding-left: 10px;
 	padding-right: 10px;
 }*/
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
   
 }
 /* Iphone X/ 6/7/8 normal */
@@ -447,6 +451,11 @@ form .error {
 }
 */
 
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
+
 }
 /* I phone 6/7/8 plus */
 /*  Normal Phone Screen */
@@ -469,6 +478,13 @@ form .error {
 	padding-right: 10px;
 }
 */
+
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
+
+
 }
 /*  Big Phone Screen */
 @media only screen and (min-width: 481px) and (max-width: 660px){
@@ -497,6 +513,11 @@ form .error {
     padding-right: 10px;
 }
 */
+
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
 
 }
 /*  Big phone Nexus*/
@@ -541,7 +562,11 @@ form .error {
 	.whoop-photo.whoop-photo-3{
 		left:440px;
 	}
-  
+	
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
 }
 /*  iPad */
 @media only screen and (min-width: 761px) and (max-width: 860px){
@@ -560,6 +585,10 @@ form .error {
 	top: 35px
 }
 
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
 
 }
 /* IPAD PRO*/
@@ -569,7 +598,12 @@ form .error {
     top: 60px;
     right: 290px;
 }
-	
+
+/* hide Widget Footer*/ 
+.tp-row-3 {
+    display:none;
+}
+
 }
 /*  PC Screen */
 @media only screen and (min-width: 1025px) {
