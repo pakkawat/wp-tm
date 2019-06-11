@@ -1677,9 +1677,9 @@ function geodirectory_detail_page_google_map_link( $options ) {
                         'sll' => $post->post_latitude . ',' . $post->post_longitude,
                     ), 'http://maps.google.com/' );
         ?>
-        <div class="direction_button">
+        
         <p><a href="<?php echo $maps_url; ?>" target="_blank"><input type=button id=direction_button value='Get Directions on Google Maps'></a></p>
-        </div>
+        
         <?php
     }
 }
