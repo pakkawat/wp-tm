@@ -3,6 +3,8 @@
 
 if ( is_single() ) {
   if ( is_user_logged_in() ){
+    $post_type = geodir_get_current_posttype();
+    if($post_type == "gd_place"){
     global $wpdb, $current_user;
     $user_has_address = false;
     $user_address = $wpdb->get_row(
@@ -19,6 +21,16 @@ if ( is_single() ) {
     ?>
     <script>
     jQuery(document).ready(function($){
+
+      function display_currency(money){
+        money = (money).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        parts = money.split(".");
+        if(parts[1] > 0)
+          money = parts[0]+"."+parts[1];
+        else
+          money = parts[0];
+        return money;
+      }
 
       //$(".btn-tamzang-quantity").on("click", function () {
       jQuery(document).on("click", ".btn-tamzang-quantity", function(){
@@ -38,7 +50,7 @@ if ( is_single() ) {
           }
           $('.wrapper-loading').toggleClass('cart-loading');
           var id = $button.data( 'id' );
-          console.log($("#"+id+"-price").text());
+
           var nonce = $button.data( 'nonce' );
           var send_data = 'action=update_product_cart&id='+id+'&nonce='+nonce+'&qty='+newVal;
           $.ajax({
@@ -47,24 +59,22 @@ if ( is_single() ) {
             data: send_data,
             success: function(msg){
                   if(msg.success){
-                    var total = msg;
                     console.log( "Data deleted: " + JSON.stringify(msg) );
-                    console.log( "Data deleted: " + total.data );
-                    $("#tamzang_cart_count").html(total.data);
-                    $button.closest('.sp-quantity').find("input.quntity-input").val(newVal);
-                    $("#"+id+"-total").text(parseInt($("#"+id+"-price").text())*parseInt(newVal));
 
-                    columnTh = $("table th:contains('ทั้งหมด')");
-                    columnIndex = columnTh.index() + 1;
+                    $button.closest('.sp-quantity').find("input.quntity-input").val(newVal);
+
+                    var total = display_currency(msg.data);
+                    $("#"+id+"-total").text(total);
                     var sum = 0;
-                    $('table tr td:nth-child(' + columnIndex + ')').each(function() {
-                      //var column = $(this).html();
-                      var total = $("[id$='-total']", $(this).html());
-                      if (typeof total.html() !== "undefined")
-                        sum += parseInt(total.html());
-                      //console.log( found.html() );
+                    $(".price").each(function() {
+                      var value = $(this).text().replace(/,/g, '');
+                      // add only if the value is number
+                      if(!isNaN(value) && value.length != 0) {
+                          sum += parseFloat(value);
+                      }
                     });
-                    $("#sum").text(sum);
+                    $("#sum").text( display_currency(sum));
+
                   }
 
                   $('.wrapper-loading').toggleClass('cart-loading');
@@ -106,20 +116,19 @@ if ( is_single() ) {
                 if(msg.success){
                   console.log( "Data deleted: " + JSON.stringify(msg) );
                   $('#' + id).remove();
-                  var total = msg;
-                  $("#tamzang_cart_count").html(total.data);
 
-                  columnTh = $("table th:contains('ทั้งหมด')");
-                  columnIndex = columnTh.index() + 1;
                   var sum = 0;
-                  $('table tr td:nth-child(' + columnIndex + ')').each(function() {
-                    //var column = $(this).html();
-                    var total = $("[id$='-total']", $(this).html());
-                    if (typeof total.html() !== "undefined")
-                      sum += parseInt(total.html());
-                    //console.log( found.html() );
+                  $(".price").each(function() {
+                    var value = $(this).text().replace(/,/g, '');
+                    // add only if the value is number
+                    if(!isNaN(value) && value.length != 0) {
+                        sum += parseFloat(value);
+                    }
                   });
-                  $("#sum").text(sum);
+
+                  $("#sum").text(display_currency(sum));
+
+
                 }
 
                 $modalDiv.modal('hide').removeClass('loading');
@@ -133,12 +142,6 @@ if ( is_single() ) {
           }
         });
 
-
-        // setTimeout(function() {
-        //     $modalDiv.modal('hide').removeClass('loading');
-        // }, 1000)
-
-        //console.log(id);
         });
 
         $('#confirm-delete').on('show.bs.modal', function(e) {
@@ -149,22 +152,6 @@ if ( is_single() ) {
         });
 
 
-        // $('#select-payment-type').on('click', '.btn-ok', function(e) {
-        //   if($('input[name=payment-type]:checked').length<=0)
-        //   {
-        //     $("#payment-error").show();
-        //   }
-        //   else
-        //   {
-        //     var $modalDiv = $(e.delegateTarget);
-        //     var id = $(this).data('recordId');
-        //     console.log(id);
-        //     var payment_type = $("input[name=payment-type]:checked").val();
-        //     console.log("payment_type: "+payment_type);
-        //   }
-        // });
-
-
         // $('#select-payment-type').on('show.bs.modal', function(e) {
         //     var data = $(e.relatedTarget).data();
         //     $('.btn-ok', this).data('recordId', data.recordId);
@@ -172,15 +159,12 @@ if ( is_single() ) {
         //     console.log("Modal show!! "+id);
         // });
 
-        $("#place_order").click(function(){
-          $("#payment-error").hide();
+        $("#place_order").click(function(e){
           var rowCount = $('#tb-cart >tbody >tr').length;
           console.log(rowCount);
-          if (rowCount > 1){
-            $("#select-payment-type").modal();
-          }
-          else {
+          if (rowCount <= 1){
             $("#no-item").modal();
+            e.preventDefault();
           }
         });
 
@@ -252,41 +236,6 @@ if ( is_single() ) {
         </div>
     </div>
 
-    <div class="modal fade" id="select-payment-type" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">กรุณาเลือกวิธีชำระเงิน</h4>
-                </div>
-                <form action="<?php echo home_url('/my-order/'); ?>" method="post" name="place_order_form">
-                  <div class="modal-body">
-                      <p>
-                        <div>
-                          <input class="form-check-input" type="radio" name="payment-type" value="1" id="pt-radio1">
-                          <label class="form-check-label" for="pt-radio1">
-                            โอนเงิน
-                          </label>
-                        </div>
-                        <div>
-                          <input class="form-check-input" type="radio" name="payment-type" value="2" id="pt-radio2">
-                          <label class="form-check-label" for="pt-radio2">
-                            เก็บเงินปลายทาง
-                          </label>
-                        </div>
-                      </p>
-                      <p><label id="payment-error" style="color:red;display:none;">กรุณาเลือกวิธีชำระเงิน</label></p>
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
-                      <input type="hidden" name="post_id" value="<?php echo get_the_ID(); ?>"/>
-                      <button type="submit" class="btn btn-success btn-ok">ตกลง</button>
-                  </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <?php if(!$user_has_address){ ?>
     <div class="modal fade" id="no-address" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -309,14 +258,15 @@ if ( is_single() ) {
     <p class="tamzang-shopping-cart-button" id="tamzang-shopping-cart-button" onclick="HideShop()">
       <img src="https://www.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/images/shop2.png" alt="ตามสั่ง">
     </p>
-    <div class="tamzang_cart" id="tamzang-shopping-cart">
+    <div class="tamzang_cart" id="tamzang-shopping-cart" <?php //echo (wp_is_mobile()? 'style="background-color: #f5f5f1;"' : ''); ?>>
       <div class="wrapper-loading" id="table-my-cart">
         <?php get_template_part( 'ajax-cart' ); ?>
       </div>
       <div style="float:right;">
         <?php if($user_has_address){ ?>
-          <button class="btn btn-success" id="place_order"
-            ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
+          <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.get_the_ID() ?>">
+            <span style="color: #ffffff !important;" class="glyphicon glyphicon-play">สั่งเลย</span>
+          </a>
         <?php }else{ ?>
 
 
@@ -330,6 +280,7 @@ if ( is_single() ) {
     </div>
 
     <?php
+  }// if($post_type == "gd_place")
   }
 }
 

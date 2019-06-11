@@ -4,10 +4,16 @@
 <?php
 
 function check_integer($value){
-  if ((is_int($value) || ctype_digit($value)) && (int)$value >= 0 ){
+  if ((is_int($value) || ctype_digit($value))){
     return true;
-  }
-  return false;
+  }else if (empty($value)){
+    return true;
+  }else
+    return false;
+}
+
+function check_currency($value){
+  return preg_match('/^\d{0,6}(\.\d{0,2})?$/', $value);
 }
 
 global $wpdb, $current_user, $gd_session;
@@ -26,20 +32,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (is_user_logged_in() && $is_current_user_owner) {
     $price = $_POST['price'];
     $stock = $_POST['stock'];
-    if ((isset($_POST['product_id']) && $_POST['product_id'] != '') && check_integer($price) && check_integer($stock)) { //update Product
+    if ((isset($_POST['product_id']) && $_POST['product_id'] != '') && check_currency($price) && check_integer($stock)) { //update Product
       $product_id = $_POST['product_id'];
       $product_name = $_POST['product_name'];
+      $category = $_POST['category'];
       $short_desc = $_POST['short_desc'];
       $long_desc = $_POST['long_desc'];
       $unlimited = $_POST['unlimited'];
+      $show_button = !empty($_POST['show_button']) ? $_POST['show_button'] : 0;
       $current_date = date("Y-m-d H:i:s");
 
-      $wpdb->query($wpdb->prepare("UPDATE products SET  name = %s, short_desc = %s, long_desc = %s, price = %d, stock = %d, unlimited = %d, update_date = %s  where id =%d",
-        array($product_name, $short_desc, $long_desc, $price, $stock, $unlimited, $current_date, $product_id)));
+      $wpdb->query($wpdb->prepare("UPDATE products SET  name = %s, category_id = %d, short_desc = %s, long_desc = %s, price = %f, stock = %d, unlimited = %d, show_button = %d, update_date = %s  where id =%d",
+        array($product_name, $category, $short_desc, $long_desc, $price, $stock, $unlimited, $show_button, $current_date, $product_id)));
 
       if (isset($_POST['post_images']) && $_POST['post_images'] != '') {
         $newArr = explode(',', $_POST['post_images']);
-        file_put_contents( dirname(__FILE__).'/debug/debug_insert_images_.log', var_export( $newArr, true));
+        //file_put_contents( dirname(__FILE__).'/debug/debug_insert_images_.log', var_export( $newArr, true));
         tamzang_save_images($product_id, $newArr);
       }
 
@@ -49,17 +57,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     else{ // เพิ่ม Product
       $price = $_POST['price'];
       $stock = $_POST['stock'];
-      if ((isset($_POST['product_name']) && $_POST['product_name'] != '') && check_integer($price) && check_integer($stock)) {
+      if ((isset($_POST['product_name']) && $_POST['product_name'] != '') && check_currency($price) && check_integer($stock)) {
         //file_put_contents( 'debug' . time() . '.log', var_export( $_POST, true));
         //file_put_contents( dirname(__FILE__).'/debug/debug' . time() . '.log', var_export( $_POST, true));
         $product_name = $_POST['product_name'];
+        $category = $_POST['category'];
         $short_desc = $_POST['short_desc'];
         $long_desc = $_POST['long_desc'];
         $unlimited = $_POST['unlimited'];
+        $show_button = !empty($_POST['show_button']) ? $_POST['show_button'] : 0;
         $current_date = date("Y-m-d H:i:s");
 
-        $wpdb->query($wpdb->prepare("INSERT INTO products SET wp_user_id = %d, post_id = %d, name = %s, short_desc = %s, long_desc = %s, price = %d, stock = %d, unlimited = %d, update_date = %s ",
-          array($current_user->ID, $pid, $product_name, $short_desc, $long_desc, $price, $stock, $unlimited, $current_date)));
+        $wpdb->query($wpdb->prepare("INSERT INTO products SET wp_user_id = %d, post_id = %d, name = %s, category_id = %d, short_desc = %s, long_desc = %s, price = %f, stock = %d, unlimited = %d, show_button = %d, update_date = %s ",
+          array($current_user->ID, $pid, $product_name, $category, $short_desc, $long_desc, $price, $stock, $unlimited, $show_button, $current_date)));
         $product_id = $wpdb->insert_id;
 
         //wp_redirect(get_permalink($_REQUEST['pid']));
@@ -97,11 +107,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         )
     );
     $product_name = $tamzang_product->name;
+    $category = $tamzang_product->category_id;
     $price = $tamzang_product->price;
     $short_desc = $tamzang_product->short_desc;
     $long_desc = $tamzang_product->long_desc;
     $stock = $tamzang_product->stock;
     $unlimited = $tamzang_product->unlimited;
+    $show_button = $tamzang_product->show_button;
   }
 }
 
@@ -140,6 +152,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                <input type="text" id = "product_name" name="product_name" value="<?php echo esc_attr(stripslashes($product_name)); ?>">
             </div>
             <div class="geodir_form_row clearfix gd-fieldset-details" style="margin-top:10px;">
+              <label>หมวดหมู่สินค้า-<?php echo $category ?></label>
+              <select id="category" name="category">
+                <?php 
+                $default_category_id = geodir_get_post_meta( $pid, 'default_category', true );
+                $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
+                $parent = get_term($default_category->parent);
+                $type = 2;
+                if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+                  $type = 1;
+                $categoryList = fetchCategoryTree($parent,$type);
+                foreach($categoryList as $cl) {
+                    echo '<option value="'.$cl["id"].'" '.(($category == $cl["id"]) ? ' selected="selected" ' : '').'>'.$cl["name"].'</option>';
+                }
+                ?>
+              </select>
+            </div>
+            <div class="geodir_form_row clearfix gd-fieldset-details" style="margin-top:10px;">
               <label>ราคาสินค้า<span>*</span> </label>
               <input type="text" id = "price" name="price" value="<?php echo esc_attr(stripslashes($price)); ?>">
             </div>
@@ -162,7 +191,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <option <?php if ($unlimited == '1') echo ' selected="selected" '; ?> value="1">ใช่</option>
               </select>
             </div>
+            <?php 
+              $geodir_tamzang_id = geodir_get_post_meta( $pid, 'geodir_tamzang_id', true );
+              if(!empty($geodir_tamzang_id)){
+            ?>
+                <div class="geodir_form_row clearfix gd-fieldset-details" style="margin-top:10px;">
+                  <label>แสดงปุ่มเพิ่มลงตะกร้าสินค้า?</label>
+                  <select id="show_button" name="show_button">
+                    <option <?php if ($show_button == '1') echo ' selected="selected" '; ?> value="1">ใช่</option>
+                    <option <?php if ($show_button == '0') echo ' selected="selected" '; ?> value="0">ไม่</option>
+                  </select>
+                </div>
             <?php
+              }
             // --------- upload image -------------------
             // adjust values here
 

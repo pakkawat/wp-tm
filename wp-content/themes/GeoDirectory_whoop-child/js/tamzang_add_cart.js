@@ -52,7 +52,7 @@ jQuery(document).ready(function($){
 
             $('.wrapper-loading').toggleClass('cart-loading');
             //$( "#table-my-cart" ).load( ajaxurl+"?action=load_tamzang_cart" );
-            $( "#table-my-cart" ).load( ajaxurl+"?action=load_tamzang_cart&post_id="+post_id, function( response, status, xhr ) {
+            $( "#table-my-cart" ).load( ajaxurl+"?action=load_tamzang_cart&pid="+post_id, function( response, status, xhr ) {
               if ( status == "error" ) {
                 var msg = "Sorry but there was an error: ";
                 $( "#table-my-cart" ).html( msg + xhr.status + " " + xhr.statusText );
@@ -94,6 +94,18 @@ jQuery(document).ready(function($){
   //
   // });
 
+  $('.modal').parent().on('show.bs.modal', function (e) { $(e.relatedTarget.attributes['data-target'].value).appendTo('body'); })
 
+  $("#dd_cat").change(function () {
+    console.log($(this).data('id')+'--'+this.value+'--'+$(this).data('cat_type'));
+    $( "#tamzang-menu" ).toggleClass('order-status-loading');
+    $( "#tamzang-menu" ).load( ajaxurl+"?action=load_tamzang_menu_view", { pid: $(this).data('id'), cat_id: this.value, cat_type: $(this).data('cat_type')}, function( response, status, xhr ) {
+        if ( status == "error" ) {
+            var msg = "Sorry but there was an error: ";
+            $( "#tamzang-menu" ).html( msg + xhr.status + " " + xhr.statusText );
+        }
+        $( "#tamzang-menu" ).toggleClass('order-status-loading');
+    });
+  });
 
 });

@@ -1,5 +1,13 @@
 jQuery(document).ready(function($){
 
+  jQuery.validator.addMethod("currency", function (value, element) {
+    if (/^\d{0,6}(\.\d{0,2})?$/.test(value)) {
+        return true;
+    } else {
+        return false;
+    };
+  }, "กรุณาใส่ราคาสินค้าให้ถูกต้อง.");
+
   $("form[name='product_form']").validate({
     // Specify validation rules
     rules: {
@@ -9,11 +17,16 @@ jQuery(document).ready(function($){
       product_name: "required",
       price:{
         required: true,
+        currency: true,
         min: 0
       },
       stock:{
-        required: true,
-        min: 0
+        required: {
+          depends: function(element) {
+              return $("#unlimited").val() != "1";
+          }
+        },
+        number: true
       }
     },
     // Specify validation error messages

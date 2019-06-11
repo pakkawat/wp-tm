@@ -1844,22 +1844,17 @@ function geodir_reviewrating_save_rating($comment = 0){
 
         $wpdb->query($sqlqry);
 
+		
+		$commment_image_adj = explode("uploads", $comment_images)[1];
+		if($commment_image_adj != ''){
+		  $attach_sqlqry = $wpdb->prepare(
+										 "INSERT INTO wp_geodir_attachments SET
+										 post_id = %d,user_id = %d,file =%s,mime_type = 'image/jpeg',menu_order = '0'",
+										 array($post->ID,$user_ID,$commment_image_adj)
+									   );
 
-        $strpieces = explode(",", $comment_images);
-        $strlength = sizeof($strpieces);
-        for($i = 0; $i < $strlength; $i++)
-        {
-            $commment_image_adj = str_replace("https://tamzang.com/wp-content/uploads/","/",$strpieces[$i]);
-            if($commment_image_adj != ''){
-              $attach_sqlqry = $wpdb->prepare(
-                                             "INSERT INTO wp_geodir_attachments SET
-                                             post_id = %d,user_id = %d,file =%s,mime_type = 'image/jpeg',menu_order = '0'",
-                                             array($post->ID,$user_ID,$commment_image_adj)
-                                           );
-
-              $wpdb->query($attach_sqlqry);
-            }
-        }
+		  $wpdb->query($attach_sqlqry);
+		}
 
 
         if (!empty($rating) || $overall_rating)

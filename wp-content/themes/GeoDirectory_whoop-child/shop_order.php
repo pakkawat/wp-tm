@@ -233,10 +233,8 @@ jQuery(document).ready(function($){
   $('#add-tracking-pic').on('show.bs.modal', function(e) {
       var data = $(e.relatedTarget).data();
       $('.title', this).text(data.id);
-      //$('.btn-default', this).data('orderId', data.orderId);
       $('#nonce', this).val(data.nonce);
       $('#order_id', this).val(data.id);
-      //console.log($(this).find('.title').text());
       var bar = $('#drag-and-drop-zone').find('div.progress-bar');
       bar.width(0 + '%').attr('aria-valuenow', 0);
       bar.html(0 + '%');
@@ -252,8 +250,7 @@ jQuery(document).ready(function($){
     var order_status = $(this).val();
     var order_id = $(this).data('id');
     var nonce = $(this).data('nonce');
-    console.log(order_status+"--"+order_id+"--"+nonce);
-
+    var dd = $(this);
 
     $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
     var send_data = 'action=update_order_status&id='+order_id+'&nonce='+nonce+'&status='+order_status;
@@ -263,14 +260,16 @@ jQuery(document).ready(function($){
       url: ajaxurl,
       data: send_data,
       success: function(msg){
-            console.log( "Updated status callback: " + JSON.stringify(msg) );
             if(msg.success){
+              if(order_status == '3'){
+                dd.hide();
+              }
+              
               $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+order_status, function( response, status, xhr ) {
                 if ( status == "error" ) {
                   var msg = "Sorry but there was an error: ";
                   $( "#status_"+order_id ).html( msg + xhr.status + " " + xhr.statusText );
                 }
-                console.log( "load_order_status: " + status );
 
               });
             }
@@ -278,7 +277,6 @@ jQuery(document).ready(function($){
 
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
-         console.log(textStatus);
          $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
       }
     });
@@ -426,6 +424,8 @@ else { // desktop browser
 
           foreach ($arrOrders as $order) {
             set_query_var( 'order_status', $order->status );
+            set_query_var( 'my_order', false );
+            set_query_var( 'deliver_ticket', $order->deliver_ticket );
 		      ?>
 
           <div style="overflow-x:auto;">
@@ -447,6 +447,7 @@ else { // desktop browser
                 if($wpdb->num_rows > 0)
                 {
                   echo "ชื่อ:".$shipping_address->name." เบอร์โทรศัพท์: ".$shipping_address->phone." ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
+                  echo ' <a href="'.home_url('/pdf-address/').'?pid='.$pid.'&oid='.$order->id.'">ปริ๊น</a>';
                 }
 
                 ?>
@@ -475,13 +476,13 @@ else { // desktop browser
                     </div>
                     <div class="order-col-6">
                       <div class="order-col-6" style="text-align:right;">
-                        <strong><?php echo $product->price; ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
+                        <strong><?php echo str_replace(".00", "",number_format($product->price,2)); ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
                       </div>
                       <div class="order-col-2">
                         <strong>รวม</strong>
                       </div>
                       <div class="order-col-4">
-                        <strong><?php echo $product->price*$product->qty; ?> บาท</strong>
+                        <strong><?php echo str_replace(".00", "",number_format($product->price*$product->qty,2)); ?> บาท</strong>
                       </div>
                     </div>
                   </div>
@@ -494,11 +495,16 @@ else { // desktop browser
               ?>
 
               <div class="order-row">
-                <div class="order-col-9" style="text-align:right;">
+                <div class="order-col-6" style="text-align:center;min-height:1px;">
+                  <?php if($order->payment_type == 2){ ?>
+                      <h2>เก็บเงินปลายทาง</h2>
+                  <?php } ?>
+                </div>
+                <div class="order-col-3" style="text-align:right;">
                   <h4>ทั้งหมด</h4>
               	</div>
                 <div class="order-col-3">
-                  <h4><strong><?php echo $order->total_amt; ?></strong> บาท</h4>
+                  <h4><strong><?php echo str_replace(".00", "",number_format($order->total_amt,2)); ?></strong> บาท</h4>
               	</div>
               </div>
               <div class="order-clear"></div>
@@ -517,31 +523,25 @@ else { // desktop browser
               <div class="panel-footer">
                 <div class="order-row">
                   <div class="order-col-4" style="text-align:left;margin-top:10px;margin-bottom:10px;">
-                    <select name="status" class="order-status" data-id="<?php echo $order->id; ?>" data-nonce="<?php echo wp_create_nonce( 'update_order_status_'.$order->id); ?>">
-                        <option <?php if ($order->status == '1') echo ' selected="selected" '; ?> value="1">รอการจ่ายเงิน</option>
-                        <option <?php if ($order->status == '2') echo ' selected="selected" '; ?> value="2">ยืนยันการจ่ายเงิน</option>
-                        <option <?php if ($order->status == '3') echo ' selected="selected" '; ?> value="3">ทำการจัดส่งแล้ว</option>
-                    </select>
+                    <?php if (($order->status == '1' || $order->status == '2') && ($order->deliver_ticket != 'Y')) { ?>
+                      <select name="status" class="order-status" data-id="<?php echo $order->id; ?>" data-nonce="<?php echo wp_create_nonce( 'update_order_status_'.$order->id); ?>">
+                          <option <?php if ($order->status == '1') echo ' selected="selected" '; ?> value="1">รอการจ่ายเงิน</option>
+                          <option <?php if ($order->status == '2') echo ' selected="selected" '; ?> value="2">ยืนยันการจ่ายเงิน</option>
+                          <option <?php if ($order->status == '3') echo ' selected="selected" '; ?> value="3">ทำการจัดส่งแล้ว</option>
+                      </select>
+                    <?php } ?>
                   </div>
-                  <?php if($order->payment_type == 2){ ?>
-                    <div class="order-col-6" style="text-align:center;min-height:1px;">
-                      <h2>เก็บเงินปลายทาง</h2>
-                    </div>
-                  <?php } else { ?>
-                    <div class="order-col-4" style="text-align:center;min-height:1px;">
+                  <div class="order-col-4" style="text-align:center;min-height:1px;">
                       <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
                         id="flip"
                       >แสดงรูปภาพ</button>
                     </div>
                     <div class="order-col-4" style="text-align:right;min-height:1px;">
-                      <?php if($order->image_slip != ''){ ?>
-                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
-                          data-nonce="<?php echo wp_create_nonce( 'add_tracking_image_'.$order->id); ?>"
-                          data-toggle="modal" data-target="#add-tracking-pic"
-                        >อัพโหลดรูปภาพ</button>
-                      <?php } ?>
+                      <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                        data-nonce="<?php echo wp_create_nonce( 'add_tracking_image_'.$order->id); ?>"
+                        data-toggle="modal" data-target="#add-tracking-pic"
+                      >อัพโหลดรูปภาพ</button>
                     </div>
-                  <?php } ?>
                 </div>
                 <div class="order-clear"></div>
 

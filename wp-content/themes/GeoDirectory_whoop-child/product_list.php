@@ -70,18 +70,36 @@ function pagination($count, $href, $PERPAGE_LIMIT) {
 
 
 
-global $current_user;
+global $current_user,$post, $wp_query;
 
 $is_current_user_owner = false;
 $PERPAGE_LIMIT = 5;
 $href = "";
+$count_product = 1;
 $pid = (int)$_REQUEST['pid'];
+
+$currentPage = 1;
+if(isset($_GET['paged'])){
+  $currentPage = $_GET['paged'];
+}
 
 if (isset($pid) && $pid != 0){
   $href = home_url('/product-list/') . '?pid='.$pid;
   $is_current_user_owner = geodir_listing_belong_to_current_user((int)$pid);
   if (is_user_logged_in() && $is_current_user_owner){
-    list($arrProducts, $count) = get_products($pid, $PERPAGE_LIMIT);
+    //list($arrProducts, $count) = get_products($pid, $PERPAGE_LIMIT);
+
+    $query_args = array(
+      'posts_per_page' => 3,
+      'is_geodir_loop' => true,
+      'post_type' => 'gd_product',
+      'pageno' => $currentPage,
+      'order_by' => 'post_title'
+    );
+
+    add_filter('geodir_filter_widget_listings_where', 'tamzang_apply_shop_id', 10, 2);
+    $product_listings = geodir_get_widget_listings($query_args);
+    $count_product = geodir_get_widget_listings($query_args,true);
 
   }else{
     wp_redirect(get_permalink($pid));
@@ -89,7 +107,6 @@ if (isset($pid) && $pid != 0){
 }else {
   wp_redirect(home_url());
 }
-
 
 
 ?>
@@ -107,7 +124,7 @@ if (isset($pid) && $pid != 0){
             <div style="width:50%;float:left;">
               <?php the_title(); ?>
             </div>
-            <a class="geodir_button" style="float:right;" href="<?php echo get_permalink($pid) ?>"><span style="color: #ffffff !important;" >ร้านค้า</span></a>
+            <a class="geodir_button" style="float:right;" href="<?php echo get_permalink($pid); ?>"><span style="color: #ffffff !important;" >ร้านค้า</span></a>
           </h1>
           <?php /*<p class="byline vcard"> <?php printf( __( 'Posted <time class="updated" datetime="%1$s" >%2$s</time> by <span class="author">%3$s</span>', GEODIRECTORY_FRAMEWORK ), get_the_time('c'), get_the_time(get_option('date_format')), get_the_author_link( get_the_author_meta( 'ID' ) )); ?> </p> */?>
         </header>
@@ -140,32 +157,49 @@ if (isset($pid) && $pid != 0){
                 <th>ชื่อ</th>
                 <th>ราคา</th>
                 <th>รายละเอียดแบบย่อ</th>
-                <th>จำนวน</th>
-                <th>ไม่จำกัดจำนวน</th>
+                <!--<th>จำนวน</th>-->
+                <!--<th>ไม่จำกัดจำนวน</th>-->
                 <th>แก้ไขล่าสุดเมื่อ</th>
                 <th>แก้ไข</th>
                 <th>ลบ</th>
               </thead>
               <tbody>
               <?php
+                global $post;
+                $current_post = $post;
 
-                foreach ($arrProducts as $product) {
-                  echo '<tr id="'.$product->id.'">';
-                  echo '<td style="text-align:center;">'.$product->name.'</td>';
-                  echo '<td style="text-align:center;">'.$product->price.'</td>';
-                  echo '<td>'.$product->short_desc.'</td>';
-                  echo '<td style="text-align:center;">'.$product->stock.'</td>';
-                  echo '<td style="text-align:center;">'.($product->unlimited == '1' ? 'ใช่' : 'ไม่').'</td>';
-                  $date = date_create($product->update_date);
+                foreach ($product_listings as $product) {
+                  $post = $product;
+                  $GLOBALS['post'] = $post;
+                  setup_postdata($post);
+                  echo '<tr id="'.$post->ID.'">';
+                  echo '<td style="text-align:center;">'.$post->post_title.'</td>';
+                  echo '<td style="text-align:center;">'.$post->geodir_price.'</td>';
+                  echo '<td>'.wp_trim_excerpt().'</td>';
+                  //echo '<td style="text-align:center;">'.$post->geodir_stock.'</td>';
+                  //echo '<td style="text-align:center;">'.($post->geodir_unlimited == '1' ? 'ใช่' : 'ไม่').'</td>';
+                  $date = date_create($post->post_modified);
                   echo '<td>'.date_format($date, 'd-m-Y H:i:s').'</td>';
-                  echo '<td style="text-align:center;"><a class="btn btn-primary btn-block" href="'. home_url('/add-product/') . '?pid='.$pid .'&product_id='.$product->id.'"><span style="color: #ffffff !important;" >แก้ไข</span></a></td>';
-                  echo '<td style="text-align:center;"><a class="btn btn-danger btn-block" href="#" data-record-id="'.$product->id.'" data-record-title="'.$product->name.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $product->id ).'" data-toggle="modal" data-target="#confirm-delete" ><span style="color: #ffffff !important;" >ลบ</span></a></td>';
+                  echo '<td style="text-align:center;"><a class="btn btn-primary btn-block" href="'. home_url('/add-listing/') . '?pid='.$post->ID .'"><span style="color: #ffffff !important;" >แก้ไข</span></a></td>';
+                  echo '<td style="text-align:center;"><a class="btn btn-danger btn-block" href="#" data-record-id="'.$post->ID.'" data-record-title="'.$post->post_title.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $post->ID ).'" data-toggle="modal" data-target="#confirm-delete" ><span style="color: #ffffff !important;" >ลบ</span></a></td>';
                   echo '</tr>';
                 }
 
+                $GLOBALS['post'] = $current_post;
+                if (!empty($current_post)) {
+                    setup_postdata($current_post);
+                }
+                //wp_reset_query();
     		      ?>
               </tbody>
             </table>
+
+            <?php product_pagination(ceil($count_product / 3),$currentPage,'«','»'); ?>
+            <?php 
+            //echo 'brfore_geodir_pagination:'.print_r($wp_query).'<br><br><br>';
+            //geodir_pagination('', '', '--<<', '>>--', 3, true);
+
+            ?>
           </div>
         </section>
         <?php // end article section ?>

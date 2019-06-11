@@ -85,25 +85,56 @@ else{
   $filter = '';
 }
 
-if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['post_id'])){// สร้าง order
-  $arrProducts = tamzang_get_all_products_in_cart($current_user->ID, $_POST['post_id']);
+if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้าง order
+  $arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
   if(!empty($arrProducts))
   {
+    /* 20190102 Bank put deliver_ticket */
+    $default_category_id = geodir_get_post_meta( $_POST['pid'], 'default_category', true );
+    $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
+    $parent = get_term($default_category->parent);
+
     $current_date = date("Y-m-d H:i:s");
-    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ",
-      array($current_user->ID, $_POST['post_id'], $current_date, 0, 1, $_POST['payment-type'])));
+
+    // $stock_results = $wpdb->get_results(
+    //     $wpdb->prepare(
+    //     "SELECT p.id,p.stock - s.qty as result
+    //     FROM products as p
+    //     INNER JOIN shopping_cart as s on s.product_id = p.id
+    //     WHERE s.wp_user_id = %d AND p.post_id = %d AND p.unlimited = false", array($current_user->ID,$_POST['post_id'])
+    // ));
+
+    // if (!empty($stock_results)){
+    //   foreach ( $stock_results as $result ){
+    //     $wpdb->query(
+    //         $wpdb->prepare(
+    //             "UPDATE products SET stock = %d where id = %d ",
+    //             array($result->result, $result->id)
+    //         )
+    //     );
+    //   }
+    // }
+
+    
+
+    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ".(($parent->name == "อาหาร")||($default_category->name == "อาหาร") ? ", deliver_ticket = 'Y'" : ""),
+      array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'])));
     $order_id = $wpdb->insert_id;
 
     $shipping_id = 0;
     $billing_id = 0;
 
+	//20190213 Bank Add Delivery Fee
+	
+	list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
+	
     $shipping_address = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT * FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array($current_user->ID)
         )
     );
-    $wpdb->query($wpdb->prepare("INSERT INTO shipping_address SET order_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s ",
-      array($order_id, $shipping_address->name, $shipping_address->address, $shipping_address->district, $shipping_address->province, $shipping_address->postcode, $shipping_address->phone)));
+    $wpdb->query($wpdb->prepare("INSERT INTO shipping_address SET order_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s, ship_latitude = %s, ship_longitude = %s, price = %f , distance= %s ",
+      array($order_id, $shipping_address->name, $shipping_address->address, $shipping_address->district, $shipping_address->province, $shipping_address->postcode, $shipping_address->phone, $shipping_address->latitude, $shipping_address->longitude, $delivery_fee,$distance)));
     $shipping_id = $wpdb->insert_id;
 
     $billing_address = $wpdb->get_row(
@@ -120,29 +151,62 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['post_id'])){// สร
     $sum = 0;
 
     foreach ($arrProducts as $product) {
-      $sum += $product->price*$product->qty;
+      $sum += $product->geodir_price*$product->shopping_cart_qty;
+      //geodir_save_post_meta($product->ID, 'geodir_stock', $product->geodir_stock - $product->shopping_cart_qty);// ตัด stock
       $wpdb->query(
         $wpdb->prepare(
-          "INSERT INTO order_items SET order_id = %d, product_id = %d, product_name = %s, product_img = %s, qty = %d, price = %d ",
-          array($order_id, $product->product_id, $product->name, $product->featured_image, $product->qty, $product->price)
+          "INSERT INTO order_items SET order_id = %d, product_id = %d, product_name = %s, product_img = %s, qty = %d, price = %f ",
+          array($order_id, $product->ID, $product->post_title, $product->featured_image, $product->shopping_cart_qty, $product->geodir_price)
         )
       );
 
       $wpdb->query(
           $wpdb->prepare(
               "DELETE FROM shopping_cart WHERE product_id = %d AND wp_user_id =%d",
-              array($product->product_id, $current_user->ID)
+              array($product->ID, $current_user->ID)
           )
       );
 
     }// end foreach
 
+    $thread_id = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT thread_id FROM wp_bp_messages_messages ORDER BY thread_id DESC LIMIT 1 ", array()
+      )
+    );
+    $thread_id++;
+
     $wpdb->query(
         $wpdb->prepare(
-            "UPDATE orders SET total_amt = %d, shipping_id = %d, billing_id = %d where id =%d",
-            array($sum, $shipping_id, $billing_id, $order_id)
+            "UPDATE orders SET total_amt = %f, shipping_id = %d, billing_id = %d, thread_id = %d where id =%d",
+            array($sum, $shipping_id, $billing_id, $thread_id, $order_id)
         )
     );
+
+    // สร้าง message
+
+    $wpdb->query(
+      $wpdb->prepare(
+        "INSERT INTO wp_bp_messages_messages SET thread_id = %d, sender_id = %d, subject = %s, message = %s, date_sent = %s ",
+        array($thread_id, $current_user->ID, "ใบสั่งซื้อเลขที่: #".$order_id , '<strong><p style="font-size:14px;">มีรายการสั่งซื้อสินค้าเข้ามาใหม่</p> <a href="'.home_url('/shop-order/').'?pid='.$_POST['pid'].'">คลิกที่นี่เพื่อดูใบสั่งซื้อ</a></strong>', $current_date)
+      )
+    );
+    $shop_owner = get_post_field ('post_author', $_POST['post_id']);
+
+    $wpdb->query(
+      $wpdb->prepare(
+        "INSERT INTO wp_bp_messages_recipients SET user_id = %d, thread_id = %d, unread_count = %d, sender_only = %d, is_deleted = %d ",
+        array($shop_owner, $thread_id, 1, 0, 0)
+      )
+    );
+
+    $wpdb->query(
+      $wpdb->prepare(
+        "INSERT INTO wp_bp_messages_recipients SET user_id = %d, thread_id = %d, unread_count = %d, sender_only = %d, is_deleted = %d ",
+        array($current_user->ID, $thread_id, 0, 1, 0)
+      )
+    );
+
   }// end if !empty
 
 }// end สร้าง order
@@ -391,6 +455,53 @@ jQuery(document).ready(function($){
         $('#img-content').attr('src', data.src);
     });
 
+
+    $('#confirm-adjust').on('click', '.btn-ok', function(e) {
+
+      var order_id = $(this).data('id');
+      var nonce = $(this).data('nonce');
+      var button_type = $(this).data('type');
+
+      var send_data = 'action=customer_response_adjust&id='+order_id+'&nonce='+nonce+'&status='+button_type;
+      $.ajax({
+          type: "POST",
+          url: ajaxurl,
+          data: send_data,
+          success: function(msg){
+                console.log( "customer_response_adjust: " + JSON.stringify(msg) );
+                if(msg.success){
+                  if(button_type){
+                    $( "#order_adjust_"+order_id ).html('<font color="green"><b>ยอมรับ</b></font>');
+                    $( "#total_amt_"+order_id ).html(msg.data);
+                  }else{
+                    $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
+                    $( "#panel_"+order_id ).find(".panel-footer").remove();
+                    $( "#status_"+order_id ).html('<div class="order-row" style="text-align:center;"><h1>ยกเลิก</h1></div>');
+                    $( "#order_adjust_"+order_id ).empty();
+                  }
+                }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(textStatus);
+
+          }
+        });
+
+        $('#confirm-adjust').modal('toggle');
+
+      });
+
+    $('#confirm-adjust').on('show.bs.modal', function(e) {
+        var data = $(e.relatedTarget).data();
+        $('.adjust-text', this).empty();
+        $('.adjust-text', this).append(data.text);
+        $('.btn-ok', this).data('id', data.id);
+        $('.btn-ok', this).data('nonce', data.nonce);
+        $('.btn-ok', this).data('type', data.type);
+        
+        console.log(data);
+    });
+
 });
 </script>
 <?php
@@ -436,10 +547,6 @@ else { // desktop browser
 <?php
 }
 ?>
-
-
-
-
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -555,6 +662,25 @@ else { // desktop browser
             </div>
           </div>
 
+          <div class="modal fade" id="confirm-adjust" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel2">ยืนยันการปรับราคา</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p class="adjust-text"></p>
+                        <p>คุณต้องการดำเนินการต่อหรือไม่?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
+                        <button type="button" class="btn btn-success btn-ok">ตกลง</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
           <?php
 
           list($arrOrders, $count) = get_my_orders($PERPAGE_LIMIT, $filter);
@@ -563,6 +689,7 @@ else { // desktop browser
             set_query_var( 'order_status', $order->status );
             set_query_var( 'my_order', true );
             set_query_var( 'id', $order->id );
+            set_query_var( 'deliver_ticket', $order->deliver_ticket );
 		      ?>
           <div style="padding:0; margin:0; width:auto; height:auto;">
 		  <!-- bank change div panel into 100% from 900px -->
@@ -579,7 +706,7 @@ else { // desktop browser
                         "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
                     )
                 );
-
+                $shipping_price = $shipping_address->price;
                 if($wpdb->num_rows > 0)
                 {
                   echo "ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
@@ -610,13 +737,13 @@ else { // desktop browser
                   </div>
                   <div class="order-col-6">
                     <div class="order-col-6" style="text-align:right;">
-                      <strong><?php echo $product->price; ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
+                      <strong><?php echo str_replace(".00", "",number_format($product->price,2)); ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
                     </div>
                     <div class="order-col-2">
                       <strong>รวม</strong>
                     </div>
                     <div class="order-col-4">
-                      <strong><?php echo $product->price*$product->qty; ?> บาท</strong>
+                      <strong><?php echo str_replace(".00", "",number_format($product->price*$product->qty,2)); ?> บาท</strong>
                     </div>
                   </div>
                 </div>
@@ -628,12 +755,82 @@ else { // desktop browser
               }
               ?>
 
+              <?php if(!empty($order->driver_adjust)){ 
+                        if($order->adjust_accept){
+                          ?>
+                              <div class="order-row">
+                                <div class="order-col-6" style="float:right;">
+                                  
+                                  <div class="order-col-6" style="text-align:right;">
+                                      <strong>ราคาเพิ่มเติม</strong>
+                                  </div>
+                                  <div class="order-col-2">
+                                      <strong>รวม</strong>
+                                  </div>
+                                  <div class="order-col-4">
+                                      <strong><?php echo str_replace(".00", "",number_format($order->driver_adjust,2)); ?> บาท</strong>
+                                  </div>
+
+                                </div>
+                              </div>
+                              <div class="order-clear"></div>
+                              <hr>
+                          <?php
+                        } else{
+                          if($order->status != 99){ 
+                            $text = ' ราคาเพิ่มเติมอีก <strong>'.str_replace(".00", "",number_format($order->driver_adjust,2)).' บาท</strong> <h4><strong>รวมทั้งหมด '.str_replace(".00", "",number_format($order->total_amt+$order->driver_adjust+$shipping_price,2)).'</strong> บาท</h4>';
+                            $customer_nonce = wp_create_nonce( 'customer_response_adjust_'.$order->id);
+                            ?>
+                                <div class="order-row" id="order_adjust_<?php echo $order->id; ?>">
+                                  <div class="order-col-4">
+                                    <?php echo $text; ?>
+                                  </div>
+                                  <div class="order-col-4">
+                                    <button class="btn btn-success" href="#" 
+                                    data-id="<?php echo $order->id; ?>" data-nonce="<?php echo $customer_nonce; ?>" 
+                                    data-type="1" data-text='<font color="green"><b>ยอมรับ</b></font><?php echo $text; ?>'
+                                    data-toggle="modal" data-target="#confirm-adjust">ยอมรับ</button>
+                                    <button class="btn btn-danger" href="#" 
+                                    data-id="<?php echo $order->id; ?>" data-nonce="<?php echo $customer_nonce; ?>" 
+                                    data-type="0" data-text='<font color="red"><b>ไม่ยอมรับ (ยกเลิก #Order:<?php echo $order->id; ?>)</b></font><?php echo $text; ?>'
+                                    data-toggle="modal" data-target="#confirm-adjust">ไม่ยอมรับ</button>
+                                  </div>
+                                </div>
+                                <div class="order-clear"></div>
+                                <hr>
+                            <?php
+                          }
+                        } 
+              ?>
+              <?php } ?>
+
+              <?php if($shipping_price != 0){ ?>        
+                <div class="order-row">
+                  <div class="order-col-9" style="text-align:right;">
+                    ราคาค่าจัดส่ง
+                  </div>
+                  <div class="order-col-3">
+                    <strong><?php echo str_replace(".00", "",number_format($shipping_price,2)); ?></strong> บาท
+                  </div>
+                </div>
+                <div class="order-clear"></div>
+                <hr>
+              <?php } ?>
+
+
               <div class="order-row">
                 <div class="order-col-9" style="text-align:right;">
                   <h4>ทั้งหมด</h4>
               	</div>
                 <div class="order-col-3">
-                  <h4><strong><?php echo $order->total_amt; ?></strong> บาท</h4>
+                  <h4><strong id="total_amt_<?php echo $order->id; ?>">
+                    <?php //echo ($order->adjust_accept ? $order->total_amt+$order->driver_adjust+$shipping_price : $order->total_amt+$shipping_price); 
+                      if($order->adjust_accept)
+                        echo str_replace(".00", "",number_format($order->total_amt+$order->driver_adjust+$shipping_price,2));
+                      else
+                        echo str_replace(".00", "",number_format($order->total_amt+$shipping_price,2));
+                    ?>
+                  </strong> บาท</h4>
               	</div>
               </div>
               <div class="order-clear"></div>
@@ -658,7 +855,28 @@ else { // desktop browser
                         data-toggle="modal" data-target="#confirm-delete" >ยกเลิกคำสั่งซื้อ</button>
                     <?php } ?>
                   </div>
-                  <?php if($order->payment_type == 2){ ?>
+
+                  <?php if($order->deliver_ticket == 'Y'){ ?>
+                    <?php if(($order->status > 1)&&($order->status < 5)){ 
+                        $driver = $wpdb->get_row(
+                          $wpdb->prepare(
+                              "SELECT driver_name,phone
+                              FROM driver
+                              INNER JOIN driver_order_log
+                              ON driver.Driver_id = driver_order_log.driver_id
+                              WHERE driver_order_log.driver_order_id = %d AND driver_order_log.status = 2 ", array($order->id)
+                          )
+                        );
+
+                        if(!empty($driver)){
+                      ?>
+                          <div class="order-col-6" >
+                            <strong>พนักงานตามส่ง:</strong><?php echo $driver->driver_name; ?> <strong>เบอร์โทรศัพท์:</strong><?php echo $driver->phone; ?> 
+                          </div>
+                    <?php }
+                      } ?>
+
+                  <?php }else if($order->payment_type == 2){ ?>
                     <div class="order-col-6" style="text-align:center;min-height:1px;">
                       <h2>เก็บเงินปลายทาง</h2>
                     </div>

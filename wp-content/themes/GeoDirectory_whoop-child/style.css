@@ -481,7 +481,7 @@ form .error {
     top: 60px;
     right: 290px;
 }
-	
+
 }
 /*  PC Screen */
 @media only screen and (min-width: 1025px) {
@@ -617,10 +617,43 @@ form .error {
 
 /* hide static map from google */
 .geodir-listing-map-box-div img{
-	display: none!important;	
+	display: none!important;
 }
 
 /*hide Full Screen Map button */
 #detail_page_map_canvas_triggermap.triggermap.gd-triggered-map{
 	display: none;
+}
+
+
+.food-menu-detail{
+  margin-bottom: 10px;
+  border-bottom: #f5f5f5 1px solid;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.food-img{
+  width: 72px;
+  height: 72px;
+}
+
+.confirm-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.confirm-table th,.confirm-table td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.confirm-table td:first-child {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.confirm-table input[type=text]{
+  width: 50px;
 }
