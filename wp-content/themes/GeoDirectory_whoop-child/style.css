@@ -1,755 +1,1903 @@
 /*
+
 Theme Name: Whoop Child Theme
+
 Theme URI: http://wpgeodirectory.com/
+
 Author: GeoDirectory
+
 Author URI: http://wpgeodirectory.com/
+
 Template: GeoDirectory_whoop
+
 Description: This theme was built to be used with the GeoDirectory plugin . You should use a child theme.
+
 Version: 1.1.0
+
 License: GPLv2 or greater
+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
 Tags: left-sidebar, right-sidebar, one-column, two-columns, theme-options, custom-header, custom-background, fluid-layout, responsive-layout, accessibility-ready, translation-ready, microformats, rtl-language-support
+
 Update URL: https://wpgeodirectory.com
+
 Update ID: 65902
+
 */
+
 body{
+
   background-color:#f5f5f1;
 }
-.tamzang_header{
-  /* url("images/test.jpg");*/
-  padding-top: 30px;
-  height: 570px;
-  background-color: #333;
-  background-size: cover;
-  background-position: 50%;
+@media (pointer:coarse) { 
+
+  .geodir-addtofav{
+    display: block;
+  }
+
 }
+
+
+.tamzang_header{
+
+  /* url("images/test.jpg");*/
+
+  padding-top: 30px;
+
+  height: 570px;
+
+  background-color: #333;
+
+  background-size: cover;
+
+  background-position: 50%;
+
+}
+
+
 
 .tamzang_header_content{
+
   max-width: 960px;
+
   margin: 0 auto;
+
   padding: 0 15px;
+
 }
+
+
 
 .tamzang_inner{
+
   padding-top: 120px;
+
 }
+
+
 
 .tamzang_logo_center{
+
   text-align: center !important;
+
 }
+
+
 
 .tamzang_header_wrapper{
+
   padding-bottom: 300px;
+
   margin: 0 auto;
+
   overflow: hidden;
+
 }
+
+
 
 .tamzang_header_menu ul{
+
   list-style-type:none;
+
   margin: 0;
+
   padding: 0;
+
 }
+
 .tamzang_header_menu ul li{
+
   display:inline-block;
+
   vertical-align: top;
+
   margin-right:1px;
+
 }
+
+
 
 /* tamzang_place_widget style */
+
 .tamzang-cat-list{
+
   border-bottom: 1px solid #ccc;
+
   width: 100%;
+
 }
+
+
 
 .tamzang-contentwrap{
+
   padding-top: 42px;
+
 }
+
+
 
 .tamzang-cat-title{
+
   font-size: 21px;
+
   text-align: center;
+
   color: #e34f43;
+
   font-weight: 400;
+
   margin: 0 0 6px;
+
 }
+
+
 
 .tamzang-cat-list-wrapper{
+
   display: block;
+
   font-size: 0;
+
   margin-left: -15px;
+
   margin-right: -15px;
+
 }
+
+
 
 .tamzang-place-arrange-30{
+
   margin-left: auto;
+
   margin-right: auto;
+
   padding-left: 15px;
+
   padding-right: 15px;
+
 }
+
+
 
 .tamzang-place-border{
+
   border: 1px solid #ccc;
+
   border-radius: 4px;
+
 }
+
+
 
 .tamzang_login_wrapper{
+
   width: 100%;
+
   display: table;
+
   table-layout: auto;
+
   border-collapse: separate;
+
   text-align: right;
+
 }
+
+
 
 .arrange_unit{
+
   box-sizing: border-box;
+
   display: table-cell;
+
   vertical-align: top;
+
   white-space: nowrap;
+
 }
+
+
 
 .no-border-right{
+
   border-right: 0px !important;
+
 }
+
+
 
 .tamzang-signup-button{
+
   background: transparent;
+
   -webkit-box-shadow: none;
+
   box-shadow: none;
+
   border-radius: 4px;
+
   border: 2px solid #fff;
+
   padding: 7px 24px 8px;
+
 }
+
+
 
 .f-col-3 ul{
+
   display: inline-block;
+
 }
+
+
 
 .f-col-3 ul li{
+
   list-style: none;
+
 }
+
+
 
 /* center nav menu at header */
+
 header nav {
+
   display: flex;
+
   justify-content: center;
+
 }
 
+
+
 .geodir_price_package_row,.whoop-share-button {display: none;}
+
 #geodir_post_tags_row,
+
 #geodir_post_latitude_row,
+
 #geodir_post_longitude_row {
+
     display:none!important;
+
 }
+
+
 
 .paoc-popup-modal-cnt{ background-color: #FFF; padding: 20px;}
 
+
+
 .pagination .active a,.pagination .active a:hover{
+
   background-color:#ed6d62;
+
   border-color:#ed6d62;
+
 }
+
+
 
 .locations_list{
+
   float: left;
+
 }
+
+
 
 ul .region{
+
   margin-top: 10px;
+
 }
 
+
+
 .locations_list li{
+
   margin-right: 10px;
+
   padding: 0px;
+
   width: 180px;
+
   line-height: 20px;
+
 }
+
+
+
+
+
+
 
 
 
 
 
 /* Tamzang Product list css */
+
 .tamzang-flex {
+
   display: flex;
+
   flex-wrap: wrap;
+
   /*justify-content: center; /* Or space-between or space-around */
+
 }
+
+
 
 .tamzang-flex > section {
+
   align-items: center;
+
   display: flex;
+
   flex: 1 1 0;
+
   flex-direction: column;
+
   text-align: center;
+
   min-width: 250px;
+
   max-width: 250px;
+
   margin: 10px;
+
   padding: 10px;
+
   border: 1px solid #CCCCCC;
+
   border-radius: 5px;
+
 }
+
+
 
 .tamzang-flex > section > p {
+
   flex-grow: 1;
+
 }
+
+
 
 /* This rule ist just because of the responsive images */
+
 @media (max-width: 1600px) {
+
   .tamzang-flex > section {
+
     max-width: 250px;
+
   }
+
 }
+
+
 
 .tamzang-flex ul {
+
   display: flex;
+
   justify-content: space-between;
+
 }
 
+
+
 .tamzang-flex aside {
+
   width: 100%;
+
 }
+
+
 
 /* Basic styling for UI */
 
+
+
 .tamzang-product-featured-img {
+
   width: 400px;
+
   border-radius: 2px;
+
 }
+
+
 
 @media (max-width: 1600px) {
+
   .tamzang-product-featured-img{
+
     width: 250px;
+
   }
+
 }
+
+
 
 .flex > section {
+
   background: #fff;
+
   padding: 1em;
+
   margin: 0.5em;
+
   border-radius: 4px;
+
 }
+
+
 
 .tamzang-cart-button {
+
   background: #e34f43 url(http://i.imgur.com/RWKrr8S.png);
+
   background-repeat: no-repeat;
+
   background-position: 2em 50%;
+
   background-size: 2em;
+
   border: 0;
+
   border-radius: 4px;
+
   cursor: pointer;
+
   color: #FFF;
+
   font-weight: bold;
+
   font-size: 13px;
+
   padding: 1.5em 3em;
+
   padding-left: 6em;
+
   text-transform: uppercase;
+
   display: block;
+
   width: 100%;
+
 }
+
+
 
 .tamzang-cart-button:hover {
+
   background-color: #ed6d62;
+
   background-size: 3em;
+
   background-position: 1.5em 50%;
+
 }
+
+
 
 .tamzang-flex ul {
+
   list-style-type: none;
+
   padding: 0;
+
 }
+
+
 
 .tamzang-flex li {
+
   background: #eee;
+
   font-weight: 700;
+
   padding: 0.3em 0.6em;
+
   border-radius: 1em;
+
 }
+
+
 
 .modal.loading .modal-content:before {
+
     content: 'รอสักครู่...';
+
     text-align: center;
+
     line-height: 155px;
+
     font-size: 20px;
+
     background: rgba(0, 0, 0, .8);
+
     position: absolute;
+
     top: 55px;
+
     bottom: 0;
+
     left: 0;
+
     right: 0;
+
     color: #EEE;
+
     z-index: 1000;
+
 }
+
+
 
 form .error {
+
   color: #ff0000;
+
 }
+
+
 
 #tamzang_cart_count{
+
   position: absolute;
+
   /* display: none; */
+
   top: 10px;
+
   left: 16px;
+
   width: 20px;
+
   height: 20px;
+
   border-radius: 50%;
+
   /* background: red; */
+
   color: black;
+
   text-align: center;
+
 }
+
+
 
 /* .modal2 {
+
     display:    none;
+
     position:   fixed;
+
     z-index:    1000;
+
     top:        0;
+
     left:       0;
+
     height:     100%;
+
     width:      100%;
+
     background: rgba( 255, 255, 255, .8 )
+
                 url('http://sampsonresume.com/labs/pIkfp.gif')
+
                 50% 50%
+
                 no-repeat;
+
 } */
+
+
 
 /* When the body has the loading class, we turn
+
    the scrollbar off with overflow:hidden */
+
 /* body.loading {
+
     overflow: hidden;
+
 } */
+
+
 
 /* Anytime the body has the loading class, our
+
    modal element will be visible */
+
 /* body.loading .modal2 {
+
     display: block;
+
 } */
 
+
+
 .wrapper-loading {
+
     position: relative;
+
 }
+
 .cart-loading:before {
+
   content: 'รอสักครู่...';
+
   text-align: center;
+
   line-height: 155px;
+
   font-size: 20px;
+
   background: rgba(0, 0, 0, .8);
+
   position: absolute;
+
   top: 0;
+
   bottom: 0;
+
   left: 0;
+
   right: 0;
+
   color: #EEE;
+
   z-index: 1000;
+
   width: 100%;
+
   height: 100%;
+
 }
+
+
 
 .order-status-loading:before {
+
   content: 'รอสักครู่...';
+
   text-align: center;
+
   line-height: 110px;
+
   font-size: 20px;
+
   background: rgba(0, 0, 0, .8);
+
   position: absolute;
+
   top: 0px;
+
   bottom: 0;
+
   left: 0;
+
   right: 0;
+
   color: #EEE;
+
   z-index: 1000;
+
   width: 100%;
+
   height: 100%;
+
 }
+
+
 
 .tamzang_cart{
+
   width:400px;
+
   float:right;
+
   background-color:white;
+
   position: absolute;
-  right: 0;
+
+  right: 1.5%;
+
   /* top: 125px; */
+
 }
+
+
 
 /*20180806 bank Add hide button for shopping cart */
+
 .tamzang-shopping-cart-button{
+
 	  position: absolute;
+
       right: 0;
+
 	  top: 12%;
+
 	  z-index :1;
+
 }
 
+
+
 /*
+
+
 
 @media only screen and (min-width: 400){
+
   .tamzang_cart{
+
     top: 286px;
+
   }
+
 }
+
+
 
 @media only screen and (min-width: 635){
+
   .tamzang_cart{
+
     top: 228px;
+
   }
+
 }
+
+
 
 @media only screen and (min-width: 768px){
+
   .tamzang_cart{
+
     top: 145px;
+
   }
+
 }
+
+
 
 @media only screen and (min-width: 1040px){
+
   .tamzang_cart{
+
     top: 125px;
+
   }
+
 }
+
 */
+
+
 
 /* VERY small Phone Screen */
+
 @media only screen and (max-width: 330px){
+
 	.tamzang_cart{
+
     top: 335px;
+
     display: none;
+
   }
+
   .tamzang-shopping-cart-button{
+
 	  top: 335px;
+
   }
+
   .whoop-btn-group{
+
 	top: -50px;
+
     position: relative;
+
     left: 110px;
+
 }
+
 /*
+
 	.direction_button{
+
 	padding-left: 10px;
+
 	padding-right: 10px;
+
 }*/
+
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
+
+}
+
+.geodir_category_list_view li.geodir-listview .geodir-post-img{
+    width: 40%;    
+}
+.post-type-archive-gd_place .geodir-content {
+    width: 70%;   
+    position: relative;
+    top: -170px;
+    left: 120px;
+	height: 147px;
+}
+.post-type-archive-gd_place .geodir-category-listing {
+    height: 155px;
+    position: relative;
+}
+.back-button{
+    position: fixed;
+    top: 8%;
+    left: 88%;
+}
+
+/*  for User Shopping cart*/
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+/* Image product slide */
+.carousel.slide img{
+height:170px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
 }
   
+
 }
+
 /* Iphone X/ 6/7/8 normal */
+
 /*  small Phone Screen */
+
 @media only screen and (min-width: 331px) and (max-width: 400px){
+
 	.tamzang_cart{
+
     top: 287px;
+
     display: none;
+
 }
+
   .tamzang-shopping-cart-button{
+
 	  top: 287px;
+
 }
+
+
 
 	.whoop-btn-group{
+
 	top: -50px;
+
     position: relative;
+
     left: 110px;
+
 }
+
 /*
+
 	.direction_button{
+
 	padding-left: 10px;
+
 	padding-right: 10px;
+
 }
+
 */
 
+
+
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
-}
 
 }
+
+.geodir_category_list_view li.geodir-listview .geodir-post-img{
+    width: 40%;    
+}
+.post-type-archive-gd_place .geodir-content {
+    width: 70%;   
+    position: relative;
+    top: -170px;
+    left: 150px;
+	height: 147px;
+}
+.post-type-archive-gd_place .geodir-category-listing {
+    height: 155px;
+    position: relative;
+}
+.back-button{
+    position: fixed;
+    top: 8%;
+    left: 88%;
+}
+
+/*  for User Shopping cart*/
+
+.tamzang_cart{
+width: 375px;
+}
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+
+/* Image product slide */
+.carousel.slide img{
+height:170px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
+}
+
+
+}
+
 /* I phone 6/7/8 plus */
+
 /*  Normal Phone Screen */
+
 @media only screen and (min-width: 401px) and (max-width: 480px){
+
 	.tamzang_cart{
+
     top: 287px;
+
     display: none;
+
   }
+
   .tamzang-shopping-cart-button{
+
 	  top: 295px;
+
   }
-  	.whoop-btn-group{
-	top: -50px;
+  .whoop-btn-group
+  {
+  top: -50px;
+  position: relative;
+  left: 100%;
+  }
+
+  @media only screen and (width: 412px){
+    .whoop-btn-group
+    {
+	  top: -50px;
     position: relative;
-    left: 110px;
-}
+    left: 180%;
+    }
+  }
+
+  
+
 /*
+
 	.direction_button{
+
 	padding-left: 10px;
+
 	padding-right: 10px;
+
 }
+
 */
 
+
+
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
+
+}
+
+.geodir_category_list_view li.geodir-listview .geodir-post-img{
+    width: 40%;    
+}
+.post-type-archive-gd_place .geodir-content {
+    width: 70%;   
+    position: relative;
+    top: -170px;
+    left: 150px;
+	height: 147px;
+}
+.post-type-archive-gd_place .geodir-category-listing {
+    height: 155px;
+    position: relative;
+}
+.back-button{
+    position: fixed;
+    top: 8%;
+    left: 88%;
+}
+
+/*  for User Shopping cart*/
+.tamzang_cart{
+width: 400px;
+}
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+
+/* Image product slide */
+.carousel.slide img{
+height:170px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
 }
 
 
+
 }
+
 /*  Big Phone Screen */
+
 @media only screen and (min-width: 481px) and (max-width: 660px){
+
 	.tamzang_cart{
+
     top: 287px;
+
     display: none;
+
   }
+
 	.tamzang-shopping-cart-button{
+
 	  top: 287px;
+
   }
+
 	.geodir-big-header-ratings{
+
 	height: 50px;
+
 }
+
 	.whoop-btn-group{
+
 	top: -50px;
+
     position: relative;
+
     left: 110px;
+
 }
+
 	.geodir-big-header-buttons{
+
 	width: 300px;
+
     height: 50px;
+
 }
+
 /*
+
 	.direction_button{
+
     padding-left: 10px;
+
     padding-right: 10px;
+
 }
+
 */
 
+
+
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
-}
 
 }
-/*  Big phone Nexus*/
+
+.geodir_category_list_view li.geodir-listview .geodir-post-img{
+    width: 40%;    
+}
+.geodir_category_list_view li .geodir-content {
+    width: 70%;   
+    position: relative;
+    top: -130px;
+    left: 250px;
+	height: 147px;
+}
+
+.post-type-archive-gd_place .geodir-category-listing {
+    height: 155px;
+    position: relative;
+}
+.back-button{
+    position: fixed;
+    top: 15%;
+    left: 93%;
+}
+
+/*  for User Shopping cart*/
+
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+
+/* Image product slide */
+.carousel.slide img{
+height:170px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
+}
+
+
+}
+
+/*  Big phone (Nexus on Horizon แนวนอน)*/
+
 @media only screen and (min-width: 661px) and (max-width: 760px){
+
 	.tamzang_cart{
+
     top: 235px;
+
     display: none;
+
   }
+
   .tamzang-shopping-cart-button{
+
 	  top: 235px;
+
   }
+
   /*
+
   .direction_button.p{
+
 	margin: 0;
+
 }
+
 	.direction_button{
+
 	position: relative;
+
     top: 150px;
+
     left:350px
+
 }
+
 */
+
 #direction_button{
+
     top: 55px;
+
 }
+
 	.geodir-listing-map-inner-div{
+
 		position: relative;
+
     top: 10px;
+
 		margin: 10px;
+
 		width: 300px;
+
 	}
+
 	.geodir-listing-map-div.geodir-common.clearfix{
+
 		height: 362px;
+
 		margin-top: 60px
+
 	}
+
 	.whoop-photo{
+
 		position: absolute!important;
+
 		margin: -15px;
+
 	}
+
 	.whoop-photo.whoop-photo-2{
+
 		right: -23px
+
 	}
+
 	.whoop-photo.whoop-photo-3{
+
 		left:440px;
+
 	}
-	
+
+
+
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
+
 }
+
+.geodir_category_list_view li.geodir-listview .geodir-post-img {
+    width: 50%;
 }
+
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
+    width: 70%;
+    position: relative;
+    top: -145px;
+    left: 245px;
+}
+.post-type-archive-gd_place .geodir-category-listing {
+    overflow: hidden;
+    height: 155px;
+    position: relative;
+}
+.back-button{
+    position: fixed;
+    top: 15%;
+    left: 93%;
+}
+
+/*  for User Shopping cart*/
+.tamzang_cart{
+width: 400px;
+}
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+
+/* Image product slide */
+.carousel.slide img{
+height:170px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
+}
+
+}
+
 /*  iPad */
+
 @media only screen and (min-width: 761px) and (max-width: 860px){
+
   .tamzang_cart{
+
     top: 145px;
+
   }
+  .whoop-btn-group{   
+  
+      position: relative;
+  
+      left: 90%;
+  
+  }
+
    .tamzang-shopping-cart-button{
+
 	  top: 145px;
+
   }
+
   .geodir-listing-map-box-div {
+
     position: relative;
+
     top: 40px;
+
     right: 230px;
+
 }
+
 #direction_button{
+
 	top: 35px
+
 }
+
+
 
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
-}
 
 }
-/* IPAD PRO*/
-@media only screen and (min-width: 861px)and (max-width: 1024px) {
-#direction_button{
+
+.geodir_category_list_view li.geodir-listview .geodir-post-img {
+    width: 40%;
+}
+
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
+    width: 70%;
     position: relative;
-    top: 60px;
-    right: 290px;
+    top: -145px;
+    left: 210px;
 }
+
+.post-type-archive-gd_place .geodir-category-listing {
+    overflow: hidden;
+    height: 155px;
+    position: relative;
+}
+.search.search-results .geodir-category-listing {
+    overflow: hidden;
+    height: 155px;
+    position: relative;
+}
+
+
+.back-button{
+    position: fixed;
+    top: 15%;
+    left: 93%;
+}
+
+/*  for User Shopping cart*/
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+/* Image product slide */
+.carousel.slide img{
+height:300px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
+}
+
+}
+
+/* IPAD PRO*/
+
+@media only screen and (min-width: 861px)and (max-width: 1024px) {
+
+#direction_button{
+
+    position: relative;
+
+    top: 60px;
+
+    right: 290px;
+
+}
+
+
 
 /* hide Widget Footer*/ 
+
 .tp-row-3 {
+
     display:none;
-}
 
 }
+
+.geodir-category-listing.tamzang-place-border{
+     height: 320px !important;
+}
+
+.archive.post-type-archive .geodir-category-listing {
+    overflow: hidden;
+    height: 160px;
+}
+
+.search.search-results .geodir-category-listing {
+    overflow: hidden;
+    height: 160px;
+}
+
+
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
+    width: 500px;
+    position: relative;
+    top: -138px;
+    left: 150px;
+}
+.back-button{
+    position: fixed;
+    top: 25%;
+    left: 93%;
+}
+
+
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+
+/* Image product slide */
+.carousel.slide img{
+height:300px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
+}
+
+
+
+}
+
 /*  PC Screen */
+
 @media only screen and (min-width: 1025px) {
+
   .tamzang_cart{
+
     top: 150px;
+
    /* width: 385px;*/
+
   }
+
   .tamzang-shopping-cart-button{
+
 	  top: 125px;
+
   }
+
   .tp-row-3 {
-    column-count: 3;
+
+    column-count: 4;
+
     column-gap: 3em;
+
+}
+
+.geodir-category-listing.tamzang-place-border{
+     height: 320px !important;
+}
+
+.archive.post-type-archive .geodir-category-listing {
+    overflow: hidden;
+    height: 160px;
+}
+
+.search.search-results .geodir-category-listing {
+    overflow: hidden;
+    height: 160px;
+}
+
+
+.geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
+    width: 500px;
+    position: relative;
+    top: -138px;
+    left: 150px;
+}
+.back-button{
+    position: fixed;
+    top: 25%;
+    left: 93%;
+}
+
+
+
+.sp-quantity{
+margin-left: 5%;
+margin-right: 5%;
+}
+
+.input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group{
+margin-left: 6px;
+}
+
+.input-group .form-control{
+margin: 3px;
+}
+
+/* Image product slide */
+.carousel.slide img{
+height:300px;
+width:auto;/*maintain aspect ratio*/
+max-width:500px;
+margin: 0 auto 1em auto; /*Center the image*/
 }
 
 }
+
 .tamzang-cart-fixed{
+
   position: fixed;
+
   top:0px;
+
   margin-left: 1500px;
+
 }
+
+
 
 /*20180806 bank Add hide button for shopping cart */
+
 .tamzang-cart-button-fixed{
+
   position: fixed;
+
   top:0px;
+
   margin:0;
+
 }
+
+
+
 
 
 .stepwizard-step p {
+
     margin-top: 10px;
+
 }
+
+
 
 .stepwizard-row {
+
     display: table-row;
+
 }
+
+
 
 .stepwizard {
+
     display: table;
+
     width: 100%;
+
     position: relative;
+
 }
+
+
 
 .stepwizard-step button[disabled] {
+
     opacity: 1 !important;
+
     filter: alpha(opacity=100) !important;
+
 }
+
+
 
 .stepwizard-row:before {
+
     top: 14px;
+
     bottom: 0;
+
     position: absolute;
+
     content: " ";
+
     width: 100%;
+
     height: 1px;
+
     background-color: #ccc;
+
     z-order: 0;
 
+
+
 }
+
+
 
 .stepwizard-step {
+
     display: table-cell;
+
     text-align: center;
+
     position: relative;
+
 }
+
+
 
 .btn-circle {
+
   width: 30px;
+
   height: 30px;
+
   text-align: center;
+
   padding: 6px 0;
+
   font-size: 12px;
+
   line-height: 1.428571429;
+
   border-radius: 15px;
+
 }
+
+
 
 .order-row{
+
   width: 100%;
+
 }
+
+
 
 .order-clear{
+
   clear: both;
+
 }
+
+
 
 .order-row::after{
+
   clear:both;
+
 }
+
+
 
 .order-col-2{
+
   width: 16.66666%;
+
   float: left;
+
   position: relative;
+
   padding-right: 15px;
+
   padding-left: 15px;
+
 }
+
+
 
 .order-col-3{
+
   width: 25%;
+
   float: left;
+
   position: relative;
+
   padding-right: 15px;
+
   padding-left: 15px;
+
 }
+
+
 
 .order-col-4{
+
   width: 33.33333%;
+
   float: left;
+
   position: relative;
+
   padding-right: 15px;
+
   padding-left: 15px;
+
 }
+
+
 
 .order-col-6{
+
   width: 50%;
+
   float: left;
+
   position: relative;
+
   padding-right: 15px;
+
   padding-left: 15px;
+
 }
 
+
+
 .order-col-9{
+
   width: 75%;
+
   float: left;
+
   position: relative;
+
   padding-right: 15px;
+
   padding-left: 15px;
+
 }
+
+
+
 
 
 /* hide top left of map */
 
+
+
 .leaflet-top.leaflet-right{
+
 	display: none;
+
 }
+
+
 
 /* hide static map from google */
+
 .geodir-listing-map-box-div img{
-	display: none!important;
+
+	display: none!important;	
+
 }
+
+
 
 /*hide Full Screen Map button */
+
 #detail_page_map_canvas_triggermap.triggermap.gd-triggered-map{
+
 	display: none;
+
 }
 
+
+
+/* hide link website*/
+
+.geodir_more_info.geodir_website
+
+{
+
+	display: none;
+
+}
 
 .food-menu-detail{
   margin-bottom: 10px;
@@ -781,8 +1929,89 @@ form .error {
 
 .confirm-table input[type=text]{
   width: 50px;
-/* hide link website*/
-.geodir_more_info.geodir_website
-{
-	display: none;
+}
+
+/*20190221 Bank Add popup*/
+/* Popup container - can be anything you want */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+#buddypress #item-nav div.item-list-tabs ul li {
+        margin: 0 2px 2px 1px;
+        border-radius: 0;
+}
+
+/* Shopping Cart Button_0*/
+
+#glfButton1.glf-button.glyphicon{
+  top: 50px;
+  right: 1px;
+  bottom: 1px;
+  width: 60px;
+  height: 50px;
+  left: 82%;
+  position: fixed;
+  visibility: visible;
+  z-index: 1;
+  background-image: url("https://tamzang.com/wp-content/uploads/2017/11/cartbt-01.png");
+  background-size: cover;
+  }
+
+
+#glfButton0.glf-button {
+  width: 150px;
+  height: 45px;
+  padding: 12px;
 }

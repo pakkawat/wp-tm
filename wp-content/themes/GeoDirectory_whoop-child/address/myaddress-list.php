@@ -1,5 +1,6 @@
 <?php /* Template Name: myaddress-list */ ?>
-
+<script src="https://www.openlayers.org/api/OpenLayers.js"></script>
+<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
 <?php
 global $wpdb, $current_user;
 
