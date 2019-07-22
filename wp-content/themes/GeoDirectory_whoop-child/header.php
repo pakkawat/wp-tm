@@ -9,7 +9,7 @@
 <?php // mobile meta (hooray!) ?>
 <meta name="HandheldFriendly" content="True" />
 <meta name="MobileOptimized" content="320" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0 " />
 <?php global $gdf;?>
 <link rel="apple-touch-icon" href="<?php echo $gdf['site_apple_touch_icon']['url']; ?>">
 <link rel="icon" href="<?php echo $gdf['site_favicon']['url']; ?>">
@@ -22,7 +22,9 @@
 <?php // end of wordpress head ?>
 <?php // drop Google Analytics Here ?>
 <?php // end analytics ?>
+
 </head>
+<script type="text/javascript" src="https://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/onesignal_iosandandroid.js"></script>
 <body <?php body_class(); ?>>
 <div id="container">
   <?php if ( is_front_page() ) { ?>
@@ -95,6 +97,11 @@
                               <li class="whoop-dd-menu-link">
                                   <a href="<?php echo home_url('/my-order/'); ?>">
                                       <i class="fa fa-user"></i> <?php echo 'รายการสั่งซื้อสินค้าของฉัน'; ?>
+                                  </a>
+                              </li>
+                              <li class="whoop-dd-menu-link">
+                                  <a href="<?php echo home_url('/รายชื่อร้านที่รอสั่ง/'); ?>">
+                                      <i class="fa fa-user"></i> รายชื่อร้านที่รอสั่ง
                                   </a>
                               </li>
                               <li class="whoop-dd-menu-link">
@@ -304,6 +311,11 @@
                                 </a>
                             </li>
                             <li class="whoop-dd-menu-link">
+                                  <a href="<?php echo home_url('/รายชื่อร้านที่รอสั่ง/'); ?>">
+                                      <i class="fa fa-user"></i> รายชื่อร้านที่รอสั่ง
+                                  </a>
+                              </li>
+                            <li class="whoop-dd-menu-link">
                                 <a href="<?php echo bp_get_loggedin_user_link().'myshop/'; ?>">
                                     <i class="fa fa-user"></i> <?php echo 'ร้านค้าของฉัน'; ?>
                                 </a>
@@ -344,7 +356,9 @@
           }?>
       </div>
     </header>
+	<?php kento_notify(); ?>
 <?php } ?>
 <script type="text/javascript">
     var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
 </script>
+

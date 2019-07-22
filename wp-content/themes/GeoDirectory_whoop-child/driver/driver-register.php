@@ -11,6 +11,16 @@ global $wpdb, $current_user;
 <script>
 jQuery(document).ready(function($){
 
+  jQuery.validator.addMethod(
+    "extension",
+    function (value, element) {
+        var fileType = element.files[0].type;
+        var isImage = /(jpg|jpeg|png)$/i.test(fileType);
+        return isImage;
+    },
+    'รูปภาพต้องนามสกุล jpg, jpeg, png'
+  );
+
     $("form[name='driver_form']").validate({
     // Specify validation rules
     rules: {
@@ -22,24 +32,38 @@ jQuery(document).ready(function($){
         required: true,
         maxlength: 10,
         digits: true
+      },
+      image:{
+        required:true,
+        extension: true
       }
     },
     // Specify validation error messages
     messages: {
       name: "กรุณากรอกชื่อ-สกุล",
-      phone: "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง"
+      phone: "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง",
+      image: {
+        required: "กรุณาใส่รูปภาพ"
+      }
     },
     // Make sure the form is submitted to the destination defined
     // in the "action" attribute of the form when valid
-    submitHandler: function(form) {
+    submitHandler: function(form, event) {
+      event.preventDefault();
       $( "#driver-content" ).toggleClass('order-status-loading');
 
       var clikedForm = $(form);
-      console.log(clikedForm.serialize());
+      var formData = new FormData(form);
+      // console.log(clikedForm.serialize());
+      // console.log($(form)[0]);
+      console.log(formData);
+
       $.ajax({
         type: "POST",
         url: ajaxurl,
-        data: clikedForm.serialize(),
+        data: formData,
+        processData: false,
+        contentType: false,
         success: function(msg){
               if(msg.success){
                 $( "#driver-content").load( ajaxurl+"?action=load_driver_pending", function( response, status, xhr ) {
@@ -50,6 +74,8 @@ jQuery(document).ready(function($){
 
                   console.log("Response: "+status);
                 });
+              }else{
+                console.log(msg);
               }
 
               $( "#driver-content" ).toggleClass('order-status-loading');
@@ -65,13 +91,33 @@ jQuery(document).ready(function($){
     }
   });
 
+  $('#image').change(function() {
+    var file = $(this).get(0).files[0];
+    //var preview = $('#preview');
+    var img = document.createElement('img');
+    img.src = window.URL.createObjectURL(file);
+    $('#preview').html(img);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        window.URL.revokeObjectURL(this.src);
+    }
+    reader.readAsDataURL(file);
+    $('#preview img').css({'width':'200px'});
+});
+
 });
 </script>
 
 <h1>ลงทะเบียน driver</h1>
 <section class="entry-content cf" itemprop="articleBody" style="width:67%;">
 
-  <form name="driver_form">
+  <form id="driver_form" name="driver_form" enctype="multipart/form-data">
+
+    <div class="geodir_form_row clearfix gd-fieldset-details">
+       <label>รูปภาพ<span>*</span> </label>
+       <input id="image" name="image" type="file" />
+       <div id="preview"></div>
+    </div>
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
        <label>ชื่อ-สกุล<span>*</span> </label>
@@ -100,6 +146,7 @@ jQuery(document).ready(function($){
       // if( is_wp_error( $recaptcha_error ) ) {
       //   echo '<h3>'.$recaptcha_error->get_error_message().'</h3>';
       // }
+
     ?>
     </div>
 

@@ -94,7 +94,13 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
     $parent = get_term($default_category->parent);
 
-    $current_date = date("Y-m-d H:i:s");
+    $tz = 'Asia/Bangkok';
+    $timestamp = time();
+    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+    //echo $dt->format('d.m.Y, H:i:s');
+
+    $current_date = $dt->format("Y-m-d H:i:s");
 
     // $stock_results = $wpdb->get_results(
     //     $wpdb->prepare(
@@ -124,9 +130,13 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     $shipping_id = 0;
     $billing_id = 0;
 
-	//20190213 Bank Add Delivery Fee
+
+  //20190213 Bank Add Delivery Fee if it need delivery
+  if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+  {
+    list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
+  }	
 	
-	list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
 	
     $shipping_address = $wpdb->get_row(
         $wpdb->prepare(
@@ -191,7 +201,7 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
         array($thread_id, $current_user->ID, "ใบสั่งซื้อเลขที่: #".$order_id , '<strong><p style="font-size:14px;">มีรายการสั่งซื้อสินค้าเข้ามาใหม่</p> <a href="'.home_url('/shop-order/').'?pid='.$_POST['pid'].'">คลิกที่นี่เพื่อดูใบสั่งซื้อ</a></strong>', $current_date)
       )
     );
-    $shop_owner = get_post_field ('post_author', $_POST['post_id']);
+    $shop_owner = get_post_field ('post_author', $_POST['pid']);
 
     $wpdb->query(
       $wpdb->prepare(
@@ -207,7 +217,35 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
       )
     );
 
+    // Send Notification to user who Subscribe with OneSignal
+    $message = "มี Order อาหารมาใหม่จาก Tamzang";
+		
+    $sql = $wpdb->prepare(
+      "SELECT device_id FROM onesignal where user_id=%d ", array($shop_owner)
+    );
+    $player_id_array = $wpdb->get_results($sql);
+    foreach ($player_id_array as $list_player_device)
+    {
+      $player_id = $list_player_device->device_id;
+      $response = sendMessage($player_id,$message);
+      $return["allresponses"] = $response;
+      $return = json_encode( $return);
+      file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true),FILE_APPEND);
+    }
+
+    $ch = curl_init();
+
+    // set URL and other appropriate options
+    curl_setopt($ch, CURLOPT_URL, "http://119.59.97.78:8010/".$order_id);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    // grab URL and pass it to the browser
+    curl_exec($ch);
+    // close cURL resource, and free up system resources
+    curl_close($ch);
+    file_put_contents( dirname(__FILE__).'/debug/autoassign.log', var_export( "Start :".$order_id."\n", true));
   }// end if !empty
+
+
 
 }// end สร้าง order
 
@@ -424,6 +462,8 @@ jQuery(document).ready(function($){
                 $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
                 $( "#panel_"+order_id ).find(".panel-footer").remove();
                 $( "#status_"+order_id ).html('<div class="order-row" style="text-align:center;"><h1>ยกเลิก</h1></div>');
+              }else{
+                $( "#panel_"+order_id ).find(".panel-footer .btn-danger").replaceWith( '<font color="FDA50C"><b>'+msg.data+'</b></font>' );
               }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -470,15 +510,20 @@ jQuery(document).ready(function($){
           success: function(msg){
                 console.log( "customer_response_adjust: " + JSON.stringify(msg) );
                 if(msg.success){
-                  if(button_type){
-                    $( "#order_adjust_"+order_id ).html('<font color="green"><b>ยอมรับ</b></font>');
-                    $( "#total_amt_"+order_id ).html(msg.data);
+                  if(msg.data == "พนักงานตามส่งยืนยันคำสั่งซื้อแล้ว"){
+                    $( "#order_adjust_"+order_id ).html('<font color="FDA50C"><b>'+msg.data+'</b></font>');
                   }else{
-                    $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
-                    $( "#panel_"+order_id ).find(".panel-footer").remove();
-                    $( "#status_"+order_id ).html('<div class="order-row" style="text-align:center;"><h1>ยกเลิก</h1></div>');
-                    $( "#order_adjust_"+order_id ).empty();
+                    if(button_type){
+                      $( "#order_adjust_"+order_id ).html('<font color="green"><b>ยอมรับ</b></font>');
+                      $( "#total_amt_"+order_id ).html(msg.data);
+                    }else{
+                      $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
+                      $( "#panel_"+order_id ).find(".panel-footer").remove();
+                      $( "#status_"+order_id ).html('<div class="order-row" style="text-align:center;"><h1>ยกเลิก</h1></div>');
+                      $( "#order_adjust_"+order_id ).empty();
+                    }
                   }
+
                 }
           },
           error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -500,6 +545,34 @@ jQuery(document).ready(function($){
         $('.btn-ok', this).data('type', data.type);
         
         console.log(data);
+    });
+
+
+    jQuery(document).on("click", ".cancel-code", function(){
+      var order_id = $(this).data('id');
+      var nonce = $(this).data('nonce');
+      var code = $('#cancel_code_'+order_id).val();
+
+      var send_data = 'action=customer_confirm_code&id='+order_id+'&nonce='+nonce+'&code='+code;
+
+      $.ajax({
+        type: "POST",
+        url: ajaxurl,
+        data: send_data,
+        success: function(msg){
+              //console.log( "Updated status callback: " + JSON.stringify(msg) );
+              if(msg.success){
+                $( "#panel_"+order_id ).find('.panel-body .cancel_code').replaceWith('<font color="green"><b>'+msg.data+'</b></font>');
+              }else{
+                $( "#panel_"+order_id ).find('.panel-body .cancel_code .cancel_txt').html('<h4>'+msg.data+'</h4>' );
+              }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.log(textStatus);
+          $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
+        }
+      });
+
     });
 
 });
@@ -777,7 +850,7 @@ else { // desktop browser
                               <hr>
                           <?php
                         } else{
-                          if($order->status != 99){ 
+                          if(($order->status != 99) && $order->status < 3){ 
                             $text = ' ราคาเพิ่มเติมอีก <strong>'.str_replace(".00", "",number_format($order->driver_adjust,2)).' บาท</strong> <h4><strong>รวมทั้งหมด '.str_replace(".00", "",number_format($order->total_amt+$order->driver_adjust+$shipping_price,2)).'</strong> บาท</h4>';
                             $customer_nonce = wp_create_nonce( 'customer_response_adjust_'.$order->id);
                             ?>
@@ -843,49 +916,74 @@ else { // desktop browser
                 </div>
               </div>
 
+              <?php if($order->status < 3 && $order->cancel_code != "" && $order->cancel_code != "ok"){ ?>
+                <div class="order-clear"></div>
+                <hr>
+                <div class="order-row cancel_code">
+                  <div class="order-col-4">
+                    <input type="text" id="cancel_code_<?php echo $order->id; ?>" value=""  placeholder="กรุณาใส่รหัสเพื่อยืนยัน">
+                  </div>
+                  <div class="order-col-4">
+                    <button class="btn btn-success cancel-code"
+                      data-id="<?php echo $order->id; ?>" data-nonce="<?php echo wp_create_nonce( 'customer_confirm_code_'.$order->id); ?>" 
+                      >ตกลง</button>
+                  </div>
+
+                  <p class="cancel_txt"></p>
+                </div>
+              <?}?>
+
             </div>
 
             <?php if($order->status != 99){ ?>
               <div class="panel-footer">
+
+                  <?php if($order->deliver_ticket == 'Y' && $order->status > 1){ 
+                          $driver = $wpdb->get_row(
+                            $wpdb->prepare(
+                                "SELECT driver_name,phone,profile_pic
+                                FROM driver
+                                INNER JOIN driver_order_log_assign
+                                ON driver.Driver_id = driver_order_log_assign.driver_id
+                                WHERE driver_order_log_assign.driver_order_id = %d AND driver_order_log_assign.status = 2 ", array($order->id)
+                            )
+                          );
+
+                          if(!empty($driver)){
+                        ?>
+                          <div class="order-row" style="text-align:center;">
+                              <a data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$driver->profile_pic; ?>"
+                              style="cursor: pointer;" >
+                                รูปภาพ
+                              </a>
+                              <strong>พนักงานตามส่ง:</strong><?php echo $driver->driver_name; ?> <strong>เบอร์โทรศัพท์:</strong><?php echo $driver->phone; ?> 
+                          </div>
+                          <div class="order-clear"></div>
+                      <?php }
+                      }else if ($order->deliver_ticket != 'Y' && $order->payment_type == 2){?>
+                          <div class="order-row" style="text-align:center;">
+                            <h2>เก็บเงินปลายทาง</h2>
+                          </div>
+                          <div class="order-clear"></div>
+                      <?php } ?>
+                
                 <div class="order-row">
                   <div class="order-col-4" style="text-align:left;min-height:1px;">
-                    <?php if($order->status == 1){ ?>
+                    <?php if($order->status == 1 || $order->status == 2){ ?>
                       <button class="btn btn-danger" href="#" data-id="<?php echo $order->id; ?>"
                         data-nonce="<?php echo wp_create_nonce( 'update_order_status_'.$order->id); ?>"
                         data-toggle="modal" data-target="#confirm-delete" >ยกเลิกคำสั่งซื้อ</button>
                     <?php } ?>
                   </div>
 
-                  <?php if($order->deliver_ticket == 'Y'){ ?>
-                    <?php if(($order->status > 1)&&($order->status < 5)){ 
-                        $driver = $wpdb->get_row(
-                          $wpdb->prepare(
-                              "SELECT driver_name,phone
-                              FROM driver
-                              INNER JOIN driver_order_log
-                              ON driver.Driver_id = driver_order_log.driver_id
-                              WHERE driver_order_log.driver_order_id = %d AND driver_order_log.status = 2 ", array($order->id)
-                          )
-                        );
-
-                        if(!empty($driver)){
-                      ?>
-                          <div class="order-col-6" >
-                            <strong>พนักงานตามส่ง:</strong><?php echo $driver->driver_name; ?> <strong>เบอร์โทรศัพท์:</strong><?php echo $driver->phone; ?> 
-                          </div>
-                    <?php }
-                      } ?>
-
-                  <?php }else if($order->payment_type == 2){ ?>
-                    <div class="order-col-6" style="text-align:center;min-height:1px;">
-                      <h2>เก็บเงินปลายทาง</h2>
-                    </div>
-                  <?php } else { ?>
-                    <div class="order-col-4" style="text-align:center;min-height:1px;">
+                  <div class="order-col-4" style="text-align:center;min-height:1px;">
                       <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
                         id="flip"
                       >แสดงรูปภาพ</button>
                     </div>
+
+                  <?php if($order->payment_type == 1) { ?>
+
                     <div class="order-col-4" style="text-align:right;min-height:1px;">
                       <?php if($order->status == 1){ ?>
                         <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"

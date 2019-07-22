@@ -4,11 +4,11 @@
 global $wpdb, $current_user;
 $order = $wpdb->get_row(
     $wpdb->prepare(
-        "SELECT orders.id,orders.post_id,orders.adjust_accept,orders.driver_adjust,orders.total_amt,driver_order_log.status,
-        orders.status as order_status,driver_order_log.Id as log_id
+        "SELECT orders.id,orders.post_id,orders.adjust_accept,orders.driver_adjust,orders.total_amt,driver_order_log_assign.status,
+        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code
         FROM orders
-        INNER JOIN driver_order_log ON orders.id = driver_order_log.driver_order_id and driver_id = %d 
-        and (driver_order_log.status = 1 OR driver_order_log.status = 2)", $current_user->ID)
+        INNER JOIN driver_order_log_assign ON orders.id = driver_order_log_assign.driver_order_id and driver_id = %d 
+        and (driver_order_log_assign.status = 1 OR driver_order_log_assign.status = 2)", $current_user->ID)
     );
 
 $is_ready = $wpdb->get_var(
@@ -25,9 +25,13 @@ $is_ready = $wpdb->get_var(
 	<div class="order-col-6" style="text-align:right;">
         <button class="btn <?php echo $is_ready ? 'btn-success' : 'btn-danger';?> driver-ready" data-d-id="<?php echo $current_user->ID; ?>"
             data-nonce="<?php echo wp_create_nonce( 'driver_ready_'.$current_user->ID); ?>"
-            ><?php echo $is_ready ? 'รอรับงาน' : 'ไม่รับงาน';?></button>
+            ><?php echo $is_ready ? 'พร้อมรับงาน' : 'ไม่พร้อมรับงาน';?></button>
+            <p style="color: red;"><em><?php echo $is_ready ?'สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน':'สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ';?></p></em>
+
+            <button class="btn btn-default transaction_details" >transaction details</button>
 	</div>
 	<div class="order-clear"></div>
+
 </div>
 
 <?php if(!empty($order)){
@@ -53,15 +57,8 @@ $is_ready = $wpdb->get_var(
 </div>
 
 <div class="order-row" style="text-align:center;">
-    <span id="confirm_button_<?php echo $order->id; ?>">
     <?php if($order->status == 2){?>
         <img src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/pass.png" />ยืนยันรับคำสั่งซื้อ
-    <?php }else{ ?>
-        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>" data-text="<?php echo '#'.$order->id.'ร้าน'.$title; ?>"
-            data-log_id="<?php echo $order->log_id; ?>"
-            data-nonce="<?php echo wp_create_nonce( 'driver_confirm_order_'.$order->id); ?>"
-            data-toggle="modal" data-target="#confirm-order" >ยืนยันรับคำสั่งซื้อ</button>
-        </span>
     <?php } ?>
 </div>
 <div class="order-clear"></div>
@@ -90,7 +87,8 @@ $is_ready = $wpdb->get_var(
                 $shipping_price = $shipping_address->price;
                 if($wpdb->num_rows > 0)
                 {
-                  echo "ที่อยู่ผู้รับ: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
+                  echo "ที่อยู่ผู้รับ: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode."<br>";
+                  echo "เบอร์โทรศัพท์: ".$shipping_address->phone;
 				  driver_map("", $shipping_address->ship_latitude, $shipping_address->ship_longitude);
                 }
 
@@ -157,29 +155,31 @@ $is_ready = $wpdb->get_var(
                             <hr>
 
                 <?php } else{ 
-                            if(!empty($order->driver_adjust)) {?>
+                            if($order->order_status < 3){
+                                if(!empty($order->driver_adjust)) {?>
 
-                                <div class="order-row">
-                                    <font color="#eb9316"><b>รอลูกค้ายอมรับ</b></font>
-                                </div>
-                                <div class="order-clear"></div>
-                                <hr>
+                                    <div class="order-row">
+                                        <font color="#eb9316"><b>รอลูกค้ายอมรับ</b></font>
+                                    </div>
+                                    <div class="order-clear"></div>
+                                    <hr>
 
-                            <?php }else{ ?>
-                                <div class="order-row" id="order_adjust_<?php echo $order->id; ?>">
-                                    <div class="order-col-4">
-                                        <input type="text" id="adjust_<?php echo $order->id; ?>" value="">
+                                <?php }else{ ?>
+                                    <div class="order-row" id="order_adjust_<?php echo $order->id; ?>">
+                                        <div class="order-col-4">
+                                            <input type="text" id="adjust_<?php echo $order->id; ?>" value="">
+                                        </div>
+                                        <div class="order-col-4">
+                                            <button class="btn btn-success adjust-price" href="#" 
+                                            data-id="<?php echo $order->id; ?>" data-log_id="<?php echo $order->log_id; ?>"
+                                            data-nonce="<?php echo wp_create_nonce( 'driver_adjust_price_'.$order->id); ?>" 
+                                            data-toggle="modal" data-target="#confirm-adjust" >เพิ่มราคา</button>
+                                        </div>
                                     </div>
-                                    <div class="order-col-4">
-                                        <button class="btn btn-success adjust-price" href="#" 
-                                        data-id="<?php echo $order->id; ?>" data-log_id="<?php echo $order->log_id; ?>"
-                                        data-nonce="<?php echo wp_create_nonce( 'driver_adjust_price_'.$order->id); ?>" 
-                                        data-toggle="modal" data-target="#confirm-adjust" >เพิ่มราคา</button>
-                                    </div>
-                                </div>
-                                <div class="order-clear"></div>
-                                <hr>
-                            <?php } ?>
+                                    <div class="order-clear"></div>
+                                    <hr>
+                                <?php }
+                            } ?>
 
                 <?php } ?>
 
@@ -220,13 +220,43 @@ $is_ready = $wpdb->get_var(
 
     <div class="panel-footer">
 
-        <div class="order-row" style="text-align:center;">
-            <?php if($order->status == 2){ ?>
-                <button class="btn btn-success driver-step"
-                data-id="<?php echo $order->id; ?>" data-nonce="<?php echo wp_create_nonce( 'driver_next_step_'.$order->id); ?>" 
-                ><?php echo driver_text_step($order->order_status); ?></button>
-            <?php   } ?>
-        </div>
+        
+        <?php if($order->status == 2){ ?>
+            <div class="order-row" >
+                <div class="order-col-6" style="text-align:left;min-height:1px;">
+                    <?php 
+                    if($order->order_status == 2){
+                        if($order->cancel_code == ""){ ?>
+                        <button class="btn btn-danger" href="#" data-id="<?php echo $order->id; ?>" data-text="<?php echo '#'.$order->id.'ร้าน'.$title; ?>"
+                                data-log_id="<?php echo $order->log_id; ?>"
+                                data-nonce="<?php echo wp_create_nonce( 'driver_cancel_order_'.$order->id); ?>"
+                                    data-toggle="modal" data-target="#cancel-order" >ยกเลิกคำสั่งซื้อ</button>
+                        <?php }else if ($order->cancel_code == "ok"){
+                                echo "<font color='green'><b>ยืนยันคำสั่งซื้อเรียบร้อย</b></font>";
+                                }else{
+                                    echo "<h4>รหัสยืนยันคำสั่งซื้อ: ".$order->cancel_code."</h4>";
+                                }
+                        }
+                    ?>
+                </div>
+                <div class="order-col-6" style="text-align:right;">
+                    <button class="btn btn-success driver-step"
+                    data-id="<?php echo $order->id; ?>" data-nonce="<?php echo wp_create_nonce( 'driver_next_step_'.$order->id); ?>" 
+                    ><?php echo driver_text_step($order->order_status); ?></button>
+                </div>
+            </div>
+            <div class="order-clear"></div>
+        <?php }else{ ?>
+            <div class="order-row" style="text-align:center;">
+                <span id="confirm_button_<?php echo $order->id; ?>">
+                    <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>" data-text="<?php echo '#'.$order->id.'ร้าน'.$title; ?>"
+                        data-log_id="<?php echo $order->log_id; ?>"
+                        data-nonce="<?php echo wp_create_nonce( 'driver_confirm_order_'.$order->id); ?>"
+                        data-toggle="modal" data-target="#confirm-order" >รับคำสั่งซื้อ</button>
+                </span>
+            </div>
+        <?php } ?>
+        
 
     </div>
 

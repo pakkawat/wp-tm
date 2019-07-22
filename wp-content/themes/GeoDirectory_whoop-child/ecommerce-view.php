@@ -48,5 +48,9 @@ foreach ( $arrProducts as $product )
   echo '</aside>';
   echo '</section> ';
 }
+$GLOBALS['post'] = $current_post;
+if (!empty($current_post)) {
+    setup_postdata($current_post);
+}
 ?>
 </div>

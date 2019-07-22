@@ -36,6 +36,7 @@ function showPosition(position) {
 
 jQuery(document).ready(function($){
 
+
     $('#main_order').on("click", '.page-item a', function(event) { 
         console.log($(this).data("page"));
         if($(this).data("page") != null)
@@ -127,6 +128,41 @@ jQuery(document).ready(function($){
         $('.btn-reject', this).data('log_id', data.log_id);
         $('.btn-reject', this).data('nonce', data.nonce);
         //console.log(data);
+    });
+
+    $('#cancel-order').on('click', '.btn-ok', function(e) {
+
+        var order_id = $(this).data('id');
+        var log_id = $(this).data('log_id');
+        var nonce = $(this).data('nonce');
+        console.log( "ยกเลิก order: " + order_id + " log_id: " + log_id );
+
+
+        var send_data = 'action=driver_cancel_order&id='+order_id+'&nonce='+nonce+'&log_id='+log_id;
+        $.ajax({
+            type: "POST",
+            url: ajaxurl,
+            data: send_data,
+            success: function(msg){
+                console.log( "Order cancel: " + JSON.stringify(msg) );
+                $( "#panel_"+order_id ).find(".panel-footer .btn-danger").replaceWith( msg.data );
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(textStatus);
+
+            }
+        });
+
+        $('#cancel-order').modal('toggle');
+
+    });
+
+    $('#cancel-order').on('show.bs.modal', function(e) {
+        var data = $(e.relatedTarget).data();
+        $('.order-text', this).text(data.text);
+        $('.btn-ok', this).data('id', data.id);
+        $('.btn-ok', this).data('log_id', data.log_id);
+        $('.btn-ok', this).data('nonce', data.nonce);
     });
 
     function isPositiveFloat(s)
@@ -249,7 +285,7 @@ jQuery(document).ready(function($){
             success: function(msg){
                 console.log( "driver step Order เรียบร้อย: " + JSON.stringify(msg) );
                 if(msg.success){
-                    if(msg.data == "close"){
+                    if(msg.data == "close" || msg.data == "รับสินค้า"){
                         $( ".wrapper-loading" ).load( ajaxurl+"?action=load_driver_order_template", function( response, status, xhr ) {
                             if ( status == "error" ) {
                                 var msg = "Sorry but there was an error: ";
@@ -270,6 +306,8 @@ jQuery(document).ready(function($){
 
     });
 
+
+
     jQuery(document).on("click", ".driver-ready", function(){
         var id = $(this).data('d-id');
         var nonce = $(this).data('nonce');
@@ -285,9 +323,11 @@ jQuery(document).ready(function($){
                 if(msg.success){
                     $this.toggleClass('btn-danger btn-success');
                     if($this.hasClass('btn-danger')){
-                        $this.text('ไม่รับงาน');
+                        $this.text('ไม่พร้อมรับงาน');
+                        $this.next().text('สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ');
                     }else{
-                        $this.text('รอรับงาน');
+                        $this.text('พร้อมรับงาน');
+                        $this.next().text('สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน');
                     }
                 }
 
@@ -300,10 +340,28 @@ jQuery(document).ready(function($){
         });
 
     });
+
+
+    jQuery(document).on("click", ".transaction_details", function(){
+        
+        $( ".wrapper-loading" ).toggleClass('order-status-loading');
+
+        $( ".wrapper-loading" ).load( ajaxurl+"?action=load_driver_transaction_details", function( response, status, xhr ) {
+            if ( status == "error" ) {
+                var msg = "Sorry but there was an error: ";
+                $( ".wrapper-loading" ).html( msg + xhr.status + " " + xhr.statusText );
+            }else{
+                $( ".wrapper-loading" ).toggleClass('order-status-loading');
+            }
+        });
+
+    });
+
+
+
+
 	
 });
-
-
 
 </script>
 
@@ -321,7 +379,26 @@ jQuery(document).ready(function($){
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger btn-reject" data-dismiss="modal" style="float:left;">ปฏิเสธ</button>
-                <button type="button" class="btn btn-success btn-ok">ตกลง</button>
+                <button type="button" class="btn btn-success btn-ok">ยืนยันรับคำสั่งซื้อ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cancel-order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">ยกเลิกคำสั่งซื้อ</h4>
+            </div>
+            <div class="modal-body">
+                <p>คุณกำลังจะยกเลิกคำสั่งซื้อรหัส <b><i class="order-text"></i></b></p>
+                <p>คุณต้องการดำเนินการต่อหรือไม่?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-reject" data-dismiss="modal" style="float:left;">ไม่ยกเลิก</button>
+                <button type="button" class="btn btn-success btn-ok">ยืนยันยกเลิก</button>
             </div>
         </div>
     </div>

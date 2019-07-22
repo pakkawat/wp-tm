@@ -4,7 +4,7 @@
 if ( is_single() ) {
   if ( is_user_logged_in() ){
     $post_type = geodir_get_current_posttype();
-    if($post_type == "gd_place"){
+    if(($post_type == "gd_place")||($post_type == "gd_product")){
     global $wpdb, $current_user;
     $user_has_address = false;
     $user_address = $wpdb->get_row(
@@ -264,7 +264,7 @@ if ( is_single() ) {
       </div>
       <div style="float:right;">
         <?php if($user_has_address){ ?>
-          <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.get_the_ID() ?>">
+          <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
             <span style="color: #ffffff !important;" class="glyphicon glyphicon-play">สั่งเลย</span>
           </a>
         <?php }else{ ?>

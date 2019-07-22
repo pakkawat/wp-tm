@@ -911,8 +911,18 @@ function update_order_status_callback(){
         )
     );
 
-    if($order_status != 1)
-        wp_send_json_error($order_status);
+    if($order_status >= 3)//ยกเลิกไม่ได้
+        wp_send_json_error("พนักงานตามส่งยืนยันคำสั่งซื้อแล้ว");
+
+    // 2019/07/03 Bank Add delete status 1 in driver_order_log_assign
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM  driver_order_log_assign WHERE driver_order_id = %d ",
+            array($order_id)
+        )
+    );
+
+
   }
   try {
 
@@ -1672,14 +1682,15 @@ function geodirectory_detail_page_google_map_link( $options ) {
     global $post;
     $post_type = geodir_get_current_posttype();
     if (($post_type !=gd_product)&&(!empty($post->post_latitude) && !empty($post->post_longitude) )) {
+       
         $maps_url = add_query_arg( array(
                         'q' => get_the_title(),
                         'sll' => $post->post_latitude . ',' . $post->post_longitude,
-                    ), 'http://maps.google.com/' );
+                    ), 'https://maps.google.com/maps' );
         ?>
-        
+        <div class="direction_button">
         <p><a href="<?php echo $maps_url; ?>" target="_blank"><input type=button id=direction_button value='Get Directions on Google Maps'></a></p>
-        
+        </div>
         <?php
     }
 }
@@ -2222,7 +2233,7 @@ function tamzang_user_driver_screen_content()
 //   wp_register_style( 'gd-captcha-style', GEODIR_RECAPTCHA_PLUGIN_URL . '/css/gd-captcha-style.css', array(), GEODIR_RECAPTCHA_VERSION);
 //   wp_enqueue_style( 'gd-captcha-style' );
   ?>
-  <div id="driver-content" class="wrapper-loading">
+  <div id="driver-content">
     <?php
         global $wpdb, $current_user;
 
@@ -2252,6 +2263,8 @@ add_action('wp_ajax_register_driver', 'register_driver_callback');
 function register_driver_callback(){
   global $wpdb, $current_user;
   $data = $_POST;
+//   file_put_contents( dirname(__FILE__).'/debug/POST.log', var_export( $_POST, true));
+//   file_put_contents( dirname(__FILE__).'/debug/FILES.log', var_export( $_FILES, true));
 
   if ( check_ajax_referer( 'register_driver_' . $current_user->ID, 'nonce', false ) == false ) {
       wp_send_json_error();
@@ -2267,16 +2280,45 @@ function register_driver_callback(){
     );
 
     if($id == NULL || empty($id) ){
-        $current_date = date("Y-m-d H:i:s");
+        $tz = 'Asia/Bangkok';
+        $timestamp = time();
+        $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+        $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+    
+        $current_date = $dt->format("Y-m-d H:i:s");
 
-        $wpdb->query(
-            $wpdb->prepare(
-              "INSERT INTO register_driver SET wp_user_id = %d, name = %s, phone = %s, note = %s, regis_date = %s, approve = %d ",
-              array($current_user->ID, $data['name'], $data['phone'], $data['note'], $current_date, 0)
-            )
-        );
+        $uploads = wp_upload_dir();
+        $path = $uploads['basedir'] . '/driver_avatars/';
+        $valid_extensions = array('jpeg', 'jpg', 'png');
+        $img = $_FILES['image']['name'];
+        $tmp = $_FILES['image']['tmp_name'];
+      
+        $ext = strtolower(pathinfo($img, PATHINFO_EXTENSION));
 
-        wp_send_json_success();
+        if(!in_array($ext, $valid_extensions))
+            wp_send_json_error("allow jpeg jpg png");
+      
+        if ( !is_dir( $path ) ) {
+            wp_mkdir_p( $path );
+        }
+
+        $path = $path.strtolower($current_user->ID.'.'.$ext);
+        if(move_uploaded_file($tmp,$path)) 
+        {
+            $file_name = '/driver_avatars/'.$current_user->ID.'.'.$ext;
+            $wpdb->query(
+                $wpdb->prepare(
+                  "INSERT INTO register_driver SET wp_user_id = %d, name = %s, phone = %s, note = %s, regis_date = %s, approve = %d, profile_pic = %s ",
+                  array($current_user->ID, $data['name'], $data['phone'], $data['note'], $current_date, 0, $file_name)
+                )
+            );
+    
+            wp_send_json_success();
+        }else{
+            wp_send_json_error("move_uploaded_file error");
+        }
+
+        
     }
     else{
         wp_send_json_error("ท่านได้สมัครสมาชิคแล้ว");
@@ -2372,17 +2414,17 @@ function get_order_list_delivery() {
     $data = $_POST;
 	
     $Order_id = $data['OrderId'];
-	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
 
 	if($Order_id == null)
 	{
 		$sql = $wpdb->prepare(
-            "SELECT * FROM orders WHERE deliver_ticket = 'Y'and status <> 99 order by id ",array()
+            "SELECT * FROM orders WHERE deliver_ticket = 'Y'and status Not in (99,5) order by id ",array()
         );
 	}
 	else{
 		$sql = $wpdb->prepare(
-            "SELECT * FROM orders WHERE deliver_ticket = 'Y' and id = %d and status <> 99",array($Order_id)  
+            "SELECT * FROM orders WHERE deliver_ticket = 'Y' and id = %d and status Not in (99,5) ",array($Order_id)  
         );
 	}
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
@@ -2479,27 +2521,86 @@ function driver_confirm_order_callback(){
 
   try {
 
-    $owner = $wpdb->get_var(
+    $owner = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT Driver_id FROM driver_order_log where Id = %d ", array($data['log_id'])
+            "SELECT Driver_id,driver_order_id FROM driver_order_log_assign where Id = %d ", array($data['log_id'])
         )
     );
 
-    if($current_user->ID == $owner){
+    if($current_user->ID == $owner->Driver_id){
 
         $wpdb->query(
             $wpdb->prepare(
-                "UPDATE driver_order_log SET status = 2 where Id = %d ",
+                "UPDATE driver_order_log_assign SET status = 2 where Id = %d ",
                 array($data['log_id'])
             )
         );
 
+        // Bank Add delete status 1 in driver_order_log_assign
         $wpdb->query(
             $wpdb->prepare(
-                "UPDATE orders SET status = 2 where id = %d ",
-                array($data['id'])
+                "DELETE FROM  driver_order_log_assign WHERE status = 1 and driver_order_id = %d ",
+                array($owner->driver_order_id)
             )
         );
+
+        // Calculate Commission Driver
+        // Get distance + deliver_price from shipping_address
+        $delivery_price = $wpdb->get_row(
+            $wpdb->prepare(
+                "select A.post_id,B.price,B.distance from orders A join shipping_address B  WHERE A.id = B.order_id and B.order_id = %d", array($owner->driver_order_id)
+            )
+        );
+
+        // Get delivery variable for Calculate tier
+        $delivery_value = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d ", array($delivery_price->post_id)
+            )
+        );
+        $range_t1 = (($delivery_value->km_tier1)>=$delivery_price->distance)? $delivery_price->distance:$delivery_value->km_tier1;			
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T1:".$range_t1, true),FILE_APPEND);
+        $range_t2 = (($delivery_value->km_tier1)<=$delivery_price->distance)?((($delivery_value->km_tier2)>=$delivery_price->distance-$range_t1)? $delivery_price->distance-($delivery_value->km_tier1):$delivery_value->km_tier2-$delivery_value->km_tier1):0;
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2:".$range_t2, true),FILE_APPEND);
+        $range_t3 = ($delivery_value->km_tier2<=$delivery_price->distance)?(($delivery_price->distance)-($delivery_value->km_tier2)):0;
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T3:".$range_t3, true),FILE_APPEND);
+
+        
+        $commission_value = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM driver_variable where driver_id = %d ", array($owner->Driver_id)
+            )
+        );  
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2:".$commission_value->tier2_percent, true),FILE_APPEND);
+
+        
+        $commission = sprintf("%.2f",$commission_value->base_constance + (($commission_value->base_percent*$delivery_value->base)/100)
+                    + $commission_value->tier1_constance+ (($commission_value->tier1_percent*($range_t1*$delivery_value->km_tier1_value))/100)
+                    + $commission_value->tier2_constance+ (($commission_value->tier2_percent*($range_t2*$delivery_value->km_tier2_value))/100)
+                    + $commission_value->tier3_constance+ (($commission_value->tier3_percent*($range_t3*$delivery_value->km_tier3_value))/100));
+
+                    /*
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Commissoin Base:".$com_base, true),FILE_APPEND);
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Commissoin 1 tier:".$com_t1, true),FILE_APPEND);
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Commissoin 2 tier:".$com_t2, true),FILE_APPEND);
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Commissoin 3 tier:".$com_t3, true),FILE_APPEND);
+        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Commissoin Sum:".$commission, true),FILE_APPEND);
+*/
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE orders SET status = 2 ,commission = %f  where id = %d ",
+                array($commission,$data['id'])
+            )
+        );
+        
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE shipping_address SET commission = %f  where order_id = %d ",
+                array($commission,$data['id'])
+            )
+        );
+
 
     }
 
@@ -2510,6 +2611,123 @@ function driver_confirm_order_callback(){
   }
 
 }
+
+//Ajax functions
+add_action('wp_ajax_driver_cancel_order', 'driver_cancel_order_callback');
+
+function driver_cancel_order_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'driver_cancel_order_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try {
+
+    $owner = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT Driver_id,driver_order_id FROM driver_order_log_assign where Id = %d ", array($data['log_id'])
+        )
+    );
+
+    if($current_user->ID == $owner->Driver_id){
+
+        $order = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT status, cancel_code FROM orders where id = %d ", array($owner->driver_order_id)
+            )
+        );
+
+        if($order->status == 2){
+            if($order->cancel_code != "")
+                wp_send_json_success("<h4>รหัสยืนยันคำสั่งซื้อ: ".$order->cancel_code."</h4>");
+            
+            $tz = 'Asia/Bangkok';
+            $timestamp = time();
+            $dt = new DateTime("now", new DateTimeZone($tz));
+            $dt->setTimestamp($timestamp);
+
+            $current_date = $dt->format("Y-m-d H:i:s");
+            $code = rand(1000, 9999);
+
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE orders SET cancel_code = %s, cancel_date = %s where id = %d ",
+                    array($code,$current_date,$owner->driver_order_id)
+                )
+            );
+
+            wp_send_json_success("<h4>รหัสยืนยันคำสั่งซื้อ: ".$code."</h4>");
+
+
+        }else if($order->status > 2){
+            wp_send_json_success("<h4>คุณได้ยืนยันคำสั่งซื้อแล้ว</h4>");
+        }
+
+    }
+
+    wp_send_json_success();
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+//Ajax functions
+add_action('wp_ajax_customer_confirm_code', 'customer_confirm_code_callback');
+
+function customer_confirm_code_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'customer_confirm_code_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try {
+
+    $order = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT wp_user_id,cancel_code FROM orders where Id = %d ", array($data['id'])
+        )
+    );
+
+    if($current_user->ID == $order->wp_user_id){
+
+        if($order->cancel_code == $data['code']){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE orders SET cancel_code = 'ok' where id = %d ",
+                    array($data['id'])
+                )
+            );
+
+            wp_send_json_success("ยืนยันคำสั่งซื้อเรียบร้อย");
+        }else{
+            wp_send_json_error("รหัสไม่ถูกต้อง");
+        }
+    
+
+    }else{
+        wp_send_json_error();
+    }
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
 
 //Ajax functions
 add_action('wp_ajax_driver_reject_order', 'driver_reject_order_callback');
@@ -2530,7 +2748,7 @@ function driver_reject_order_callback(){
 
     $owner = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT Driver_id FROM driver_order_log where Id = %d ", array($data['log_id'])
+            "SELECT Driver_id FROM driver_order_log_assign where Id = %d ", array($data['log_id'])
         )
     );
 
@@ -2538,7 +2756,7 @@ function driver_reject_order_callback(){
 
       $wpdb->query(
           $wpdb->prepare(
-              "UPDATE driver_order_log SET status = 4 where Id = %d ",
+              "UPDATE driver_order_log_assign SET status = 4 where Id = %d ",
               array($data['log_id'])
           )
       );
@@ -2567,6 +2785,12 @@ add_action('wp_ajax_driver_next_step', 'driver_next_step_callback');
 function driver_next_step_callback(){
   global $wpdb, $current_user;
 
+  $tz = 'Asia/Bangkok';
+  $timestamp = time();
+  $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+  $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+
+  $current_date = $dt->format("Y-m-d H:i:s");
   $data = $_POST;
 
   // check the nonce
@@ -2575,42 +2799,117 @@ function driver_next_step_callback(){
   }
 
   try {
-
+    // get Driver_id who accept job from assign 
     $owner = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT Driver_id FROM driver_order_log where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
+            "SELECT Driver_id FROM driver_order_log_assign where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
+        )
+    );
+    // Get Restaurant ID
+    $Tamzang_id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT tamzang_id FROM driver_order_log_assign where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
         )
     );
 
     if(!empty($owner)){
-
-        $status = $wpdb->get_var(
+        // Check status of the order
+        $order = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT status FROM orders where id = %d ", array($data['id'])
+                "SELECT status,	commission FROM orders where id = %d ", array($data['id'])
             )
         );
 
-        if($status < 5){
-            $status++;
+        if($order->status < 5){
+            $order->status++;
 
             $wpdb->query(
                 $wpdb->prepare(
                     "UPDATE orders SET status = %d where id = %d ",
-                    array($status, $data['id'])
+                    array($order->status, $data['id'])
                 )
             );
-            if($status == 5){
+            if($order->status == 5){
+                
+                // Job done 
                 $wpdb->query(
                     $wpdb->prepare(
-                        "UPDATE driver_order_log SET status = 3 where Driver_id = %d AND Driver_order_id = %d ",
-                        array($owner, $data['id'])
+                        "INSERT INTO driver_order_log SET
+                        tamzang_id = %d,driver_id = %s,driver_order_id =%d,status = 3,assign_date =%s",
+                        array($Tamzang_id,$owner,$data['id'],$current_date)
                     )
                 );
 
+                if($order->commission != 0){
+
+                    $driver = $wpdb->get_row(
+                        $wpdb->prepare(
+                            "SELECT balance, add_on_credit FROM driver where driver_id = %d ", array($current_user->ID)
+                        )
+                    );
+    
+                    if($driver->add_on_credit == 0 || $driver->add_on_credit == ""){// ไม่มี point
+                        $driver->balance = $driver->balance - $order->commission;
+                        insert_driver_transaction_details("COMMISSION", 
+                        array($current_user->ID, $order->commission, $driver->balance, "COMMISSION", $current_date, $data['id']));
+                    }else{
+                        $debit = $driver->add_on_credit - $order->commission;
+                        if($debit < 0){// point ติดลบ
+                            $driver->balance = $driver->balance + $debit;// point ติดลบ !!!
+                            
+                            insert_driver_transaction_details("ADD_ON_COMMISSION",
+                            array($current_user->ID, $driver->add_on_credit, 0, "ADD_ON_COMMISSION", $current_date, $data['id']));
+
+                            $driver->add_on_credit = 0;
+
+                            insert_driver_transaction_details("COMMISSION",
+                            array($current_user->ID, abs($debit), $driver->balance, "COMMISSION", $current_date, $data['id']));
+                        }else{// point เหลือ หรือ เท่ากับศูนย์
+                            $driver->add_on_credit = $debit;
+                            insert_driver_transaction_details("ADD_ON_COMMISSION",
+                            array($current_user->ID, $order->commission, $debit, "ADD_ON_COMMISSION", $current_date, $data['id']));
+                        }
+                    }
+    
+                    $wpdb->query(
+                        $wpdb->prepare(
+                            "UPDATE driver SET balance = %f, add_on_credit = %f where driver_id = %d ",
+                            array($driver->balance, $driver->add_on_credit, $current_user->ID)
+                        )
+                    );
+
+                }
+
+
+                // Bank Add delete all  in driver_order_log_assign After Job done
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "DELETE FROM  driver_order_log_assign WHERE driver_order_id = %d ",
+                        array($data['id'])
+                    )
+                );
                 wp_send_json_success("close");
             }
             else
-                wp_send_json_success(driver_text_step($status));
+            {
+                if($order->status == 3){
+                    $code = $wpdb->get_var(
+                        $wpdb->prepare(
+                            "SELECT cancel_code FROM orders where Id = %d ", array($data['id'])
+                        )
+                    );
+                }
+                if($code != "" && $code != "ok"){
+                    $wpdb->query(
+                        $wpdb->prepare(
+                            "UPDATE orders SET cancel_code = 'ok'  where id = %d ",
+                            array($data['id'])
+                        )
+                    );
+                }
+                wp_send_json_success(driver_text_step($order->status));
+            }
+                
         }else{
             wp_send_json_error("error2");
         }
@@ -2622,6 +2921,29 @@ function driver_next_step_callback(){
   } catch (Exception $e) {
       wp_send_json_error($e->getMessage());
   }
+
+}
+
+function insert_driver_transaction_details($type, $parameters){
+    global $wpdb;
+
+    if($type == "COMMISSION"){
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO driver_transaction_details SET
+                driver_id = %d,debit = %f,balance = %f,	transaction_type = %s, transaction_date = %s, order_id = %d",
+                $parameters
+            )
+        );
+    }else{
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO driver_transaction_details SET
+                driver_id = %d, debit = %f, balance_add_on_credit = %f,	transaction_type = %s, transaction_date = %s, order_id = %d",
+                $parameters
+            )
+        );
+    }
 
 }
 
@@ -2644,7 +2966,7 @@ function driver_adjust_price_callback(){
 
     $owner = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT Driver_id FROM driver_order_log where Id = %d ", array($data['log_id'])
+            "SELECT Driver_id FROM driver_order_log_assign where Id = %d ", array($data['log_id'])
         )
     );
 
@@ -2688,11 +3010,14 @@ function customer_response_adjust_callback(){
 
     $customer = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT o.wp_user_id,o.total_amt,o.driver_adjust,s.price FROM orders as o
+            "SELECT o.wp_user_id,o.total_amt,o.driver_adjust,s.price,o.status as order_status FROM orders as o
             inner join shipping_address as s on o.shipping_id = s.id
             where o.id = %d ", array($data['id'])
         )
     );
+
+    if($customer->order_status >= 3)
+        wp_send_json_success("พนักงานตามส่งยืนยันคำสั่งซื้อแล้ว");
 
     if($current_user->ID == $customer->wp_user_id){
 
@@ -2724,11 +3049,30 @@ function load_driver_order_template_callback(){
 }
 
 //Ajax functions
+add_action('wp_ajax_load_driver_transaction_details', 'load_driver_transaction_details_callback');
+
+function load_driver_transaction_details_callback(){
+  get_template_part( 'driver/driver', 'transaction_details' );
+  wp_die();
+}
+
+//Ajax functions
+add_action('wp_ajax_load_driver_transaction_list', 'load_driver_transaction_list_callback');
+
+function load_driver_transaction_list_callback(){
+  set_query_var( 'start_date', $_POST['start_date'] );
+  set_query_var( 'end_date', $_POST['end_date'] );
+  get_template_part( 'driver/driver', 'transaction_list' );
+  wp_die();
+}
+
+//Ajax functions
 add_action('wp_ajax_supervisor_assign_order', 'supervisor_assign_order_callback');
 
 function supervisor_assign_order_callback(){
   global $wpdb, $current_user;
   //$current_user->ID;
+  $current_date = date("Y-m-d H:i:s");
 
   $data = $_POST;
   //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
@@ -2742,7 +3086,7 @@ function supervisor_assign_order_callback(){
 
     $order = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT * FROM driver_order_log where Id = %d ", array($data['log_id'])
+            "SELECT * FROM driver_order_log_assign where Id = %d ", array($data['log_id'])
         )
     );
 
@@ -2759,30 +3103,39 @@ function supervisor_assign_order_callback(){
             $wpdb->prepare(
                 "SELECT driver.driver_id,driver.driver_name FROM driver 
         WHERE Supervisor=%d
-        and driver.driver_id NOT IN (SELECT DISTINCT driver_id FROM driver_order_log WHERE driver_order_id=%d or status IN (1,2))",
+        and driver.driver_id NOT IN (SELECT DISTINCT driver_id FROM driver_order_log_assign WHERE driver_order_id=%d or status IN (1,2))",
         array($current_user->ID,$data['driver_id'])
             )            
         );  
+        // bank Change sql to auto assign
         if(!empty($employee )){
-            $current_date = date("Y-m-d H:i:s");
+            
             $wpdb->query(
                 $wpdb->prepare(
-                    "UPDATE driver_order_log SET status = 4, transfer_date = %s where Id = %d ",
-                    array($current_date, $data['log_id'])
+                    "INSERT INTO driver_order_log SET tamzang_id = %d, driver_id = %d, driver_order_id = %d, status = %d, transfer_date = %s ",
+                    array($order->tamzang_id, $order->driver_id, $order->driver_order_id, 4, $current_date)
+                
                 )
             );
 
             $check_order = $wpdb->get_var(
                 $wpdb->prepare(
-                    "SELECT id FROM driver_order_log where driver_id = %d AND driver_order_id = %d AND status = 4 ", array($data['driver_id'],$order->driver_order_id)
+                    "SELECT id FROM driver_order_log_assign where driver_id = %d AND driver_order_id = %d AND status = 4 ", array($data['driver_id'],$order->driver_order_id)
                 )
             );// ตรวจว่า A -> B แล้ว B -> A หรือเปล่า
 
             if(empty($check_order)){
                 $wpdb->query(
                     $wpdb->prepare(
-                    "INSERT INTO driver_order_log SET tamzang_id = %d, driver_id = %d, driver_order_id = %d, status = %d, assign_date = %s ",
+                    "INSERT INTO driver_order_log_assign SET tamzang_id = %d, driver_id = %d, driver_order_id = %d, status = %d, assign_date = %s ",
                     array($order->tamzang_id, $data['driver_id'], $order->driver_order_id, 2, $current_date)
+                    )
+                );
+
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "DELETE FROM driver_order_log_assign WHERE  status = 2 and  driver_id = %d ",
+                        array($order->driver_id)
                     )
                 );
 
@@ -2861,10 +3214,14 @@ function assign_order_driver() {
     $driver_id = $_POST['priority'];
     $driver_id_sql = (empty($emer_driver_id))?$driver_id:$emer_driver_id;
 
-    
-
-
-	//file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $driver_id, true));
+    //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $driver_id, true));
+    // Get tamzang ID and Driver ID
+    $driver_cancel = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT tamzang_id,driver_id FROM driver_order_log_assign where status IN (1,2) and driver_order_id =%d ", array($order_id)
+        )
+    );
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $driver_cancel->tamzang_id, true));
 
 	/*
 	$sql = $wpdb->prepare(
@@ -2874,139 +3231,192 @@ function assign_order_driver() {
 		*/
 		
 
-		
-	$sql = "SELECT * FROM driver_order_log where (status = 1 or status = 2) and (driver_order_id =".$order_id." or driver_id =".$driver_id_sql.")";
-	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
-	$result_driver = $wpdb->get_results($sql, ARRAY_A );
-	
+    // Check in driver_order_log
+    /*
+	$sql = "SELECT * FROM driver_order_log where status = 2 and (driver_order_id =".$order_id." or driver_id =".$driver_id_sql.")";
+    $result_driver = $wpdb->get_results($sql, ARRAY_A );
+	*/
 	//$total_driver = $wpdb->num_rows;
 	//file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $sql, true));
-	$is_status = $result_driver[0]['status'];
-	$is_exist = $wpdb->num_rows;
+	//$is_status = $result_driver[0]['status'];
+	//$is_exist = $wpdb->num_rows;
 	//file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $is_status, true),FILE_APPEND);
-	//file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $is_exist, true),FILE_APPEND);
+    //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $is_exist, true),FILE_APPEND);
+    
+    // Check in driver_order_log_assign
+    $sql_assign = "SELECT * FROM driver_order_log_assign where status IN (1,2) and (driver_order_id =".$order_id." or driver_id =".$driver_id_sql.")";
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
+    $result_driver_assign = $wpdb->get_results($sql_assign, ARRAY_A );
+    $is_exist_assign = $wpdb->num_rows;
 	
 	//Cancel Assign
-	if( ($is_exist >=0) && ($status == "Cancel") )
+	if( ($is_exist_assign >=0) && ($status == "Cancel") )
 	{
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Cancel", true));
-    $wpdb->query(
-        $wpdb->prepare(
-          "UPDATE  driver_order_log SET status = 4 where driver_order_id = %d and status in (1,2)",
-          array($order_id)
-        )
-    );
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));
-	$return_result = "Cancel Order is compleate";
-	wp_send_json_success($return_result);
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Cancel", true));
+        if($is_exist_assign == 0)
+        {
+            $return_result = "Nothing to Cancel";
+            wp_send_json_success($return_result);
+        }
+        else{
+            $wpdb->query(
+                $wpdb->prepare(
+                 "INSERT INTO driver_order_log SET
+                 tamzang_id = %d,driver_id = %s,driver_order_id =%d,status = 4,assign_date =%s",
+                 array($driver_cancel->tamzang_id,$driver_cancel->driver_id,$order_id,$current_date)
+             )
+            );
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE driver_order_log_assign SET status = 4 where driver_id = %s and driver_order_id = %d  ",
+                 array($driver_cancel->driver_id,$order_id)
+                )
+            );    
+            //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));
+            $return_result = "Cancel Order is compleate";
+            wp_send_json_success($return_result);
+        }
+
 	}
 	//Abort
-	else if( ($is_exist >=0) && ($status == "Abort") )
-	{
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Cancel", true));
-	// Update order in driver_order_log
-    $wpdb->query(
-        $wpdb->prepare(
-          "UPDATE  driver_order_log SET status = 5 where driver_order_id = %d and status != 4",
-          array($order_id)
-        )
-    );
-	// Update order in orders
-    $wpdb->query(
-        $wpdb->prepare(
-          "UPDATE  orders SET deliver_ticket = 'Y',status = 99 where id = %d",
-          array($order_id)
-        )
-    );
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));
-	$return_result = "Abort Order is compleate";
-	wp_send_json_success($return_result);
+	else if( ($is_exist_assign >= 0) && ($status == "Abort") )
+	{      
+           	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Cancel", true));
+	        // Update order in driver_order_log
+            $wpdb->query(
+                $wpdb->prepare(
+                    "INSERT INTO driver_order_log SET
+                    tamzang_id = %d,driver_id = %s,driver_order_id =%d,status = 5,assign_date =%s",
+                    array($driver_cancel->tamzang_id,$driver_cancel->driver_id,$order_id,$current_date)
+                )
+            );
+            // Delete all in driver_order_log_assign
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM  driver_order_log_assign WHERE driver_order_id = %d ",
+                    array($order_id)
+                    )
+                );
+                // Update order in orders
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "UPDATE  orders SET deliver_ticket = 'Y',status = 99 where id = %d",array($order_id)                    
+                    )
+                );
+                //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));
+                $return_result = "Abort Order is compleate";
+                wp_send_json_success($return_result);
+        
 	}
-	else if(($is_exist >0) && ($status == null))
+	else if(($is_exist_assign >0) && ($status == null))
 	{
 		$return_result = "Cannot Assign this order to Driver This Order is already Assign";
 		wp_send_json_success($return_result);
 	}
-	else{
-		if(empty($emer_driver_id))
-		{
-			
-			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "No Emer and Date :".$current_date, true),FILE_APPEND);
-			$query = $wpdb->prepare("INSERT INTO driver_order_log SET
-                             tamzang_id = %d,driver_id = %s,driver_order_id =%d,status = 1,assign_date =%s",
-                             array($Tamzang_id,$driver_id,$order_id,$current_date)
-                          );
-            $wpdb->query($query);
-            $username = get_user_by('id',$driver_id);
-		}
-		else
-		{
-			
-			$query = $wpdb->prepare("INSERT INTO driver_order_log SET
-                             tamzang_id = %d,driver_id = %s,driver_order_id =%d,status =1,assign_date =%s",
-                             array($Tamzang_id,$emer_driver_id,$order_id,$current_date)
-                          );
-            $wpdb->query($query);
-            $username = get_user_by('id',$emer_driver_id);
-		}
-		
-		$driver_message = (empty($emer_driver_id))?$driver_id:$emer_driver_id;
-        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "User name is :".$username->user_nicename, true),FILE_APPEND);
-       // file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "User name is :".$username, true),FILE_APPEND);
-		
-		// สร้าง message
-		$current_date = date("Y-m-d H:i:s");
-		$thread_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT thread_id FROM wp_bp_messages_messages ORDER BY thread_id DESC LIMIT 1 ", array()
-			)
-		);
-		$thread_id++;
-		$wpdb->query(
-			$wpdb->prepare(
-			"INSERT INTO wp_bp_messages_messages SET thread_id = %d, sender_id = 1, subject = %s, message = %s, date_sent = %s ",
-			array($thread_id, "ใบสั่งซื้อเลขที่: #".$order_id , '<strong><p style="font-size:14px;">ได้รับ order จากพนักงานตามสั่ง</p> <a href="'.home_url('/members/').$username->user_nicename."/driver/".'">คลิกที่นี่เพื่อดู Order</a></strong>', $current_date)
-			)
-		);
-		
-	
-		$wpdb->query(
-		$wpdb->prepare(
-			"INSERT INTO wp_bp_messages_recipients SET user_id = %d, thread_id = %d, unread_count = %d, sender_only = %d, is_deleted = %d ",
-			array($driver_message, $thread_id, 1, 0, 0)
-		)
-		);
-	
-		$wpdb->query(
-		$wpdb->prepare(
-			"INSERT INTO wp_bp_messages_recipients SET user_id = 1, thread_id = %d, unread_count = %d, sender_only = %d, is_deleted = %d ",
-			array( $thread_id, 0, 1, 0)
-		)
-		);
-		
-		
-		//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Insert", true),FILE_APPEND);
-		
-        // Send Notification to user who Subscribe with OneSignal
+    else
+    {
+        if($is_exist_assign == 0)
+        {
+            // Check this driver never reject this job
+            $driver_log_status = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT status FROM driver_order_log where driver_id=%d and driver_order_id =%d ", array($driver_id,$order_id)
+                )
+            );
+            $driver_log_assign_status = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT status FROM driver_order_log_assign where driver_id=%d and driver_order_id =%d ", array($driver_id,$order_id)
+                )
+            );
+
+            if(($driver_log_status == 4) || ($driver_log_assign_status == 4))
+            {
+                $return_result = "##!!This Driver is Already Reject this Order!!##";
+                wp_send_json_success($return_result);
+            }
+            else{
+
+                if(empty($emer_driver_id))
+                {
+                
+                    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "No Emer and Date :".$current_date, true),FILE_APPEND);
+                    $query = $wpdb->prepare("INSERT INTO driver_order_log_assign SET
+                                 tamzang_id = %d,driver_id = %s,driver_order_id =%d,status = 1,assign_date =%s",
+                                 array($Tamzang_id,$driver_id,$order_id,$current_date)
+                              );
+                    $wpdb->query($query);
+                    $username = get_user_by('id',$driver_id);
+                }
+                else
+                {			
+                    $query = $wpdb->prepare("INSERT INTO driver_order_log_assign SET
+                                 tamzang_id = %d,driver_id = %s,driver_order_id =%d,status =1,assign_date =%s",
+                                 array($Tamzang_id,$emer_driver_id,$order_id,$current_date)
+                              );
+                    $wpdb->query($query);
+                    $username = get_user_by('id',$emer_driver_id);
+                }		
+                $driver_message = (empty($emer_driver_id))?$driver_id:$emer_driver_id;
+                file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "User name is :".$username->user_nicename, true),FILE_APPEND);
+                // file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "User name is :".$username, true),FILE_APPEND);
+            
+                // สร้าง message
+                $current_date = date("Y-m-d H:i:s");
+                $thread_id = $wpdb->get_var(
+                    $wpdb->prepare(
+                    "SELECT thread_id FROM wp_bp_messages_messages ORDER BY thread_id DESC LIMIT 1 ", array()
+                    )
+                );
+                $thread_id++;
+                $wpdb->query(
+                    $wpdb->prepare(
+                    "INSERT INTO wp_bp_messages_messages SET thread_id = %d, sender_id = 1, subject = %s, message = %s, date_sent = %s ",
+                    array($thread_id, "ใบสั่งซื้อเลขที่: #".$order_id , '<strong><p style="font-size:14px;">ได้รับ order จากพนักงานตามสั่ง</p> <a href="'.home_url('/members/').$username->user_nicename."/driver/".'">คลิกที่นี่เพื่อดู Order</a></strong>', $current_date)
+                    )
+                );
         
-		$message = "มี Order อาหารมาใหม่จาก Tamzang";
-		
-		$sql = $wpdb->prepare(
-				"SELECT device_id FROM onesignal where user_id=%d ", array($driver_message)
-			);
-		$player_id_array = $wpdb->get_results($sql);
-		foreach ($player_id_array as $list_player_device)
-		{
-			$player_id = $list_player_device->device_id;
-			$response = sendMessage($player_id,$message);
-			$return["allresponses"] = $response;
-			$return = json_encode( $return);
-			file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true),FILE_APPEND);
+                $wpdb->query(
+                    $wpdb->prepare(
+                    "INSERT INTO wp_bp_messages_recipients SET user_id = %d, thread_id = %d, unread_count = %d, sender_only = %d, is_deleted = %d ",
+                    array($driver_message, $thread_id, 1, 0, 0)
+                    )
+                );
+        
+                $wpdb->query(
+                    $wpdb->prepare(
+                    "INSERT INTO wp_bp_messages_recipients SET user_id = 1, thread_id = %d, unread_count = %d, sender_only = %d, is_deleted = %d ",
+                    array( $thread_id, 0, 1, 0)
+                    )
+                );
+            
+            
+                //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Insert", true),FILE_APPEND);
+            
+                // Send Notification to user who Subscribe with OneSignal
+                $message = "มี Order อาหารมาใหม่จาก Tamzang";
+            
+                $sql = $wpdb->prepare(
+                    "SELECT device_id FROM onesignal where user_id=%d ", array($driver_message)
+                );
+                $player_id_array = $wpdb->get_results($sql);
+                foreach ($player_id_array as $list_player_device)
+                {
+                    $player_id = $list_player_device->device_id;
+                    $response = sendMessage($player_id,$message);
+                    $return["allresponses"] = $response;
+                    $return = json_encode( $return);
+                    file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true),FILE_APPEND);
+                }
+            
+                $return_result = "New order is assign";
+                wp_send_json_success($return_result);
+                //echo $return_result;
+
+            }		    
         }
-        
-		$return_result = "New order is assign";
-        wp_send_json_success($return_result);
-        //echo $return_result;
+        $return_result = "This Driver is waiting for answer another Order";
+		wp_send_json_success($return_result);
+
 	
 	}
 
@@ -3026,7 +3436,8 @@ function sendMessage($player_id,$message){
 			);
 		
 		$fields = array(
-			'app_id' => "73b7d329-0a82-4e80-aa74-c430b7b0705b",
+            //30bcc12c-404d-494a-ac93-ac8ee755744f For Test02 || 73b7d329-0a82-4e80-aa74-c430b7b0705b for Prod
+			'app_id' => "30bcc12c-404d-494a-ac93-ac8ee755744f",
 			'include_player_ids' => array($playerID),
 			//'include_player_ids' => array("1c072fb6-f1b3-44ba-9f19-7a6fb5534366","646d645e-382d-45d9-aea9-916401fe3954"),
 			'data' => array("foo" => "bar"),
@@ -3078,14 +3489,16 @@ function get_driver_regis() {
 			$usr_id = $list_order->wp_user_id;
 			$name = $list_order->name;
 			$phone = $list_order->phone;
-			$note = $list_order->note;
+            $note = $list_order->note;
+            $picture = $list_order->profile_pic;
 			// put value into process call Template
 
 			//file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $usr_id, true));
 			set_query_var( 'usr_id', $usr_id); 
 			set_query_var( 'name', $name); 
 			set_query_var( 'phone', $phone); 
-			set_query_var( 'note', $note); 
+            set_query_var( 'note', $note);
+            set_query_var( 'picture', $picture);
 			get_template_part( 'ajax-driver-approve' );
 		}
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));	
@@ -3237,23 +3650,17 @@ function get_delivery_fee($pid) {
 	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "point :".$buyer_point->latitude, true));
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "ID :".get_current_user_id(), true),FILE_APPEND);
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "POST ID :".$post_id, true),FILE_APPEND);
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Point Long :".$buyer_point->longitude, true),FILE_APPEND);
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Point Long :".$buyer_point->longitude, true),FILE_APPEND);
 	
 	//Check point of this address exit
-    $deliver_fee = $wpdb->get_row(
+    $deliver_fee_sql = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT price,distance FROM delivery_fee where wp_user_id = %d AND post_id = %d and latitude = %s and longitude = %s ", array(get_current_user_id(),$post_id,$buyer_point->latitude,$buyer_point->longitude)
+            "SELECT distance FROM delivery_fee where wp_user_id = %d AND post_id = %d and latitude = %s and longitude = %s ", array(get_current_user_id(),$post_id,$buyer_point->latitude,$buyer_point->longitude)
         )
     );
 	
-	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price :".$deliver_fee->price, true),FILE_APPEND);
-	if(!empty($deliver_fee->price))
-	{
-		//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "! Have Delivery_fee", true),FILE_APPEND);
-		return array($deliver_fee->price,$deliver_fee->distance);
-	}
-	else{
-		//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "! Do Not Have Delivery_fee", true),FILE_APPEND);
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price :".$deliver_fee_sql->price, true),FILE_APPEND);
+		file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "! Do Not Have Delivery_fee", true),FILE_APPEND);
 		//Get Shop Latitude and Longitude from GD_place_detail
 		$post_point = $wpdb->get_row(
 			$wpdb->prepare(
@@ -3263,36 +3670,53 @@ function get_delivery_fee($pid) {
 		//Calculate distance from google
 		$check = $post_point->post_latitude.":".$post_point->post_longitude.":".$buyer_point->latitude.":".$buyer_point->longitude;
 		//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "google distance :".$check, true),FILE_APPEND);
-		$distance = google_distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude);
+        //$distance = google_distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude);
+        $distance = distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude,'K');
+        $distance = round($distance,3);
 		if($distance != "ขณะนี้ไม่สามารถคำนวนระยะทางของผู้ซื้อได้ชั่วคราว")
 		{
 			//Calculate delivery Fee
-			
+			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Pass from Google".$distance, true),FILE_APPEND);
 			$delivery_value = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value FROM delivery_variable where post_id = %d ", array($post_id)
+					"SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d ", array($post_id)
 				)
 			);
 			$range_t1 = (($delivery_value->km_tier1)>=$distance)? $distance:$delivery_value->km_tier1;			
 			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T1:".$range_t1, true),FILE_APPEND);
-			$range_t2 = (($delivery_value->km_tier1)<=$distance)?((($delivery_value->km_tier2)>=$distance-$range_t1)? $distance-($delivery_value->km_tier1):$delivery_value->km_tier2):0;
-			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2 :".$range_t2, true),FILE_APPEND);
-			$deliver_fee = ($delivery_value->base + $delivery_value->base_adjust)+ ($range_t1*$delivery_value->km_tier1_value)+(($range_t2*$delivery_value->km_tier2_value));
-			$deliver_fee = round($deliver_fee,2);
+            $range_t2 = (($delivery_value->km_tier1)<=$distance)?((($delivery_value->km_tier2)>=$distance-$range_t1)? $distance-($delivery_value->km_tier1):$delivery_value->km_tier2-$delivery_value->km_tier1):0;
+            file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2 :".$range_t2, true),FILE_APPEND);
+            $range_t3 = ($delivery_value->km_tier2<=$distance)?($distance-$delivery_value->km_tier2):0;
+			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T3 :".$range_t3, true),FILE_APPEND);
+			$deliver_fee = ($delivery_value->base + $delivery_value->base_adjust)+ ($range_t1*$delivery_value->km_tier1_value)+($range_t2*$delivery_value->km_tier2_value)+($range_t3*$delivery_value->km_tier3_value);
+			$deliver_fee = round($deliver_fee,2);    
+            
+            if(empty($deliver_fee_sql->distance)){
+                file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price empty Ins new ", true),FILE_APPEND);
+                $wpdb->query(
+                    $wpdb->prepare(
+                    "INSERT INTO delivery_fee SET wp_user_id = %d, post_id = %d, latitude = %s, longitude = %s, price = %f, distance = %s",
+                    array(get_current_user_id(),$post_id,$buyer_point->latitude,$buyer_point->longitude,$deliver_fee,$distance)
+                    )
+                );
+            }            
+            else{
+                file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price 0 update new ", true),FILE_APPEND);
+
+                $wpdb->query(
+                    $wpdb->prepare(
+                    "UPDATE delivery_fee SET price = %f,distance = %s WHERE wp_user_id = %d and post_id = %d and latitude = %s and longitude = %s",
+                    array($deliver_fee,$distance,get_current_user_id(),$post_id,$buyer_point->latitude,$buyer_point->longitude)
+                    )
+                );
+            }
 			
-			$wpdb->query(
-				$wpdb->prepare(
-				"INSERT INTO delivery_fee SET wp_user_id = %d, post_id = %d, latitude = %s, longitude = %s, price = %f, distance = %s ",
-				array(get_current_user_id(),$post_id,$buyer_point->latitude,$buyer_point->longitude,$deliver_fee,$distance)
-				)
-			);
 			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Delivery_fee :".$deliver_fee, true),FILE_APPEND);
 			return array($deliver_fee,$distance);
 		}
 		else{
 			return array(0,0);
-		}
-	}
+		}	
 }
 
 function google_distance($post_lat,$post_lng,$buyer_lat,$buyer_lng) {
@@ -3446,10 +3870,11 @@ var usrID = <?php echo get_current_user_id()?>;
 var usrDevice = "<?php echo $device?>";
 
 OneSignal.push(function() {
-    alert("Javascript Onesignal Start Point");
 	console.log("OneSignal Start!!:");
   OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-
+    <?php
+    file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal push-notice  ".$usrDevice." and login is".$usrlogincheck, true),FILE_APPEND);
+    ?>
 	console.log("OneSignal Check isEnabled:"+isEnabled);
     if ((isEnabled)&&(usrlogincheck))
 	{
@@ -3549,15 +3974,16 @@ add_action('wp_ajax_updateusrnoti', 'updateusrnoti');
 add_action('wp_ajax_nopriv_updateusrnoti', 'updateusrnoti');
 function updateusrnoti(){
 	$data = $_POST;
-	$queery_sql = $data['doing']; 
+    $queery_sql = $data['doing']; 
+    
 	$device_id_bfr = $data['device_id'];
-	$device_id = trim($device_id_bfr,'Optional(\\")');
+    $device_id = trim($device_id_bfr,'Optional(\\")');    
 	$user_id = get_current_user_id();
 	$device_type = $data['deviceType'];	
 	if($user_id != 0)
 	{
 		updateOneSignaliOS($queery_sql,$device_id,$user_id,$device_type);
-		file_put_contents( dirname(__FILE__).'/debug/iostest.log', var_export( "Check user login".$device_id."user login is ".$user_id, true));
+		file_put_contents( dirname(__FILE__).'/debug/iostest.log', var_export( "Check user login".$device_id."user login is ".$user_id."Doing is".$queery_sql, true));
 	}
 }
 
@@ -3661,9 +4087,6 @@ global $post;
 		}
 	}
 }
-
-
-
 
 
 
