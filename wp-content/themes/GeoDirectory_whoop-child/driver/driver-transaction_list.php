@@ -19,7 +19,7 @@ jQuery(document).ready(function() {
 global $wpdb, $current_user;
 
 $start_date  = date('Y-m-d', strtotime($start_date));
-$end_date  = date('Y-m-d', strtotime($end_date));
+$end_date  = date('Y-m-d', strtotime($end_date)).' 23:59:59.999';
 
 $transaction_list = $wpdb->get_results(
     $wpdb->prepare(

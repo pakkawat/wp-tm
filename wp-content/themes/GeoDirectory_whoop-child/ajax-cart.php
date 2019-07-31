@@ -35,7 +35,8 @@ $arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
         echo '<tr id="'.$product->ID.'">';
           echo "<td>";
             echo "<div>";
-              echo '<a class="thumbnail pull-left" href="#"> <img class="media-object" src="'.$uploads['baseurl'].$product->featured_image.'" style="width: 72px; height: 72px;"> </a>';
+              if($product->featured_image != "")
+                echo '<a class="thumbnail pull-left" href="#"> <img class="media-object" src="'.$uploads['baseurl'].$product->featured_image.'" style="width: 72px; height: 72px;"> </a>';
               echo '<div class="media-body">';
                 echo '<h4 class="media-heading">'.$product->post_title.'</h4>';
               echo "</div>";

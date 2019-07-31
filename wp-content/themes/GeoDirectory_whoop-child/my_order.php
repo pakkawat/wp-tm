@@ -71,6 +71,30 @@ function pagination($count, $PERPAGE_LIMIT, $filter) {
   return $output;
 }
 
+function check_user_point($use_point){
+  global $wpdb, $current_user;
+
+  if(empty($use_point) || $use_point != "true")
+    return false;
+
+  $user_cash_back = $wpdb->get_row(
+    $wpdb->prepare(
+        "SELECT * FROM cash_back where user_id = %d ", array($current_user->ID)
+    )
+  );
+
+  if(empty($user_cash_back))
+    return false;
+
+  $point = $user_cash_back->add_on_credit * $user_cash_back->redeem_point_rate;
+  if($point >= $delivery_fee){
+    return true;
+  }else{
+    return false;
+  }
+
+}
+
 
 global $wpdb, $current_user;
 $PERPAGE_LIMIT = 5;
@@ -121,21 +145,22 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     //   }
     // }
 
-    
+    $use_point = false;
+      //20190213 Bank Add Delivery Fee if it need delivery
+    if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+    {
+      list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
+      if($delivery_fee != 0)
+        $use_point = check_user_point($_POST['hidden_up']);
+    }	
 
-    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ".(($parent->name == "อาหาร")||($default_category->name == "อาหาร") ? ", deliver_ticket = 'Y'" : ""),
+    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ".
+    (($parent->name == "อาหาร")||($default_category->name == "อาหาร") ? ", deliver_ticket = 'Y'" : "").(($use_point) ? ", redeem_point = true" : ""),
       array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'])));
     $order_id = $wpdb->insert_id;
 
     $shipping_id = 0;
     $billing_id = 0;
-
-
-  //20190213 Bank Add Delivery Fee if it need delivery
-  if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
-  {
-    list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
-  }	
 	
 	
     $shipping_address = $wpdb->get_row(
@@ -877,7 +902,7 @@ else { // desktop browser
               ?>
               <?php } ?>
 
-              <?php if($shipping_price != 0){ ?>        
+              <?php if($shipping_price != 0 && !$order->redeem_point){ ?>        
                 <div class="order-row">
                   <div class="order-col-9" style="text-align:right;">
                     ราคาค่าจัดส่ง
@@ -897,11 +922,16 @@ else { // desktop browser
               	</div>
                 <div class="order-col-3">
                   <h4><strong id="total_amt_<?php echo $order->id; ?>">
-                    <?php //echo ($order->adjust_accept ? $order->total_amt+$order->driver_adjust+$shipping_price : $order->total_amt+$shipping_price); 
+                    <?php //echo ($order->adjust_accept ? $order->total_amt+$order->driver_adjust+$shipping_price : $order->total_amt+$shipping_price);
+                      $sum = $order->total_amt;
+
                       if($order->adjust_accept)
-                        echo str_replace(".00", "",number_format($order->total_amt+$order->driver_adjust+$shipping_price,2));
-                      else
-                        echo str_replace(".00", "",number_format($order->total_amt+$shipping_price,2));
+                          $sum += $order->driver_adjust;
+  
+                      if(!$order->redeem_point)
+                          $sum += $shipping_price;
+                          
+                      echo str_replace(".00", "",number_format($sum,2));
                     ?>
                   </strong> บาท</h4>
               	</div>

@@ -2634,6 +2634,11 @@ function driver_cancel_order_callback(){
             "SELECT Driver_id,driver_order_id FROM driver_order_log_assign where Id = %d ", array($data['log_id'])
         )
     );
+    $buyer = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT wp_user_id FROM orders where Id = %d ", array($owner->driver_order_id)
+        )
+    );
 
     if($current_user->ID == $owner->Driver_id){
 
@@ -2661,6 +2666,22 @@ function driver_cancel_order_callback(){
                     array($code,$current_date,$owner->driver_order_id)
                 )
             );
+
+             // Send Notification to user who Subscribe with OneSignal
+             $message = "ระบบขอยกเลิกรายการสั่งหาก Driver ไม่สามารถติดต่อท่านได้เกิน 5 นาที";
+            
+             $sql = $wpdb->prepare(
+                 "SELECT device_id FROM onesignal where user_id=%d ", array($buyer->wp_user_id)
+             );
+             $player_id_array = $wpdb->get_results($sql);
+             foreach ($player_id_array as $list_player_device)
+             {
+                 $player_id = $list_player_device->device_id;
+                 $response = sendMessage($player_id,$message);
+                 $return["allresponses"] = $response;
+                 $return = json_encode( $return);
+                 file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true),FILE_APPEND);
+             }
 
             wp_send_json_success("<h4>รหัสยืนยันคำสั่งซื้อ: ".$code."</h4>");
 
@@ -2783,54 +2804,53 @@ function driver_text_step($step){
 add_action('wp_ajax_driver_next_step', 'driver_next_step_callback');
 
 function driver_next_step_callback(){
-  global $wpdb, $current_user;
-
-  $tz = 'Asia/Bangkok';
-  $timestamp = time();
-  $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
-  $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
-
-  $current_date = $dt->format("Y-m-d H:i:s");
-  $data = $_POST;
-
-  // check the nonce
-  if ( check_ajax_referer( 'driver_next_step_' . $data['id'], 'nonce', false ) == false ) {
-      wp_send_json_error();
-  }
-
-  try {
-    // get Driver_id who accept job from assign 
-    $owner = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT Driver_id FROM driver_order_log_assign where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
-        )
-    );
-    // Get Restaurant ID
-    $Tamzang_id = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT tamzang_id FROM driver_order_log_assign where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
-        )
-    );
-
-    if(!empty($owner)){
-        // Check status of the order
-        $order = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT status,	commission FROM orders where id = %d ", array($data['id'])
-            )
-        );
-
-        if($order->status < 5){
-            $order->status++;
-
-            $wpdb->query(
-                $wpdb->prepare(
-                    "UPDATE orders SET status = %d where id = %d ",
-                    array($order->status, $data['id'])
-                )
-            );
-            if($order->status == 5){
-                
+    global $wpdb, $current_user;
+  
+    $data = $_POST;
+  
+    // check the nonce
+    if ( check_ajax_referer( 'driver_next_step_' . $data['id'], 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    try {
+      // get Driver_id who accept job from assign 
+      $owner = $wpdb->get_var(
+          $wpdb->prepare(
+              "SELECT Driver_id FROM driver_order_log_assign where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
+          )
+      );
+      // Get Restaurant ID
+      $Tamzang_id = $wpdb->get_var(
+          $wpdb->prepare(
+              "SELECT tamzang_id FROM driver_order_log_assign where Driver_order_id = %d and driver_id = %d and status = 2", array($data['id'],$current_user->ID)
+          )
+      );
+  
+      if(!empty($owner)){
+          // Check status of the order
+          $order = $wpdb->get_row(
+              $wpdb->prepare(
+                  "SELECT status, commission, wp_user_id, id, redeem_point FROM orders where id = %d ", array($data['id'])
+              )
+          );
+  
+          if($order->status < 5){
+              $order->status++;
+  
+              $wpdb->query(
+                  $wpdb->prepare(
+                      "UPDATE orders SET status = %d where id = %d ",
+                      array($order->status, $data['id'])
+                  )
+              );
+              if($order->status == 5){
+                $tz = 'Asia/Bangkok';
+                $timestamp = time();
+                $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+                $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+              
+                $current_date = $dt->format("Y-m-d H:i:s");
                 // Job done 
                 $wpdb->query(
                     $wpdb->prepare(
@@ -2844,39 +2864,66 @@ function driver_next_step_callback(){
 
                     $driver = $wpdb->get_row(
                         $wpdb->prepare(
-                            "SELECT balance, add_on_credit FROM driver where driver_id = %d ", array($current_user->ID)
+                            "SELECT * FROM driver where driver_id = %d ", array($current_user->ID)
                         )
                     );
-    
-                    if($driver->add_on_credit == 0 || $driver->add_on_credit == ""){// ไม่มี point
-                        $driver->balance = $driver->balance - $order->commission;
-                        insert_driver_transaction_details("COMMISSION", 
-                        array($current_user->ID, $order->commission, $driver->balance, "COMMISSION", $current_date, $data['id']));
-                    }else{
-                        $debit = $driver->add_on_credit - $order->commission;
-                        if($debit < 0){// point ติดลบ
-                            $driver->balance = $driver->balance + $debit;// point ติดลบ !!!
-                            
-                            insert_driver_transaction_details("ADD_ON_COMMISSION",
-                            array($current_user->ID, $driver->add_on_credit, 0, "ADD_ON_COMMISSION", $current_date, $data['id']));
 
-                            $driver->add_on_credit = 0;
-
-                            insert_driver_transaction_details("COMMISSION",
-                            array($current_user->ID, abs($debit), $driver->balance, "COMMISSION", $current_date, $data['id']));
-                        }else{// point เหลือ หรือ เท่ากับศูนย์
-                            $driver->add_on_credit = $debit;
-                            insert_driver_transaction_details("ADD_ON_COMMISSION",
-                            array($current_user->ID, $order->commission, $debit, "ADD_ON_COMMISSION", $current_date, $data['id']));
-                        }
-                    }
-    
-                    $wpdb->query(
+                    $user_cash_back = $wpdb->get_row(
                         $wpdb->prepare(
-                            "UPDATE driver SET balance = %f, add_on_credit = %f where driver_id = %d ",
-                            array($driver->balance, $driver->add_on_credit, $current_user->ID)
+                            "SELECT * FROM cash_back where user_id = %d ", array($order->wp_user_id)
                         )
                     );
+
+                    if(!empty($user_cash_back)){
+                        $shipping_price = $wpdb->get_var(
+                            $wpdb->prepare(
+                                "SELECT price FROM shipping_address where order_id = %d ", array($order->id)
+                            )
+                        );
+    
+                        $cash_back = ( $shipping_price * ($user_cash_back->cash_back_percentage/100)) * $driver->cash_back_point_rate;
+    
+                        if($driver->cash_back_level == "exclude"){
+                            driver_commission($order->commission, $driver, $current_date, $order->id);
+                        }else{
+                            $new_commission = $order->commission - $cash_back;
+                            driver_commission($new_commission, $driver, $current_date, $order->id);
+                        }
+    
+                        $driver_new_balance = $wpdb->get_var(
+                            $wpdb->prepare(
+                                "SELECT balance FROM driver where Driver_id = %d ", array($driver->Driver_id)
+                            )
+                        );
+    
+                        $driver_new_balance = $driver_new_balance - $cash_back;
+    
+                        insert_driver_transaction_details("COMMISSION",
+                        array($driver->Driver_id, $cash_back, $driver_new_balance, "CASH_BACK", $current_date, $order->id));
+
+                        $wpdb->query(
+                            $wpdb->prepare(
+                                "UPDATE driver SET balance = %f where driver_id = %d ",
+                                array($driver_new_balance, $driver->Driver_id)
+                            )
+                        );
+
+                        if($order->redeem_point)
+                            calculate_redeem_and_driver_credit($shipping_price, $user_cash_back, $current_date, $order->id, $driver->Driver_id);
+                        else{// user cash back
+                            $user_add_on_credit = ($shipping_price * ($user_cash_back->cash_back_percentage/100));
+                            $wpdb->query(
+                                $wpdb->prepare(
+                                    "UPDATE cash_back SET add_on_credit = (add_on_credit + %f) where user_id = %d ",
+                                    array($user_add_on_credit, $user_cash_back->user_id)
+                                )
+                            );
+                        }
+
+                    }else{
+                        driver_commission($order->commission, $driver, $current_date, $order->id);
+                    }
+
 
                 }
 
@@ -2889,45 +2936,45 @@ function driver_next_step_callback(){
                     )
                 );
                 wp_send_json_success("close");
-            }
-            else
-            {
-                if($order->status == 3){
-                    $code = $wpdb->get_var(
-                        $wpdb->prepare(
-                            "SELECT cancel_code FROM orders where Id = %d ", array($data['id'])
-                        )
-                    );
-                }
-                if($code != "" && $code != "ok"){
-                    $wpdb->query(
-                        $wpdb->prepare(
-                            "UPDATE orders SET cancel_code = 'ok'  where id = %d ",
-                            array($data['id'])
-                        )
-                    );
-                }
-                wp_send_json_success(driver_text_step($order->status));
-            }
-                
-        }else{
-            wp_send_json_error("error2");
-        }
-
-    }else{
-        wp_send_json_error("error1");
+              }
+              else
+              {
+                  if($order->status == 3){
+                      $code = $wpdb->get_var(
+                          $wpdb->prepare(
+                              "SELECT cancel_code FROM orders where Id = %d ", array($data['id'])
+                          )
+                      );
+                  }
+                  if($code != "" && $code != "ok"){
+                      $wpdb->query(
+                          $wpdb->prepare(
+                              "UPDATE orders SET cancel_code = 'ok'  where id = %d ",
+                              array($data['id'])
+                          )
+                      );
+                  }
+                  wp_send_json_success(driver_text_step($order->status));
+              }
+                  
+          }else{
+              wp_send_json_error("error2");
+          }
+  
+      }else{
+          wp_send_json_error("error1");
+      }
+  
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
     }
-
-  } catch (Exception $e) {
-      wp_send_json_error($e->getMessage());
-  }
-
+  
 }
-
-function insert_driver_transaction_details($type, $parameters){
+  
+function insert_driver_transaction_details($type, $parameters){// ตัด commission
     global $wpdb;
 
-    if($type == "COMMISSION"){
+    if($type == "COMMISSION"){// balance
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO driver_transaction_details SET
@@ -2935,7 +2982,7 @@ function insert_driver_transaction_details($type, $parameters){
                 $parameters
             )
         );
-    }else{
+    }else{// credit
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO driver_transaction_details SET
@@ -2945,6 +2992,79 @@ function insert_driver_transaction_details($type, $parameters){
         );
     }
 
+}
+
+function driver_commission($commission, $driver, $current_date, $order_id){
+    global $wpdb;
+
+    if($driver->add_on_credit == 0 || $driver->add_on_credit == ""){// ไม่มี point
+        $driver->balance = $driver->balance - $commission;
+        insert_driver_transaction_details("COMMISSION", 
+        array($driver->Driver_id, $commission, $driver->balance, "COMMISSION", $current_date, $order_id));
+    }else{
+        $debit = $driver->add_on_credit - $commission;
+        if($debit < 0){// point ติดลบ
+            $driver->balance = $driver->balance + $debit;// point ติดลบ !!!
+            
+            insert_driver_transaction_details("ADD_ON_COMMISSION",
+            array($driver->Driver_id, $driver->add_on_credit, 0, "ADD_ON_COMMISSION", $current_date, $order_id));
+
+            $driver->add_on_credit = 0;
+
+            insert_driver_transaction_details("COMMISSION",
+            array($driver->Driver_id, abs($debit), $driver->balance, "COMMISSION", $current_date, $order_id));
+        }else{// point เหลือ หรือ เท่ากับศูนย์
+            $driver->add_on_credit = $debit;
+            insert_driver_transaction_details("ADD_ON_COMMISSION",
+            array($driver->Driver_id, $commission, $debit, "ADD_ON_COMMISSION", $current_date, $order_id));
+        }
+    }
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE driver SET balance = %f, add_on_credit = %f where driver_id = %d ",
+            array($driver->balance, $driver->add_on_credit, $driver->Driver_id)
+        )
+    );
+
+}
+
+function calculate_redeem_and_driver_credit($shipping_price, $user_cash_back, $current_date, $order_id, $driver_id){
+    global $wpdb;
+
+    $minus_credit = $user_cash_back->add_on_credit * $user_cash_back->redeem_point_rate;
+    $minus_credit = abs($shipping_price - $minus_credit);
+    if($minus_credit > 0)
+        $minus_credit = $minus_credit / $user_cash_back->redeem_point_rate;
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE cash_back SET add_on_credit = %f where user_id = %d ",
+            array($minus_credit, $user_cash_back->user_id)
+        )
+    );
+
+    $driver = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM driver where driver_id = %d ", array($driver_id)
+        )
+    );
+
+    $driver_add_on_credit = $shipping_price * $driver->redeem_rate;
+
+    $wpdb->query(
+        $wpdb->prepare(
+        "INSERT INTO driver_transaction_details SET driver_id = %d, credit = %f, balance_add_on_credit = %f, transaction_type = %s, transaction_date = %s, order_id = %d ",
+        array($driver->Driver_id,$driver_add_on_credit,$driver_add_on_credit+$driver->add_on_credit,"REDEEM_CREDIT",$current_date,$order_id)
+        )
+    );
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE driver SET add_on_credit = add_on_credit + %f where driver_id = %d ",
+            array($driver_add_on_credit, $driver->Driver_id)
+        )
+    );
 }
 
 //Ajax functions
@@ -3027,6 +3147,15 @@ function customer_response_adjust_callback(){
               array($data['status'], $customer->wp_user_id, $data['id'])
           )
       );
+
+      if($data['status'] == "0"){
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM driver_order_log_assign WHERE driver_order_id = %d ",
+                array($data['id'])
+            )
+        );
+      }
 
       wp_send_json_success($customer->total_amt+$customer->driver_adjust+$customer->price);
 
@@ -4088,7 +4217,497 @@ global $post;
 	}
 }
 
+add_action('wp_ajax_trueMoneyApi', 'trueMoneyApi');
+// True Money Test Api
+function trueMoneyApi(){
+    $playerID = $player_id;
+    file_put_contents( dirname(__FILE__).'/debug/truemoney.log',"Start :");
+    $content = array(
+        "en" => $message
+        );
+    
+    $fields = array(
+        //30bcc12c-404d-494a-ac93-ac8ee755744f For Test02 || 73b7d329-0a82-4e80-aa74-c430b7b0705b for Prod
+        'app_id' => "30bcc12c-404d-494a-ac93-ac8ee755744f",
+        'include_player_ids' => array($playerID),
+        //'include_player_ids' => array("1c072fb6-f1b3-44ba-9f19-7a6fb5534366","646d645e-382d-45d9-aea9-916401fe3954"),
+        'data' => array("foo" => "bar"),
+        'contents' => $content
+    );
+    
+    $fields = json_encode($fields);
+    //print("\nJSON sent:\n");
+    //print($fields);
+    $user = "kedng@hotmail.com";
+    $pass = "Gub2019%";
+    $type = "email";
+    $method = 'GET';
+    
+    $data = array("username"=>$user, "password"=>sha1($user.$pass), "type"=>$type);
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://mobile-api-gateway.truemoney.com/mobile-api-gateway/api/v1/signin");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Host: mobile-api-gateway.truemoney.com", "Content-Type: application/json"));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    //curl_setopt($ch, CURLOPT_USERAGENT, 'okhttp/3.8.0');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    file_put_contents( dirname(__FILE__).'/debug/truemoney.log', var_export( "Response : ".$response, true),FILE_APPEND);
+
+    return $response;
+    
+}
+
+add_action('wp_ajax_getDriverCredit', 'getDriverCredit');
+// For operater get Driver for adjust his balance
+function getDriverCredit(){
+    global $wpdb;
+	$return_arr = array();
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST;
+
+    $Driver_id = $data['DriverId'];
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+	
+	$sql = $wpdb->prepare(
+         "SELECT * FROM driver WHERE driver_id = %d ",array($Driver_id)  
+    );
+	
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
+	$result_driver = $wpdb->get_results($sql);
+	
+	//$total_driver = $wpdb->num_rows;
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $result_driver, true));
+    if(empty($result_driver)){
+        wp_send_json_success("Cannot found");
+        wp_die(); 
+    }
+    else{
+        foreach ($result_driver as $Driver)
+        {
+            $drivers_array = array();
+            $driver_name = $Driver->driver_name;
+            $driver_id = $Driver->Driver_id;
+            $driver_balance = $Driver->balance;
+            $driver_credit = $Driver->add_on_credit;
+                
+            $drivers_array['name'] = $driver_name;
+            $drivers_array['id'] = $driver_id;
+            $drivers_array['balance'] = $driver_balance;
+            $drivers_array['credit'] = $driver_credit;		
+            
+            $return_arr[] = $drivers_array;
+        }
+        wp_send_json_success($return_arr);
+        wp_die();
+    }	
+    
+}
+//AJAX FUNCTION
+add_action('wp_ajax_listdrivercredit', 'listdrivercredit');
+function listdrivercredit(){
+    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Ajax listdrivercredit START", true));
+    $driver_assign_array = $_GET;
+    set_query_var('name', $driver_assign_array['driver_name']); 
+    set_query_var('id', $driver_assign_array['driver_id']); 
+    set_query_var('balance', $driver_assign_array['driver_balance']);
+    set_query_var('credit', $driver_assign_array['driver_credit']); 
+    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Driver balance : ".$driver_assign_array['driver_balance'], true),FILE_APPEND);
+    get_template_part( 'ajax-driver-credit' );
+    wp_die();
+}
+
+
+//AJAX FUNCTION
+add_action('wp_ajax_updatedrivercredit', 'updatedrivercredit');
+function updatedrivercredit(){
+    global $wpdb;
+    // make sysdate on Bangkok
+    $tz = 'Asia/Bangkok';
+    $timestamp = time();
+    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+    $current_date = $dt->format("Y-m-d H:i:s");
+	
+	file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "updatedrivercredit START", true));
+    $data = $_POST;
+
+    $balance = $_POST['driverBalanceUpdate'];
+	$credit = $_POST['driverCreditUpdate'];
+    $driver_id = $_POST['driverID'];
+
+    $driver_bfr =  $wpdb->get_row(
+        $wpdb->prepare(
+                "SELECT * FROM driver WHERE driver_id = %d ",array($driver_id)  
+        )
+    );
+
+   $new_balance = $driver_bfr->balance + $balance;
+   $new_credit = $driver_bfr->add_on_credit + $credit;
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE driver SET balance = %f , add_on_credit=%f where driver_id = %s ",
+         array($new_balance,$new_credit,$driver_id)
+        )
+    );    
+
+    if(!empty($balance)||$balance != 0)
+    {
+        $wpdb->query(
+            $wpdb->prepare(
+            "INSERT INTO driver_transaction_details SET driver_id = %d, credit = %f, balance = %f, transaction_type = %s, transaction_detail = %s, transaction_date = %s",
+            array($driver_id,$balance,$new_balance,"CREDIT","Driver top up Balance",$current_date)
+            )
+        ); 
+    }
+    if(!empty($credit)||$credit != 0)
+    {
+        $wpdb->query(
+            $wpdb->prepare(
+            "INSERT INTO driver_transaction_details SET driver_id = %d, credit = %f, balance_add_on_credit = %f, transaction_type = %s, transaction_detail = %s, transaction_date = %s",
+            array($driver_id,$credit,$new_credit,"ADD_ON_CREDIT","Driver receive free credit",$current_date)
+            )
+        ); 
+    }
+
+
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));
+    $return_result = "Update Driver Credit / Balance complete";
+    wp_send_json_success($return_result);
+}
+
+
+add_action('wp_ajax_getUserCredit', 'getUserCredit');
+// For operater get User for adjust his Credit
+function getUserCredit(){
+    global $wpdb;
+	$return_arr = array();
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST;
+
+    $User_id = $data['UserId'];
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+    
+    $user_name =  $wpdb->get_var(
+        $wpdb->prepare(
+                "SELECT user_nicename FROM wp_users WHERE ID = %d ",array($User_id)  
+        )
+    );
+
+	
+	$sql = $wpdb->prepare(
+         "SELECT * FROM cash_back WHERE user_id = %d ",array($User_id)  
+    );
+	
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
+	$result_user = $wpdb->get_results($sql);
+	
+	//$total_driver = $wpdb->num_rows;
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $result_user, true));
+    if(empty($result_user)){
+        wp_send_json_success("Cannot found");
+        wp_die(); 
+    }
+    else{
+        foreach ($result_user as $User)
+        {
+            $User_array = array();            
+            $user_id = $User->user_id;
+            $user_cb = $User->cash_back_percentage;
+            $user_credit = $User->add_on_credit;                
+            
+            $User_array['id'] = $driver_id;
+            $User_array['name'] = $user_name;
+            $User_array['cb'] = $user_cb;
+            $User_array['credit'] = $user_credit;		
+            
+            $return_arr[] = $User_array;
+        }
+        wp_send_json_success($return_arr);
+        wp_die();
+    }	
+    
+}
+//AJAX FUNCTION
+add_action('wp_ajax_listusercredit', 'listusercredit');
+function listusercredit(){
+    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Ajax listusercredit START", true));
+    $user_assign_array = $_GET;
+    set_query_var('name', $user_assign_array['user_name']); 
+    set_query_var('id', $user_assign_array['user_id']); 
+    set_query_var('cash_back', $user_assign_array['user_cb']);
+    set_query_var('credit', $user_assign_array['user_credit']); 
+    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Driver balance : ".$user_assign_array['user_cb'], true),FILE_APPEND);
+    get_template_part( 'ajax-buyer-credit' );
+    wp_die();
+}
+
+
+//AJAX FUNCTION
+add_action('wp_ajax_updateusercredit', 'updateusercredit');
+function updateusercredit(){
+    global $wpdb;
+    // make sysdate on Bangkok
+    $tz = 'Asia/Bangkok';
+    $timestamp = time();
+    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+    $current_date = $dt->format("Y-m-d H:i:s");
+	
+	file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "updateusercredit START", true));
+    $data = $_POST;
+
+    $newUserCB = $_POST['userCBUpdate'];
+    $user_id = $_POST['userID'];
+
+    if(empty($_POST['userCBUpdate'])){
+        $return_result = "New Cash Back must be filled";
+        wp_send_json_success($return_result);
+    }
+    else{
+        $user_bfr =  $wpdb->get_row(
+            $wpdb->prepare(
+                    "SELECT * FROM cash_back WHERE user_id = %d ",array($user_id) 
+            )
+        );
+
+        $old_cb = $user_bfr->cash_back_percentage;
+        // $new_credit = $driver_bfr->add_on_credit + $credit;
+        if(empty($old_cb))
+        {
+            file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Insert New Cash back", true));
+            $wpdb->query(
+                $wpdb->prepare(
+                "INSERT INTO cash_back SET user_id = %d, start_date = %s, balance = %f, cash_back_percentage = %s, add_on_credit = %s",
+                array($user_id,$current_date,0,0,$newUserCB,0)
+                )
+            ); 
+        }
+        if(!empty($old_cb))
+        {
+            file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "update old cash back to new ".$newUserCB, true));
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE cash_back SET cash_back_percentage = %f where user_id = %d ",
+                 array($newUserCB,$user_id)
+                )
+            );
+        }
+            
+    
+        /*
+        if(!empty($credit)||$credit != 0)
+        {
+            $wpdb->query(
+                $wpdb->prepare(
+                "INSERT INTO driver_transaction_details SET driver_id = %d, credit = %f, balance_add_on_credit = %f, transaction_type = %s, transaction_detail = %s, transaction_date = %s",
+                array($driver_id,$credit,$new_credit,"ADD_ON_CREDIT","Driver receive free credit",$current_date)
+                )
+            ); 
+        }*/
+    
+    
+        //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Update", true));
+        $return_result = "Update User Cash back / Credit complete";
+        wp_send_json_success($return_result);
+    }
+}
+
+
+function customer_rating(){
+    global $wpdb, $current_user;
+
+    if(is_page_template('my_order.php') || geodir_is_page( 'detail' )){
+
+
+    if(isset($_POST['dl_id'])){
+        // echo '<h1>driver_rating: '.$_POST['driver_rating'].'</h1>';
+        // echo '<h1>dl_id: '.$_POST['dl_id'].'</h1>';
+
+        $driver_order = $wpdb->get_row(
+            $wpdb->prepare(
+            "SELECT o.wp_user_id, dl.rating
+            FROM orders as o
+            INNER JOIN driver_order_log as dl on o.id = dl.driver_order_id
+            WHERE dl.id = %d ", array($_POST['dl_id'])
+        ));
+
+        if($current_user->ID == $driver_order->wp_user_id && empty($driver_order->rating)){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE driver_order_log SET rating = %d where id = %d ",
+                 array($_POST['driver_rating'], $_POST['dl_id'])
+                )
+            );
+        }
+    }
+
+    $driver = $wpdb->get_row(
+        $wpdb->prepare(
+        "SELECT d.driver_name, o.id as order_id, o.wp_user_id, dl.id as driver_log_id
+        FROM driver as d
+        INNER JOIN driver_order_log as dl on d.driver_id = dl.driver_id
+        INNER JOIN orders as o on o.id = dl.driver_order_id
+        WHERE o.wp_user_id = %d AND dl.rating IS NULL ", array($current_user->ID)
+    ));
+
+
+    if(!empty($driver)){
+        $overall_star_offimg = get_option('geodir_reviewrating_overall_off_img');
+        $star_width = get_option('geodir_reviewrating_overall_off_img_width');
+    ?>
+    <div class="modal show">
+        <div class="modal-dialog">
+            <form method="post">
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">กรุณาให้คะแนน</h4>
+            </div>
+            <div class="modal-body">
+                <div id="rating_frm" style="margin-top:15px;">
+                    <div class="gd-rating-box-in clearfix">
+                        <div class="gd-rating-box-in-left">
+                            <div class="gd-rate-area clearfix">
+                                <style scoped="">ul.rate-area-list li.active, ul.rate-area-list li.active{background-color:#ed695d}</style>
+                                พนักงานตามส่ง: <?php echo $driver->driver_name;?><br>
+                                <span class="gd-ratehead">อัตราคะแนนโดยรวม</span>
+                                <ul class="rate-area-list">
+                                    <li data-star-rating="1" data-star-label="แย่มาก" class="gd-multirating-star"><a><img src="<?php echo $overall_star_offimg;?>" style="width:<?php echo $star_width;?>px; height:auto;"/></a></li>
+                                    <li data-star-rating="2" data-star-label="แย่" class="gd-multirating-star"><a><img src="<?php echo $overall_star_offimg;?>" style="width:<?php echo $star_width;?>px; height:auto;"/></a></li>
+                                    <li data-star-rating="3" data-star-label="ปานกลาง" class="gd-multirating-star"><a><img src="<?php echo $overall_star_offimg;?>" style="width:<?php echo $star_width;?>px; height:auto;"/></a></li>
+                                    <li data-star-rating="4" data-star-label="ดีมาก" class="gd-multirating-star"><a><img src="<?php echo $overall_star_offimg;?>" style="width:<?php echo $star_width;?>px; height:auto;"/></a></li>
+                                    <li data-star-rating="5" data-star-label="ยอดเยี่ยม" class="gd-multirating-star"><a><img src="<?php echo $overall_star_offimg;?>" style="width:<?php echo $star_width;?>px; height:auto;"/></a></li>
+                                </ul>
+                                <span class="gd-rank"></span>
+                                <input type="hidden" name="driver_rating" value="0">
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" name="dl_id" value="<?php echo $driver->driver_log_id;?>">
+                <button type="submit" class="btn btn-success btn-ok">ตกลง</button>
+            </div>
+            </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="modal-backdrop fade in"></div>
+    <?php
+    }
+    }else return;
+}
+
+add_action('wp_ajax_generateQRpayment', 'generateQRpayment');
+// For operater get Driver for adjust his balance
+function generateQRpayment(){
+    global $wpdb;
+	$return_arr = array();
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST;
+
+    $Amount_topup = $data['amount'];
+    $user_id = get_current_user_id();
+
+    /*
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+		$sql = $wpdb->prepare(
+         "SELECT * FROM driver WHERE driver_id = %d ",array($Driver_id)  
+    );
+	$result_driver = $wpdb->get_results($sql);
+    */
+    $scb_token_obj = json_decode(SCBTokenGenerater());
+
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $scb_token_obj, true));
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Token is :".$scb_token_obj->data->accessToken, true),FILE_APPEND);
+
+    $scb_qr_obj = json_decode(SCBQRGenerate($scb_token_obj->data->accessToken,$Amount_topup));
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Data is :".$scb_qr_obj->data->qrRawData, true),FILE_APPEND);
+    
+}
+
+function SCBTokenGenerater()
+{
+    $fields = array(        
+        'applicationKey' => "l7e0defea0cc1f4183ab3356ac23932a64",
+        'applicationSecret' => "805247453ba54aa69e0409637e5dd653"   
+    );
+    $fields = json_encode($fields);
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true));
+
+    // API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
+	$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "https://api.partners.scb/partners/sandbox/v1/oauth/token");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:tz-topup-12346'));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+		//file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $response, true),FILE_APPEND);
+        return $response;
+}
+function SCBQRGenerate($token,$amount)
+{
+    //ppId = Biller ID :632243887766375
+    $authorization = "Bearer ".$token;
+    $fields = array(        
+        'qrType' => "PP",
+        'ppType' => "BILLERID",
+        "ppId"  => "632243887766375", 
+	    "amount"  => $amount, 
+        "ref1"  => "TZ01", 
+        "ref2"  => "REFERENCE2",
+        "ref3"  => "TZ01" 
+    );
+    $fields = json_encode($fields);
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true));
+
+    // API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
+	$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "https://api.partners.scb/partners/sandbox/v1/payment/qrcode/create");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:tz-topup-12346','authorization:'.$authorization));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+		file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $response, true));
+        return $response;
+}
+/*
+//AJAX FUNCTION
+add_action('wp_ajax_listdrivercredit', 'listdrivercredit');
+function listdrivercredit(){
+    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Ajax listdrivercredit START", true));
+    $driver_assign_array = $_GET;
+    set_query_var('name', $driver_assign_array['driver_name']); 
+    set_query_var('id', $driver_assign_array['driver_id']); 
+    set_query_var('balance', $driver_assign_array['driver_balance']);
+    set_query_var('credit', $driver_assign_array['driver_credit']); 
+    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Driver balance : ".$driver_assign_array['driver_balance'], true),FILE_APPEND);
+    get_template_part( 'ajax-driver-credit' );
+    wp_die();
+}
+*/
 
 
 ?>

@@ -5,15 +5,15 @@ global $wpdb, $current_user;
 $order = $wpdb->get_row(
     $wpdb->prepare(
         "SELECT orders.id,orders.post_id,orders.adjust_accept,orders.driver_adjust,orders.total_amt,driver_order_log_assign.status,
-        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code
+        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code, orders.redeem_point
         FROM orders
         INNER JOIN driver_order_log_assign ON orders.id = driver_order_log_assign.driver_order_id and driver_id = %d 
         and (driver_order_log_assign.status = 1 OR driver_order_log_assign.status = 2)", $current_user->ID)
     );
 
-$is_ready = $wpdb->get_var(
+$driver = $wpdb->get_row(
     $wpdb->prepare(
-        "SELECT is_ready FROM driver where Driver_id = %d ", array($current_user->ID)
+        "SELECT is_ready, redeem_rate FROM driver where Driver_id = %d ", array($current_user->ID)
     )
 );
 ?>
@@ -23,10 +23,10 @@ $is_ready = $wpdb->get_var(
 		<p style="color: red;"><em>สำหรับผู้ส่งอิสระกรุณากดปุ่มเพื่อยืนยันความพร้อมก่อนรับอาหาร</p></em>
 	</div>
 	<div class="order-col-6" style="text-align:right;">
-        <button class="btn <?php echo $is_ready ? 'btn-success' : 'btn-danger';?> driver-ready" data-d-id="<?php echo $current_user->ID; ?>"
+        <button class="btn <?php echo $driver->is_ready ? 'btn-success' : 'btn-danger';?> driver-ready" data-d-id="<?php echo $current_user->ID; ?>"
             data-nonce="<?php echo wp_create_nonce( 'driver_ready_'.$current_user->ID); ?>"
-            ><?php echo $is_ready ? 'พร้อมรับงาน' : 'ไม่พร้อมรับงาน';?></button>
-            <p style="color: red;"><em><?php echo $is_ready ?'สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน':'สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ';?></p></em>
+            ><?php echo $driver->is_ready ? 'พร้อมรับงาน' : 'ไม่พร้อมรับงาน';?></button>
+            <p style="color: red;"><em><?php echo $driver->is_ready ?'สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน':'สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ';?></p></em>
 
             <button class="btn btn-default transaction_details" >transaction details</button>
 	</div>
@@ -191,10 +191,20 @@ $is_ready = $wpdb->get_var(
             <div class="order-clear"></div>
             <div class="order-row">
                 <div class="order-col-6">
-                    <strong>ราคาค่าจัดส่ง</strong>
+                    <?php 
+                        if($order->redeem_point){
+                            echo "<br>ลูกค้าใช้ point แทนค่าส่งเป็นเงิน <strong>".str_replace(".00", "",number_format($shipping_price,2))."</strong> บาท";
+                            echo "<br>คุณจะได้รับ เครดิต <strong>".str_replace(".00", "",number_format($shipping_price * $driver->redeem_rate,2))."</strong> บาทจาก point นี้";
+                        }else{
+                            echo "<strong>ราคาค่าจัดส่ง</strong>";
+                        }
+                    ?>
                 </div>
                 <div class="order-col-6" style="text-align:right;">
-                    <strong><?php echo str_replace(".00", "",number_format($shipping_price,2)); ?> บาท</strong>
+                    <?php 
+                        if(!$order->redeem_point)
+                            echo "<strong>".str_replace(".00", "",number_format($shipping_price,2))." บาท</strong>";
+                    ?>
                 </div>
             </div>
             <div class="order-clear"></div>
@@ -206,11 +216,15 @@ $is_ready = $wpdb->get_var(
                 </div>
                 <div class="order-col-6">
                     <h4><strong><?php //echo ($order->adjust_accept ? $order->total_amt+$order->driver_adjust+$shipping_price : $order->total_amt+$shipping_price); 
-                    
+                    $sum = $order->total_amt;
+
                     if($order->adjust_accept)
-                        echo str_replace(".00", "",number_format($order->total_amt+$order->driver_adjust+$shipping_price,2));
-                      else
-                        echo str_replace(".00", "",number_format($order->total_amt+$shipping_price,2));
+                        $sum += $order->driver_adjust;
+
+                    if(!$order->redeem_point)
+                        $sum += $shipping_price;
+
+                    echo str_replace(".00", "",number_format($sum,2));
                     
                     ?></strong> บาท</h4>
                 </div>

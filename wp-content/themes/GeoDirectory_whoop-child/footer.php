@@ -283,7 +283,7 @@ if ( is_single() ) {
   }// if($post_type == "gd_place")
   }
 }
-
+customer_rating();
 
 ?>
 

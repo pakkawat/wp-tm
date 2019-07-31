@@ -10,8 +10,18 @@ if ( is_user_logged_in() ){
   if (empty($arrProducts))
     wp_redirect(get_page_link($pid));
 
+  /* 20190627 Bank put deliver fee */
+  $default_category_id = geodir_get_post_meta( $pid, 'default_category', true );
+  $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
+  $parent = get_term($default_category->parent);
+
   //Get Delivery_fee and distance
-  list($delivery_fee,$distance) = get_delivery_fee($pid);
+  if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+  {
+    list($delivery_fee,$distance) = get_delivery_fee($pid);
+  }	
+
+
   
   $user_address = $wpdb->get_row(
       $wpdb->prepare(
@@ -161,18 +171,20 @@ if ( is_user_logged_in() ){
           {
             var $modalDiv = $(e.delegateTarget);
             var id = $(this).data('recordId');
-            console.log(id);
             var payment_type = $("input[name=payment-type]:checked").val();
-            console.log("payment_type: "+payment_type);
+
+            if($('#use_point').is(":checked")){
+              $('#hidden_up').val("true");
+            }else{
+              $('#hidden_up').val("");
+            }
           }
         });
 
         $("#place_order").click(function(){
           $("#payment-error").hide();
           var rowCount = $('#tb-cart >tbody >tr').length;
-          console.log(rowCount);
-          if (rowCount > 1){
-            console.log("nonce:"+$(this).data('nonce'));
+          if (rowCount > 2){
             $("#select-payment-type").modal();
           }
           else {
@@ -282,6 +294,7 @@ function myPopupFunc() {
               <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
                   <input type="hidden" name="pid" value="<?php echo $pid; ?>"/>
+                  <input type="hidden" name="hidden_up" id="hidden_up" />
                   <button type="submit" class="btn btn-success btn-ok">ตกลง</button>
               </div>
             </form>
@@ -327,7 +340,8 @@ function myPopupFunc() {
                     echo "<td>";
                       echo '<div class="order-row">';
                         echo '<div class="order-col-3">';
-                          echo '<img style="width:72px;height:72px;" src="'.$uploads['baseurl'].$post->featured_image.'">';
+                          if($post->featured_image != "")
+                            echo '<img style="width:72px;height:72px;" src="'.$uploads['baseurl'].$post->featured_image.'">';
                         echo "</div>";
                         echo '<div class="order-col-9">';
                           echo '<h4 class="product-name"><strong><a href="'.get_the_permalink().'" style="color: #e34f43;">'.$post->post_title.'</a></strong></h4>';
@@ -390,10 +404,23 @@ function myPopupFunc() {
                 }
 				        $sum += $delivery_fee;
     		      ?>
-			<tr>
+			        <tr>
                 <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="2">
+                  <?php
+                    $user_cash_back = $wpdb->get_row(
+                      $wpdb->prepare(
+                          "SELECT * FROM cash_back where user_id = %d ", array($current_user->ID)
+                      )
+                    );
+                    if(!empty($user_cash_back)){
+                      $point = $user_cash_back->add_on_credit * $user_cash_back->redeem_point_rate;
+                      if($point >= $delivery_fee && ($parent->name == "อาหาร" || $default_category->name == "อาหาร") && $delivery_fee != 0){
+                        echo 'ขณะนี้คุณมี point มากพอจะใช้แทนค่าส่งกรุณาเลือก หากต้องการใช้: <input type="checkbox" name="use_point" id="use_point" />';
+                      }
+                    }
+                  ?>
+                </td>
                 <td><div class="popup" onclick="myPopupFunc()">ค่าจัดส่ง*
 					<span class="popuptext" id="myPopup">ค่าส่งเบื้องต้น 30 บาท รวมกับระยะทาง 3 กม.แรกคิดกม.ล่ะ 10 บาท กม.ถัดไปคิด กม.ล่ะ 15 บาท</span></div>
 				</td>
@@ -411,7 +438,7 @@ function myPopupFunc() {
           </table>
             <div style="float:right;">
               <?php if($user_has_address){
-			  if(($delivery_fee == 0) and ($distance == 0))
+			  if(($delivery_fee == 0) and ($distance == 0) and (($parent->name == "อาหาร")||($default_category->name == "อาหาร")))
 			  {
 				?>
 				<h3>ขณะนี้ระบบไม่สามารถคำนวนค่าจัดส่งได้ ขออภัยในความไม่สะดวก</h3>
