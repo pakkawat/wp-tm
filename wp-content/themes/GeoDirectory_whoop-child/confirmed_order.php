@@ -52,23 +52,8 @@ if ( is_user_logged_in() ){
         return money;
       }
 
-      //$(".btn-tamzang-quantity").on("click", function () {
-      jQuery(document).on("click", ".btn-tamzang-quantity", function(){
-
-          var $button = $(this);
-          var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
-
-          if ($button.data( 'type' ) == "plus") {
-              var newVal = parseFloat(oldValue) + 1;
-          } else {
-              // Don't allow decrementing below zero
-              if (oldValue > 1) {
-                  var newVal = parseFloat(oldValue) - 1;
-              } else {
-                  newVal = 1;
-              }
-          }
-          $('.wrapper-loading').toggleClass('cart-loading');
+      function update_product_cart($button, newVal){
+        $('.wrapper-loading').toggleClass('cart-loading');
           var id = $button.data( 'id' );
           //console.log($("#"+id+"-price").text());
           var nonce = $button.data( 'nonce' );
@@ -81,7 +66,7 @@ if ( is_user_logged_in() ){
                   if(msg.success){
                     
                     console.log( "update confirm: " + JSON.stringify(msg) );
-                    $button.closest('.sp-quantity').find("input.quntity-input").val(newVal);
+                    $button.closest('.sp-quantity').find("p.quntity-input").text(newVal);
                     var total = display_currency(msg.data);
                     $("#"+id+"-total").text(total);
                     var sum = 0;
@@ -106,21 +91,13 @@ if ( is_user_logged_in() ){
                $('.wrapper-loading').toggleClass('cart-loading');
             }
           });
+      }
 
-      });
-
-
-
-
-      $('#confirm-delete').on('click', '.btn-ok', function(e) {
-          var $modalDiv = $(e.delegateTarget);
-          var id = $(this).data('recordId');
-          var nonce = $(this).data('recordNonce');
-          //console.log(id);
-          // $.ajax({url: '/api/record/' + id, type: 'DELETE'})
-          // $.post('/api/record/' + id).then()
-          $modalDiv.addClass('loading');
-          var send_data = 'action=delete_product_cart&id='+id+'&nonce='+nonce;
+      function delete_product_cart($button){
+        $('.wrapper-loading').toggleClass('cart-loading');
+        var id = $button.data( 'id' );
+        var nonce_delete = $button.data( 'delete' );
+        var send_data = 'action=delete_product_cart&id='+id+'&nonce='+nonce_delete;
           $.ajax({
             type: "POST",
             url: geodir_var.geodir_ajax_url,
@@ -141,25 +118,36 @@ if ( is_user_logged_in() ){
                     $("#sum").text(sum);
                   }
 
-                  $modalDiv.modal('hide').removeClass('loading');
+                  $('.wrapper-loading').toggleClass('cart-loading');
                   //console.log( "Data Saved: " + msg );
                   //console.log(tamzang_ajax_settings.ajaxurl);
                   // ถ้า msg = 0 แสดงว่าไม่ได้ login
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
               console.log(textStatus);
-              $modalDiv.modal('hide').removeClass('loading');
+              $('.wrapper-loading').toggleClass('cart-loading');
             }
           });
 
-        });
+      }
 
-        $('#confirm-delete').on('show.bs.modal', function(e) {
-            var data = $(e.relatedTarget).data();
-            $('.title', this).text(data.recordTitle);
-            $('.btn-ok', this).data('recordId', data.recordId);
-            $('.btn-ok', this).data('recordNonce', data.recordNonce);
-        });
+      //$(".btn-tamzang-quantity").on("click", function () {
+      jQuery(document).on("click", ".btn-tamzang-quantity", function(){
+
+          var $button = $(this);
+          var oldValue = $button.closest('.sp-quantity').find("p.quntity-input").text();
+
+          if ($button.data( 'type' ) == "plus") {
+              update_product_cart($button, parseFloat(oldValue) + 1);
+          } else {
+              if (oldValue > 1) {
+                  update_product_cart($button, parseFloat(oldValue) - 1);
+              } else {
+                  delete_product_cart($button);
+              }
+          }
+      });
+
 
         $('#select-payment-type').on('click', '.btn-ok', function(e) {
           if($('input[name=payment-type]:checked').length<=0)
@@ -239,25 +227,6 @@ function myPopupFunc() {
     </div>
 </div>
 
-<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel">ยืนยันการลบสินค้า</h4>
-            </div>
-            <div class="modal-body">
-                <p>คุณกำลังจะลบสินค้า <b><i class="title"></i></b></p>
-                <p>คุณต้องการดำเนินการต่อหรือไม่?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
-                <button type="button" class="btn btn-danger btn-ok">ตกลง</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="select-payment-type" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -318,9 +287,7 @@ function myPopupFunc() {
               <tr>
                 <th>สินค้า</th>
                 <th style="width:50px">จำนวน</th>
-                <th>ราคา</th>
                 <th>ทั้งหมด</th>
-                <th> </th>
               </tr>
             </thead>
             <tbody>
@@ -363,12 +330,14 @@ function myPopupFunc() {
                       echo '<div class="sp-quantity">';
                       echo '<div class="input-group">';
                       echo '<span class="input-group-btn">';
-                      echo '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  data-type="minus" data-id="'.$post->ID.'" data-nonce="'.wp_create_nonce( 'update_product_cart_' . $post->ID ).'">';
+                      echo '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  
+                            data-delete="'.wp_create_nonce( 'delete_product_cart_' . $post->ID ).'"
+                            data-type="minus" data-id="'.$post->ID.'" data-nonce="'.wp_create_nonce( 'update_product_cart_' . $post->ID ).'">';
                       echo '<span class="glyphicon glyphicon-minus"></span>';
                       echo '</button>';
                       echo '</span>';
                       echo '<div class="sp-input">';
-                      echo '<input type="text" class="quntity-input form-control" name="qty" value="'.$post->shopping_cart_qty.'">';
+                      echo '<p class="quntity-input" style="width:30px;">'.$post->shopping_cart_qty.'</p>';
                       echo '</div>';
                       echo '<span class="input-group-btn">';
                       echo '<button type="button" class="btn-tamzang-quantity btn-quantity quantity-right-plus btn btn-success btn-number" 
@@ -383,17 +352,7 @@ function myPopupFunc() {
                       //echo '<input type="text" class="quntity-input form-control" name="qty" value="'.$product->qty.'">';
                     echo "</td>";
                     echo '<td>';
-                      echo '<strong><div id="'.$post->ID.'-price" >'.str_replace(".00", "",number_format($post->geodir_price,2)).'</div></strong>';
-                    echo "</td>";
-                    echo '<td>';
                       echo '<strong><div id="'.$post->ID.'-total" class ="price" >'.str_replace(".00", "",number_format($total,2)).'</div></strong>';
-                    echo "</td>";
-                    echo "<td>";
-                      echo '<a class="btn btn-danger btn-xs" href="#"
-                      data-record-id="'.$post->ID.'"
-                      data-record-title="'.$post->post_title.'"
-                      data-record-nonce="'.wp_create_nonce( 'delete_product_cart_' . $post->ID ).'"
-                      data-toggle="modal" data-target="#confirm-delete" style="color:white;" ><span class="glyphicon glyphicon-trash"></span> ลบ</a>';
                     echo "</td>";
                   echo "</tr>";
                 }
@@ -405,8 +364,7 @@ function myPopupFunc() {
 				        $sum += $delivery_fee;
     		      ?>
 			        <tr>
-                <td></td>
-                <td colspan="2">
+                <td>
                   <?php
                     $user_cash_back = $wpdb->get_row(
                       $wpdb->prepare(
@@ -427,9 +385,6 @@ function myPopupFunc() {
                 <td class="text-right"><strong><div id="delivery"><?php echo $delivery_fee; ?></div></strong></td>
               </tr>
               <tr>
-                <td>
-                </td>
-                <td></td>
                 <td></td>
                 <td><h3>รวมทั้งหมด</h3></td>
                 <td class="text-right"><h3><strong><div id="sum"><?php echo str_replace(".00", "",number_format($sum,2)); ?></div></strong></h3></td>
