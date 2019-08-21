@@ -36,48 +36,95 @@ $driver = $wpdb->get_row(
 
 ?>
 
-<table id="tran_list" style="width:100%">
-    <thead>
+
+<?php
+if ( wp_is_mobile() ){
+?>
+    <br>
+    <table style="width:100%;text-align:right;">
         <tr>
-            <th>วันที่</th>
-            <th>รายการ</th>
-            <th>ถอน</th>
-            <th>ฝาก</th>
-            <th>คงเหลือ</th>
-            <th>เครดิต</th>
+            <td><b>คงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
         </tr>
-    </thead>
-    <tbody>
-    <?php
-        foreach ($transaction_list as $transaction) {
-            echo "<tr>";
-            echo "<td>".date('d/m/Y', strtotime($transaction->transaction_date))."</td>";
-            echo "<td>".$transaction->transaction_type."</td>";
-            echo "<td>".($transaction->debit != "" ? '---' : '').$transaction->debit."</td>";
-            echo "<td>".($transaction->credit != "" ? '+++' : '').$transaction->credit."</td>";
-            echo "<td>".$transaction->balance."</td>";
-            echo "<td>".$transaction->balance_add_on_credit."</td>";
-            echo "</tr>";
-        }
-    ?>
-    </tbody>
-    <tfoot>
         <tr>
-            <th>วันที่</th>
-            <th>รายการ</th>
-            <th>ถอน</th>
-            <th>ฝาก</th>
-            <th>คงเหลือ</th>
-            <th>เครดิต</th>
+            <td><b>เครดิตทั้งหมด:</b></td><td><?php echo $driver->add_on_credit;?> พอยท์</td>
         </tr>
-    </tfoot>
-</table>
-<br><br>
-<table style="width:100%;text-align:right;">
-    <tr>
-        <td><b>คงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
-    </tr>
-    <tr>
-        <td><b>เครดิตทั้งหมด:</b></td><td><?php echo $driver->add_on_credit;?> พอยท์</td>
-    </tr>
-</table>
+    </table>
+    <table id="tran_list" style="width:100%">
+        <thead>
+            <tr>
+                <th>วันที่</th>
+                <th>รายการ</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+            foreach ($transaction_list as $transaction) {
+                echo "<tr>";
+                echo "<td>".date('d/m/Y', strtotime($transaction->transaction_date))."</td>";
+                echo "<td>".$transaction->transaction_type."</td>";
+                if($transaction->debit != "")
+                    echo '<td style="color:red;font-weight:bold;">-'.$transaction->debit.'</td>';
+                else
+                    echo '<td style="color:green;font-weight:bold;">'.$transaction->credit.'</td>';
+                echo "</tr>";
+            }
+        ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>วันที่</th>
+                <th>รายการ</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+<?php
+}else{
+?>
+    <table id="tran_list" style="width:100%">
+        <thead>
+            <tr>
+                <th>วันที่</th>
+                <th>รายการ</th>
+                <th>ถอน</th>
+                <th>ฝาก</th>
+                <th>คงเหลือ</th>
+                <th>เครดิต</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+            foreach ($transaction_list as $transaction) {
+                echo "<tr>";
+                echo "<td>".date('d/m/Y', strtotime($transaction->transaction_date))."</td>";
+                echo "<td>".$transaction->transaction_type."</td>";
+                echo "<td>".($transaction->debit != "" ? '---' : '').$transaction->debit."</td>";
+                echo "<td>".($transaction->credit != "" ? '+++' : '').$transaction->credit."</td>";
+                echo "<td>".$transaction->balance."</td>";
+                echo "<td>".$transaction->balance_add_on_credit."</td>";
+                echo "</tr>";
+            }
+        ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>วันที่</th>
+                <th>รายการ</th>
+                <th>ถอน</th>
+                <th>ฝาก</th>
+                <th>คงเหลือ</th>
+                <th>เครดิต</th>
+            </tr>
+        </tfoot>
+    </table>
+    <br><br>
+    <table style="width:100%;text-align:right;">
+        <tr>
+            <td><b>คงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
+        </tr>
+        <tr>
+            <td><b>เครดิตทั้งหมด:</b></td><td><?php echo $driver->add_on_credit;?> พอยท์</td>
+        </tr>
+    </table>
+<?php }// else wp_is_mobile ?>

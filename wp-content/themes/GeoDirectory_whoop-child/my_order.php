@@ -255,7 +255,7 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
       $response = sendMessage($player_id,$message);
       $return["allresponses"] = $response;
       $return = json_encode( $return);
-      file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true),FILE_APPEND);
+      //file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true));
     }
 
     $ch = curl_init();
@@ -287,7 +287,7 @@ jQuery(document).ready(function($){
     if(data.success)
     {
       ui_single_update_status(element, 'อัพโหลดเรียบร้อย', 'success');
-      $('#slip_pic_'+data.data.order_id).attr('src', data.data.image);
+      $('#slip_pic_'+data.data.order_id).attr('src', data.data.image+'?dt=' + Math.random());
       $('#slip_pic_'+data.data.order_id).attr('data-src', data.data.image);
       $('#div_slip_pic_'+data.data.order_id).css("display", "inline");
     }else
@@ -376,6 +376,7 @@ jQuery(document).ready(function($){
       }
     },
     onBeforeUpload: function(id){
+      $('#div_slip_pic_'+$('#order_id').val()).css("display", "none");
       // about tho start uploading a file
 
       ui_single_update_progress(this, 0, true);
@@ -602,49 +603,7 @@ jQuery(document).ready(function($){
 
 });
 </script>
-<?php
-if(wp_is_mobile()){ // if mobile browser
-?>
-<style>
-@media only screen and (orientation: portrait){
-.page-id-225149 #container {
 
-    height: 100vw;
-
-
-    -webkit-transform: rotate(90deg);
-
-    -moz-transform: rotate(90deg);
-
-    -o-transform: rotate(90deg);
-
-    -ms-transform: rotate(90deg);
-
-    transform: rotate(90deg);
-
-  }
-}
-</style>
-<?php
-}
-else { // desktop browser
-?>
-<style>
-.img2 {
-    border: 1px solid #ddd; /* Gray border */
-    border-radius: 4px;  /* Rounded border */
-    padding: 5px; /* Some padding */
-    width: 150px; /* Set a small width */
-}
-
-/* Add a hover effect (blue shadow) */
-.img2:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
-}
-</style>
-<?php
-}
-?>
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -793,24 +752,29 @@ else { // desktop browser
 		  <!-- bank change div panel into 100% from 900px -->
           <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>" style="width:100%;">
             <div class="panel-heading">
-              <div class="order-col-3">
+              <div class="order-col-12">
                 Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
               </div>
-              <div class="order-col-9" style="text-align:right;">
-                <?php
+              <div class="order-col-12" style="text-align:left;">
+                <div class="order-col-5">
+                  ที่อยู่ในการจัดส่ง: 
+                </div>
+                <div class="order-col-10">                
+                  <?php
 
-                $shipping_address = $wpdb->get_row(
-                    $wpdb->prepare(
-                        "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
-                    )
-                );
-                $shipping_price = $shipping_address->price;
-                if($wpdb->num_rows > 0)
-                {
-                  echo "ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
-                }
+                  $shipping_address = $wpdb->get_row(
+                      $wpdb->prepare(
+                          "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
+                      )
+                  );
+                  $shipping_price = $shipping_address->price;
+                  if($wpdb->num_rows > 0)
+                  {
+                    echo "".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
+                  }
 
-                ?>
+                  ?>
+                </div>
               </div>
               <div class="order-clear"></div>
             </div>
@@ -827,18 +791,15 @@ else { // desktop browser
 
               ?>
                 <div class="order-row">
-                  <div class="order-col-2">
-                    <img style="width:72px;height:72px;" src="<?php echo $uploads['baseurl'].$product->product_img; ?>">
-                  </div>
-                  <div class="order-col-4">
+                  <div class="order-col-12">
                     <h4 class="product-name"><strong><?php echo $product->product_name; ?></strong></h4><h4><small><?php //echo $product->short_desc; ?></small></h4>
                   </div>
-                  <div class="order-col-6">
-                    <div class="order-col-6" style="text-align:right;">
+                  <div class="order-col-12">
+                    <div class="order-col-4" style="text-align:left;">
                       <strong><?php echo str_replace(".00", "",number_format($product->price,2)); ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
                     </div>
                     <div class="order-col-2">
-                      <strong>รวม</strong>
+                      <strong>=</strong>
                     </div>
                     <div class="order-col-4">
                       <strong><?php echo str_replace(".00", "",number_format($product->price*$product->qty,2)); ?> บาท</strong>
@@ -876,7 +837,10 @@ else { // desktop browser
                           <?php
                         } else{
                           if(($order->status != 99) && $order->status < 3){ 
-                            $text = ' ราคาเพิ่มเติมอีก <strong>'.str_replace(".00", "",number_format($order->driver_adjust,2)).' บาท</strong> <h4><strong>รวมทั้งหมด '.str_replace(".00", "",number_format($order->total_amt+$order->driver_adjust+$shipping_price,2)).'</strong> บาท</h4>';
+                            $adjust_total = $order->total_amt+$order->driver_adjust;
+                            if(!$order->redeem_point)
+                              $adjust_total += $shipping_price;
+                            $text = ' ราคาเพิ่มเติมอีก <strong>'.str_replace(".00", "",number_format($order->driver_adjust,2)).' บาท</strong> <h4><strong>รวมทั้งหมด '.str_replace(".00", "",number_format($adjust_total,2)).'</strong> บาท</h4>';
                             $customer_nonce = wp_create_nonce( 'customer_response_adjust_'.$order->id);
                             ?>
                                 <div class="order-row" id="order_adjust_<?php echo $order->id; ?>">
@@ -1012,28 +976,34 @@ else { // desktop browser
                       >แสดงรูปภาพ</button>
                     </div>
 
-                  <?php if($order->payment_type == 1) { ?>
+                  <?php //if($order->payment_type == 1) { ?>
 
                     <div class="order-col-4" style="text-align:right;min-height:1px;">
-                      <?php if($order->status == 1){ ?>
+                      <?php if($order->deliver_ticket == 'Y' && $order->status < 5){ ?>
+                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                          data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
+                          data-toggle="modal" data-target="#add-transfer-slip"
+                        >อัพโหลดรูปภาพ</button>
+                      <?php }else if($order->status < 4){ ?>
                         <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
                           data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
                           data-toggle="modal" data-target="#add-transfer-slip"
                         >อัพโหลดรูปภาพ</button>
                       <?php } ?>
                     </div>
-                  <?php } ?>
+                  <?php //} ?>
                 </div>
                 <div class="order-clear"></div>
 
                 <div class="order-row" id="toggle_pic_<?php echo $order->id; ?>" style="display:none;text-align:center;">
                   <div class="order-col-6">
                     <?php if($order->image_slip != ''){ ?>
-                      <h2>หลักฐานการโอนเงิน</h2>
-                      <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" />
+                      <h2>หลักฐาน</h2>
+                      <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" 
+                      data-src="<?php echo $uploads['baseurl'].$order->image_slip; ?>"  data-toggle="modal" data-target="#image-modal" />
                     <?php }else{ ?>
                       <div id="div_slip_pic_<?php echo $order->id; ?>" style="display:none;">
-                        <h2>หลักฐานการโอนเงิน</h2>
+                        <h2>หลักฐาน</h2>
                         <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="" data-toggle="modal" data-target="#image-modal"  data-src="" />
                       </div>
                     <?php } ?>

@@ -1,7 +1,52 @@
-<?php /* Template Name: driver-order */ ?>
-<?php
+<?php /* Template Name: driver-order */ 
+global $wpdb, $current_user;
+if ( !is_user_logged_in() )
+    wp_redirect(home_url());
+
+$driver = $wpdb->get_var(
+    $wpdb->prepare(
+        "SELECT ID FROM driver where Driver_id = %d ", array($current_user->ID)
+    )
+);
+
+if(empty($driver))
+    wp_redirect(home_url());
 
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ตามสั่ง</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <?php echo '<script type="text/javascript">var ajaxurl = "' .admin_url('admin-ajax.php'). '";</script>';?>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+.order-status-loading:before {
+display: flex;
+flex-direction: column;
+justify-content: center;
+content: 'รอสักครู่...';
+text-align: center;
+font-size: 20px;
+background: rgba(0, 0, 0, .8);
+position: absolute;
+top: 0px;
+bottom: 0;
+left: 0;
+right: 0;
+color: #EEE;
+z-index: 1000;
+width: 100%;
+height: 100%;
+}
+</style>
 
 <script>
 
@@ -104,7 +149,12 @@ jQuery(document).ready(function($){
             success: function(msg){
                 console.log( "Order confirmed: " + JSON.stringify(msg) );
                 if(msg.success){
-                    $( "#confirm_button_"+order_id ).html('<img src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/error.png" />ปฏิเสธการสั่งซื้อ');
+                    $( ".wrapper-loading" ).load( ajaxurl+"?action=load_driver_order_template", function( response, status, xhr ) {
+                        if ( status == "error" ) {
+                        var msg = "Sorry but there was an error: ";
+                        $( ".wrapper-loading" ).html( msg + xhr.status + " " + xhr.statusText );
+                        }
+                    });
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -324,10 +374,12 @@ jQuery(document).ready(function($){
                     $this.toggleClass('btn-danger btn-success');
                     if($this.hasClass('btn-danger')){
                         $this.text('ไม่พร้อมรับงาน');
-                        $this.next().text('สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ');
+                        $this.next().html('<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>');
+                        $('#status_text').html('<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>');
                     }else{
                         $this.text('พร้อมรับงาน');
-                        $this.next().text('สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน');
+                        $this.next().html('<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>');
+                        $('#status_text').html('<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>');
                     }
                 }
 
@@ -364,7 +416,7 @@ jQuery(document).ready(function($){
 });
 
 </script>
-
+<body>
 
 <div class="modal fade" id="confirm-order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -378,8 +430,12 @@ jQuery(document).ready(function($){
                 <p>คุณต้องการดำเนินการต่อหรือไม่?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger btn-reject" data-dismiss="modal" style="float:left;">ปฏิเสธ</button>
-                <button type="button" class="btn btn-success btn-ok">ยืนยันรับคำสั่งซื้อ</button>
+                <div class="col-4">
+                    <button type="button" class="btn btn-danger btn-reject" data-dismiss="modal" style="float:left;">ปฏิเสธ</button>
+                </div>
+                <div class="col-8 text-right">
+                    <button type="button" class="btn btn-success btn-ok">ยืนยันรับคำสั่งซื้อ</button>
+                </div>
             </div>
         </div>
     </div>
@@ -397,16 +453,23 @@ jQuery(document).ready(function($){
                 <p>คุณต้องการดำเนินการต่อหรือไม่?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger btn-reject" data-dismiss="modal" style="float:left;">ไม่ยกเลิก</button>
-                <button type="button" class="btn btn-success btn-ok">ยืนยันยกเลิก</button>
+                <div class="col-6">
+                    <button type="button" class="btn btn-success btn-reject" data-dismiss="modal" style="float:left;">ไม่ยกเลิก</button>
+                </div>
+                <div class="col-6 text-right">
+                    <button type="button" class="btn btn-danger btn-ok">ยืนยันยกเลิก</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
+<div class="container">
 <div id="main_order">
     <div class="wrapper-loading">
         <?php get_template_part( 'driver/driver', 'order_template' ); ?>
     </div>
 </div>
+</div>
+</body>
+</html>

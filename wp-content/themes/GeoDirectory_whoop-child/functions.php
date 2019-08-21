@@ -1074,9 +1074,17 @@ function add_transfer_slip_picture_callback(){
 
   $owner = $wpdb->get_row(
       $wpdb->prepare(
-          "SELECT wp_user_id,thread_id,post_id FROM orders where id = %d AND status != 99 ", array($data['order_id'])
+          "SELECT wp_user_id,thread_id,post_id,status,deliver_ticket FROM orders where id = %d AND status != 99 ", array($data['order_id'])
       )
   );
+
+  if($owner->deliver_ticket == 'Y')
+  {
+    if($owner->status > 4)
+        wp_send_json_error();
+  }
+  else if($owner->status > 3)
+    wp_send_json_error();
 
   if($current_user->ID == $owner->wp_user_id)
   {
@@ -1145,9 +1153,17 @@ function add_tracking_image_callback(){
 
   $order = $wpdb->get_row(
       $wpdb->prepare(
-          "SELECT post_id,thread_id,wp_user_id FROM orders where id = %d AND status != 99 ", array($data['order_id'])
+          "SELECT post_id,thread_id,wp_user_id,status,deliver_ticket FROM orders where id = %d AND status != 99 ", array($data['order_id'])
       )
   );
+
+  if($order->deliver_ticket == 'Y')
+  {
+    if($order->status > 4)
+        wp_send_json_error();
+  }
+  else if($order->status > 3)
+    wp_send_json_error();
 
   if(geodir_listing_belong_to_current_user((int)$order->post_id))
   {
@@ -1633,6 +1649,49 @@ function tamzang_user_shop_screen_content()
 
   if ( $my_query->have_posts() ) {
 
+    if ( wp_is_mobile() ){
+
+        ?>
+
+        <table class="table">
+            <thead>
+            <th>ร้านค้า</th>
+
+            </thead>
+            <tbody>
+
+            <?php
+
+            while ( $my_query->have_posts() ) {
+
+                $my_query->the_post();
+                echo '<tr>';
+                echo '<td>';
+                echo '<a href="' .get_permalink(). ' ">';
+                the_title();
+                echo '</a>';
+                echo '<br><br><a class="btn btn-info btn-block" href="'. home_url('/shop-order/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >รายการสั่งซื้อของร้าน</span></a>';
+                echo '<br>';
+                echo '<div class="order-row">';
+                echo '<div class="order-col-6"><a class="btn btn-success btn-block" href="'. home_url('/add-listing/') . '?listing_type=gd_product&shop_id='.get_the_ID() .'"><span style="color: #ffffff !important;" >เพิ่มสินค้า</span></a></div>';
+                echo '<div class="order-col-6"><a class="btn btn-primary btn-block" href="'. home_url('/product-list/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >แก้ไขสินค้า</span></a></div>';
+                echo '</div>';
+                echo '</td>';
+                echo '</tr>';
+
+            }
+
+
+            ?>
+
+            </tbody>
+        </table>
+
+
+        <?php
+
+    }else{
+
     ?>
 
     <div class="table-responsive">
@@ -1671,6 +1730,7 @@ function tamzang_user_shop_screen_content()
     </div>
 
     <?php
+    }
 
 
   }
@@ -2247,7 +2307,7 @@ function tamzang_user_driver_screen_content()
             get_template_part( 'driver/driver', 'register' ); 
         }else{
             if($driver_approve)
-                get_template_part( 'driver/driver', 'order' );
+                get_template_part( 'driver/driver', 'transaction_details' );
             else
                 get_template_part( 'driver/driver', 'pending' ); 
         }
@@ -3130,7 +3190,7 @@ function customer_response_adjust_callback(){
 
     $customer = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT o.wp_user_id,o.total_amt,o.driver_adjust,s.price,o.status as order_status FROM orders as o
+            "SELECT o.wp_user_id,o.total_amt,o.driver_adjust,s.price,o.status as order_status,o.redeem_point FROM orders as o
             inner join shipping_address as s on o.shipping_id = s.id
             where o.id = %d ", array($data['id'])
         )
@@ -3157,7 +3217,10 @@ function customer_response_adjust_callback(){
         );
       }
 
-      wp_send_json_success($customer->total_amt+$customer->driver_adjust+$customer->price);
+      if($customer->redeem_point)
+        wp_send_json_success($customer->total_amt+$customer->driver_adjust);
+      else
+        wp_send_json_success($customer->total_amt+$customer->driver_adjust+$customer->price);
 
     }else{
         wp_send_json_error();
@@ -3373,7 +3436,7 @@ function assign_order_driver() {
     //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $is_exist, true),FILE_APPEND);
     
     // Check in driver_order_log_assign
-    $sql_assign = "SELECT * FROM driver_order_log_assign where status IN (1,2) and (driver_order_id =".$order_id." or driver_id =".$driver_id_sql.")";
+    $sql_assign = "SELECT * FROM driver_order_log_assign where (status = 2 and driver_id =".$driver_id_sql.") and (status IN (1,4) and driver_id =".$driver_id_sql." and driver_order_id =".$order_id.")";
     //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
     $result_driver_assign = $wpdb->get_results($sql_assign, ARRAY_A );
     $is_exist_assign = $wpdb->num_rows;
@@ -4216,56 +4279,6 @@ global $post;
 		}
 	}
 }
-
-add_action('wp_ajax_trueMoneyApi', 'trueMoneyApi');
-// True Money Test Api
-function trueMoneyApi(){
-    $playerID = $player_id;
-    file_put_contents( dirname(__FILE__).'/debug/truemoney.log',"Start :");
-    $content = array(
-        "en" => $message
-        );
-    
-    $fields = array(
-        //30bcc12c-404d-494a-ac93-ac8ee755744f For Test02 || 73b7d329-0a82-4e80-aa74-c430b7b0705b for Prod
-        'app_id' => "30bcc12c-404d-494a-ac93-ac8ee755744f",
-        'include_player_ids' => array($playerID),
-        //'include_player_ids' => array("1c072fb6-f1b3-44ba-9f19-7a6fb5534366","646d645e-382d-45d9-aea9-916401fe3954"),
-        'data' => array("foo" => "bar"),
-        'contents' => $content
-    );
-    
-    $fields = json_encode($fields);
-    //print("\nJSON sent:\n");
-    //print($fields);
-    $user = "kedng@hotmail.com";
-    $pass = "Gub2019%";
-    $type = "email";
-    $method = 'GET';
-    
-    $data = array("username"=>$user, "password"=>sha1($user.$pass), "type"=>$type);
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://mobile-api-gateway.truemoney.com/mobile-api-gateway/api/v1/signin");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Host: mobile-api-gateway.truemoney.com", "Content-Type: application/json"));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    curl_setopt($ch, CURLOPT_POST, TRUE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    //curl_setopt($ch, CURLOPT_USERAGENT, 'okhttp/3.8.0');
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    file_put_contents( dirname(__FILE__).'/debug/truemoney.log', var_export( "Response : ".$response, true),FILE_APPEND);
-
-    return $response;
-    
-}
-
 add_action('wp_ajax_getDriverCredit', 'getDriverCredit');
 // For operater get Driver for adjust his balance
 function getDriverCredit(){
@@ -4557,7 +4570,7 @@ function customer_rating(){
         FROM driver as d
         INNER JOIN driver_order_log as dl on d.driver_id = dl.driver_id
         INNER JOIN orders as o on o.id = dl.driver_order_id
-        WHERE o.wp_user_id = %d AND dl.rating IS NULL ", array($current_user->ID)
+        WHERE o.wp_user_id = %d AND dl.rating IS NULL AND dl.status = 3 ", array($current_user->ID)
     ));
 
 
@@ -4616,7 +4629,6 @@ add_action('wp_ajax_generateQRpayment', 'generateQRpayment');
 // For operater get Driver for adjust his balance
 function generateQRpayment(){
     global $wpdb;
-	$return_arr = array();
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
     $data = $_POST;
 
@@ -4637,6 +4649,7 @@ function generateQRpayment(){
 
     $scb_qr_obj = json_decode(SCBQRGenerate($scb_token_obj->data->accessToken,$Amount_topup));
     file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Data is :".$scb_qr_obj->data->qrRawData, true),FILE_APPEND);
+    wp_send_json_success($scb_qr_obj->data->qrRawData);
     
 }
 
@@ -4709,5 +4722,62 @@ function listdrivercredit(){
 }
 */
 
+function tamzang_modify_home_nav_menu_objects( $items, $args ) {
+    global $wpdb, $current_user;
+    if($args->theme_location != "main-nav")
+        return $items;
+    if ( !is_user_logged_in() )
+        return $items;
+
+    $user_link = bp_get_loggedin_user_link();
+    $about_me = '<li class="menu-item "><a href="'.$user_link.'" class="">เกี่ยวกับฉัน</a></li>';
+
+    $is_driver = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT ID FROM driver where Driver_id = %d ", array($current_user->ID)
+        )
+    );
+
+    $driver = '';
+    if(!empty($is_driver))
+        $driver = '<li class="menu-item "><a href="'.home_url('/driver_orders/').'" class="">driver</a></li>';
+    
+    return $items.$about_me.$driver;
+    
+}
+add_filter( 'wp_nav_menu_items', 'tamzang_modify_home_nav_menu_objects', 120, 2 );//101
+
+
+//AJAX FUNCTION
+add_action('wp_ajax_refresh_Driver', 'refresh_Driver');
+function refresh_Driver(){
+    
+    get_template_part( 'driver/driver', 'order_template' );
+    wp_die();
+}
+
+function add_shop_link_at_product_form($type = '', $id = '', $class = ''){
+    if (isset($_REQUEST['pid']) && $_REQUEST['pid'] != ''){//หน้าแก้ไขสินค้า
+        $post = geodir_get_post_info($_REQUEST['pid']);
+        $listing_type = $post->post_type;
+        $geodir_shop_id = $post->geodir_shop_id;
+    }else{//หน้าเพิ่มสินค้า
+        $listing_type = sanitize_text_field($_REQUEST['listing_type']);
+        $geodir_shop_id = $_REQUEST['shop_id'];
+    }
+    if($listing_type != "gd_product")
+        return;
+        
+    echo '<div id="shopname"><a href="'.get_permalink($geodir_shop_id).'">'.get_the_title($geodir_shop_id).'</a></div><br>';
+}
+
+add_action('geodir_wrapper_content_open', 'add_shop_link_at_product_form', 20, 3);
+
+//AJAX FUNCTION
+add_action('wp_ajax_refresh_seller_page', 'refresh_seller_page');
+function refresh_seller_page(){    
+    get_template_part( 'ajax-order-status' );
+    wp_die();
+}
 
 ?>

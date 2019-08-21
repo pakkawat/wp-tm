@@ -29,6 +29,10 @@ jQuery(document).ready(function($){
 
 </script>
 
+<h1 class="page-title">
+
+</h1>
+
 <div class="order-row">
     <div class="order-col-6">
         <div class="order-col-3">

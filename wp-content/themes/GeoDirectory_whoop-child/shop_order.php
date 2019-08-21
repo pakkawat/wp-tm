@@ -95,7 +95,7 @@ jQuery(document).ready(function($){
     if(data.success)
     {
       ui_single_update_status(element, 'อัพโหลดเรียบร้อย', 'success');
-      $('#tracking_pic_'+data.data.order_id).attr('src', data.data.image);
+      $('#tracking_pic_'+data.data.order_id).attr('src', data.data.image+'?dt=' + Math.random());
       $('#tracking_pic_'+data.data.order_id).attr('data-src', data.data.image);
       $('#div_tracking_pic_'+data.data.order_id).css("display", "inline");
     }else
@@ -296,49 +296,6 @@ jQuery(document).ready(function($){
 
 });
 </script>
-<?php
-if(wp_is_mobile()){ // if mobile browser
-?>
-<style>
-@media only screen and (orientation: portrait){
-.page-id-225149 #container {
-
-    height: 100vw;
-
-
-    -webkit-transform: rotate(90deg);
-
-    -moz-transform: rotate(90deg);
-
-    -o-transform: rotate(90deg);
-
-    -ms-transform: rotate(90deg);
-
-    transform: rotate(90deg);
-
-  }
-}
-</style>
-<?php
-}
-else { // desktop browser
-?>
-<style>
-.img2 {
-    border: 1px solid #ddd; /* Gray border */
-    border-radius: 4px;  /* Rounded border */
-    padding: 5px; /* Some padding */
-    width: 150px; /* Set a small width */
-}
-
-/* Add a hover effect (blue shadow) */
-.img2:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
-}
-</style>
-<?php
-}
-?>
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -429,12 +386,12 @@ else { // desktop browser
 		      ?>
 
           <div style="overflow-x:auto;">
-          <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>" style="width:900px;">
+          <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>" style="width:100%;">
             <div class="panel-heading">
-              <div class="order-col-3">
+              <div class="order-col-12">
                 Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
               </div>
-              <div class="order-col-9">
+              <div class="order-col-12">
 
                 <?php
 
@@ -446,8 +403,8 @@ else { // desktop browser
 
                 if($wpdb->num_rows > 0)
                 {
-                  echo "ชื่อ:".$shipping_address->name." เบอร์โทรศัพท์: ".$shipping_address->phone." ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
-                  echo ' <a href="'.home_url('/pdf-address/').'?pid='.$pid.'&oid='.$order->id.'">ปริ๊น</a>';
+                  echo "ชื่อ:".$shipping_address->name."<br>เบอร์โทรศัพท์: ".$shipping_address->phone."<br>ที่อยู่ในการจัดส่ง: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
+                  echo '<br><a href="'.home_url('/pdf-address/').'?pid='.$pid.'&oid='.$order->id.'">ปริ๊น</a>';
                 }
 
                 ?>
@@ -468,18 +425,15 @@ else { // desktop browser
 
                 ?>
                   <div class="order-row">
-                    <div class="order-col-2">
-                      <img style="width:72px;height:72px;" src="<?php echo $uploads['baseurl'].$product->product_img; ?>">
+                    <div class="order-col-12">
+                      <h4 class="product-name"><strong><?php echo $product->product_name; ?></strong></h4>
                     </div>
-                    <div class="order-col-4">
-                      <h4 class="product-name"><strong><?php echo $product->product_name; ?></strong></h4><h4><small><?php //echo $product->short_desc; ?></small></h4>
-                    </div>
-                    <div class="order-col-6">
-                      <div class="order-col-6" style="text-align:right;">
+                    <div class="order-col-12">
+                      <div class="order-col-4" style="text-align:left;">
                         <strong><?php echo str_replace(".00", "",number_format($product->price,2)); ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
                       </div>
                       <div class="order-col-2">
-                        <strong>รวม</strong>
+                        <strong>=</strong>
                       </div>
                       <div class="order-col-4">
                         <strong><?php echo str_replace(".00", "",number_format($product->price*$product->qty,2)); ?> บาท</strong>
@@ -537,10 +491,17 @@ else { // desktop browser
                       >แสดงรูปภาพ</button>
                     </div>
                     <div class="order-col-4" style="text-align:right;min-height:1px;">
-                      <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                      <?php if($order->deliver_ticket == 'Y' && $order->status < 5){ ?>
+                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                          data-nonce="<?php echo wp_create_nonce( 'add_tracking_image_'.$order->id); ?>"
+                          data-toggle="modal" data-target="#add-tracking-pic"
+                        >อัพโหลดรูปภาพ</button>
+                      <?php }else if($order->status < 4){ ?>
+                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
                         data-nonce="<?php echo wp_create_nonce( 'add_tracking_image_'.$order->id); ?>"
                         data-toggle="modal" data-target="#add-tracking-pic"
-                      >อัพโหลดรูปภาพ</button>
+                        >อัพโหลดรูปภาพ</button>
+                      <?php } ?>
                     </div>
                 </div>
                 <div class="order-clear"></div>

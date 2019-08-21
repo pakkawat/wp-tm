@@ -90,7 +90,7 @@ if (isset($pid) && $pid != 0){
     //list($arrProducts, $count) = get_products($pid, $PERPAGE_LIMIT);
 
     $query_args = array(
-      'posts_per_page' => 3,
+      'posts_per_page' => 10,
       'is_geodir_loop' => true,
       'post_type' => 'gd_product',
       'pageno' => $currentPage,
@@ -119,12 +119,12 @@ if (isset($pid) && $pid != 0){
     <div id="geodir_content" class="" role="main" style="width: 100%">
       <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
       <article id="post-<?php the_ID(); ?>" <?php post_class( 'cf' ); ?> role="article">
+        <?php echo '<div id="shopname" style="padding:1.5em;"><a href="'.get_permalink($pid).'">'.get_the_title($pid).'</a></div>'; ?>
         <header class="article-header">
           <h1 class="page-title entry-title" itemprop="headline" style="padding-bottom:40px;">
             <div style="width:50%;float:left;">
-              <?php the_title(); ?>
+              <?php the_title() ?>
             </div>
-            <a class="geodir_button" style="float:right;" href="<?php echo get_permalink($pid); ?>"><span style="color: #ffffff !important;" >ร้านค้า</span></a>
           </h1>
           <?php /*<p class="byline vcard"> <?php printf( __( 'Posted <time class="updated" datetime="%1$s" >%2$s</time> by <span class="author">%3$s</span>', GEODIRECTORY_FRAMEWORK ), get_the_time('c'), get_the_time(get_option('date_format')), get_the_author_link( get_the_author_meta( 'ID' ) )); ?> </p> */?>
         </header>
@@ -151,6 +151,62 @@ if (isset($pid) && $pid != 0){
                   </div>
               </div>
           </div>
+
+          <?php
+            if ( wp_is_mobile() ){
+          ?>
+
+
+          <div class="table-responsive">
+            <table id="product_table" class="table">
+              <thead>
+                <th></th>
+              </thead>
+              <tbody>
+              <?php
+                global $post;
+                $current_post = $post;
+
+                foreach ($product_listings as $product) {
+                  $post = $product;
+                  $GLOBALS['post'] = $post;
+                  setup_postdata($post);
+                  echo '<tr id="'.$post->ID.'">';
+                  echo '<td>';
+                  echo 'ชื่อ: '.$post->post_title.'<br>';
+                  echo 'ราคา: '.$post->geodir_price.'<br>';
+                  echo 'รายละเอียดแบบย่อ	: '.wp_trim_excerpt().'<br>';
+                  $date = date_create($post->post_modified);
+                  echo 'แก้ไขล่าสุดเมื่อ: '.date_format($date, 'd-m-Y H:i:s').'<br>';
+                  echo '<div class="order-row">';
+                  echo '<div class="order-col-6"><a class="btn btn-primary btn-block" href="'. home_url('/add-listing/') . '?pid='.$post->ID .'"><span style="color: #ffffff !important;" >แก้ไข</span></a></div>';
+                  echo '<div class="order-col-6"><a class="btn btn-danger btn-block" href="#" data-record-id="'.$post->ID.'" data-record-title="'.$post->post_title.'" data-record-nonce="'.wp_create_nonce( 'delete_product_' . $post->ID ).'" data-toggle="modal" data-target="#confirm-delete" ><span style="color: #ffffff !important;" >ลบ</span></a></div>';
+                  echo '</div>';
+                  echo '</td>';
+                  echo '</tr>';
+                }
+
+                $GLOBALS['post'] = $current_post;
+                if (!empty($current_post)) {
+                    setup_postdata($current_post);
+                }
+                //wp_reset_query();
+    		      ?>
+              </tbody>
+            </table>
+
+            <?php product_pagination(ceil($count_product / 10),$currentPage,'«','»'); ?>
+
+          </div>
+
+
+
+
+
+          <?php
+            }else{
+          ?>
+
           <div class="table-responsive">
             <table id="product_table" class="table">
               <thead>
@@ -194,13 +250,15 @@ if (isset($pid) && $pid != 0){
               </tbody>
             </table>
 
-            <?php product_pagination(ceil($count_product / 3),$currentPage,'«','»'); ?>
+            <?php product_pagination(ceil($count_product / 10),$currentPage,'«','»'); ?>
             <?php 
             //echo 'brfore_geodir_pagination:'.print_r($wp_query).'<br><br><br>';
             //geodir_pagination('', '', '--<<', '>>--', 3, true);
 
             ?>
           </div>
+          <?php }// else wp_is_mobile ?>
+
         </section>
         <?php // end article section ?>
 
