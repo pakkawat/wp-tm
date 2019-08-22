@@ -177,7 +177,6 @@ jQuery(document).ready(function($){
         $('.btn-reject', this).data('id', data.id);
         $('.btn-reject', this).data('log_id', data.log_id);
         $('.btn-reject', this).data('nonce', data.nonce);
-        //console.log(data);
     });
 
     $('#cancel-order').on('click', '.btn-ok', function(e) {
@@ -185,8 +184,6 @@ jQuery(document).ready(function($){
         var order_id = $(this).data('id');
         var log_id = $(this).data('log_id');
         var nonce = $(this).data('nonce');
-        console.log( "ยกเลิก order: " + order_id + " log_id: " + log_id );
-
 
         var send_data = 'action=driver_cancel_order&id='+order_id+'&nonce='+nonce+'&log_id='+log_id;
         $.ajax({
@@ -194,8 +191,7 @@ jQuery(document).ready(function($){
             url: ajaxurl,
             data: send_data,
             success: function(msg){
-                console.log( "Order cancel: " + JSON.stringify(msg) );
-                $( "#panel_"+order_id ).find(".panel-footer .btn-danger").replaceWith( msg.data );
+                $( "#panel_"+order_id ).find(".card-body .btn-danger").replaceWith( msg.data );
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log(textStatus);
