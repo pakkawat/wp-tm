@@ -21,8 +21,18 @@ jQuery(document).ready(function($){
     'รูปภาพต้องนามสกุล jpg, jpeg, png'
   );
 
+  jQuery.validator.addMethod(
+    "filesize",
+    function (value, element) {
+        console.log(element.files[0].size);
+        return (element.files[0].size <= 3000000);
+    },
+    'ขนาดรูปต้องน้อยกว่า 3MB'
+  );
+
     $("form[name='driver_form']").validate({
     // Specify validation rules
+    errorElement: 'div',
     rules: {
       // The key name on the left side is the name attribute
       // of an input field. Validation rules are defined
@@ -35,7 +45,8 @@ jQuery(document).ready(function($){
       },
       image:{
         required:true,
-        extension: true
+        extension: true,
+        filesize: true
       }
     },
     // Specify validation error messages
