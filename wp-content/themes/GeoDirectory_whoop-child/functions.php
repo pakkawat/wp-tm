@@ -1,5 +1,22 @@
 <?php
 
+function tamzang_get_current_date(){
+    $tz = 'Asia/Bangkok';
+    $timestamp = time();
+    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+
+    return $dt->format("Y-m-d H:i:s");
+}
+
+function tamzang_thai_datetime($date_time){
+    $date_time = explode(" ", $date_time);
+    $date = explode("-", $date_time[0]);
+    $time = $date_time[1];
+    $month = array ( "ม.ค", "ก.พ", "มี.ค", "เม.ย","พ.ค", "มิ.ย", "ก.ค", "ส.ค","ก.ย", "ต.ค", "พ.ย", "ธ.ค" );
+
+    return $date[2]." ".$month[$date[1]-1]." ".$date[0]." ".$time;
+}
 
 function my_theme_enqueue_styles() {
 
@@ -818,14 +835,24 @@ function update_product_cart_callback(){
 
   try {
 
-    $wpdb->query(
-        $wpdb->prepare(
-            "UPDATE shopping_cart SET qty = %d where product_id = %d AND wp_user_id =%d",
-            array($qty, $product_id, $current_user->ID)
-        )
-    );
+    $total = 0;
+    if($qty == 0){
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM shopping_cart WHERE product_id = %d AND wp_user_id =%d",
+                array($product_id, $current_user->ID)
+            )
+        );
+    }else{
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE shopping_cart SET qty = %d where product_id = %d AND wp_user_id =%d",
+                array($qty, $product_id, $current_user->ID)
+            )
+        );
+        $total = geodir_get_post_meta($data['id'], 'geodir_price', true)*$qty;
+    }
 
-    $total = geodir_get_post_meta($data['id'], 'geodir_price', true)*$qty;
     wp_send_json_success($total);
 
   } catch (Exception $e) {
@@ -1089,7 +1116,7 @@ function add_transfer_slip_picture_callback(){
   if($current_user->ID == $owner->wp_user_id)
   {
     $thread_id = $owner->thread_id;
-    $current_date = date("Y-m-d H:i:s");
+    $current_date = tamzang_get_current_date();
     //$target_dir = '/home/tamzang/domains/tamzang.com/public_html/Test02/wp-content/themes/GeoDirectory_whoop-child/images/upload/';
     $uploads = wp_upload_dir();
     $uploads_dir = $uploads['path'].'/slip/'; //C:/path/to/wordpress/wp-content/uploads/2010/05/slip
@@ -1167,7 +1194,7 @@ function add_tracking_image_callback(){
 
   if(geodir_listing_belong_to_current_user((int)$order->post_id))
   {
-    $current_date = date("Y-m-d H:i:s");
+    $current_date = tamzang_get_current_date();
     $thread_id = $order->thread_id;
     //$target_dir = '/home/tamzang/domains/tamzang.com/public_html/Test02/wp-content/themes/GeoDirectory_whoop-child/images/upload/';
     $uploads = wp_upload_dir();
@@ -1216,6 +1243,84 @@ function add_tracking_image_callback(){
     wp_send_json_error();
   }
   //wp_send_json_success();
+}
+
+add_action('wp_ajax_driver_add_image', 'driver_add_image_callback');
+
+function driver_add_image_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+
+  //check the nonce
+  if ( check_ajax_referer( 'driver_add_image_' . $data['order_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+
+  $order = $wpdb->get_row(
+      $wpdb->prepare(
+          "SELECT post_id,thread_id,wp_user_id,status,deliver_ticket FROM orders where id = %d ", array($data['order_id'])
+      )
+  );
+
+  if($order->status > 4)
+    wp_send_json_error();
+
+  $owner = $wpdb->get_var(
+    $wpdb->prepare(
+        "SELECT driver_id FROM driver_order_log_assign where driver_order_id = %d AND status = 2 ", array($data['order_id'])
+    )
+  );
+
+  if($owner != $current_user->ID)
+    wp_send_json_error();
+
+  $current_date = tamzang_get_current_date();
+  $thread_id = $order->thread_id;
+  //$target_dir = '/home/tamzang/domains/tamzang.com/public_html/Test02/wp-content/themes/GeoDirectory_whoop-child/images/upload/';
+  $uploads = wp_upload_dir();
+  $uploads_dir = $uploads['path'].'/driver_image/'; //C:/path/to/wordpress/wp-content/uploads/2010/05/tracking
+  if (!file_exists($uploads_dir))
+  {
+      mkdir($uploads_dir);
+  }
+
+
+  $old_file_name = basename($_FILES["file"]["name"]);
+  $imageFileType = strtolower(pathinfo($old_file_name,PATHINFO_EXTENSION));
+  $target_file = $uploads_dir . $data['order_id'] .'.'. $imageFileType;
+  $image = $uploads['subdir'].'/driver_image/'.$data['order_id'] .'.'. $imageFileType;
+  move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
+
+  $wpdb->query(
+      $wpdb->prepare(
+          "UPDATE orders SET driver_image = %s where id = %d ",
+          array($image, $data['order_id'])
+      )
+  );
+
+  $return = array(
+      'image' => $uploads['url'].'/driver_image/'.$data['order_id'] .'.'. $imageFileType,
+      'order_id'      => $data['order_id']
+  );
+
+//   $reply_message = '<strong><p style="font-size:14px;">ร้านได้ส่งหลักฐานการจัดส่งแล้ว</p> <a href="'.home_url('/my-order/').'">คลิกที่นี่เพื่อดูใบสั่งซื้อ</a></strong>';
+//   $wpdb->query(
+//       $wpdb->prepare(
+//           "INSERT INTO wp_bp_messages_messages SET thread_id = %d, sender_id = %d, subject = %s, message = %s, date_sent = %s ",
+//           array($thread_id, $current_user->ID, "ใบสั่งซื้อเลขที่: #".$data['order_id'] , $reply_message, $current_date)
+//       )
+//   );
+
+//   $wpdb->query(
+//       $wpdb->prepare(
+//           "UPDATE wp_bp_messages_recipients SET unread_count = %d where thread_id = %d AND user_id != %d ",
+//           array(1, $thread_id, $current_user->ID)
+//       )
+//   );
+
+  wp_send_json_success($return);
+
 }
 
 
@@ -1534,6 +1639,76 @@ function update_shipping_address_callback(){
       wp_send_json_error($e->getMessage());
   }
 
+}
+
+//Ajax functions
+add_action('wp_ajax_confirm_order_select_shipping', 'confirm_order_select_shipping_callback');
+
+function confirm_order_select_shipping_callback(){
+    global $wpdb, $current_user;
+
+    $data = $_POST;
+    //$data['id'] id ของ table user_address
+    //$data['shop_id'] id ร้านค้า
+    //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
+  
+    // check the nonce
+    if ( check_ajax_referer( 'select_shipping_address' . $data['id'], 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+
+    try {
+
+        $owner = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT wp_user_id FROM user_address where id = %d ", array($data['id'])
+            )
+        );
+
+        if($current_user->ID != $owner || empty($data['shop_id']))
+            wp_send_json_error();
+
+        $pre = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT id FROM user_address where wp_user_id = %d AND shipping_address = true ", array($current_user->ID)
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE user_address SET shipping_address = true where id = %d AND wp_user_id = %d ",
+                array($data['id'], $current_user->ID)
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE user_address SET shipping_address = false where id = %d AND wp_user_id = %d ",
+                array($pre, $current_user->ID)
+            )
+        );
+
+        $current_address = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM user_address where id = %d ", array($data['id'])
+            )
+        );
+
+        $return = array(
+            'select' => '<img src="'.get_stylesheet_directory_uri().'/js/pass.png" />',
+            'select_address' => $current_address->address.' '.$current_address->district.' '.$current_address->province.' '.$current_address->postcode,
+            'pre_id' => $pre,
+            'pre'      => '<a class="btn btn-success select-shipping" href="#"
+                            data-id="'.$pre.'"
+                            data-nonce="'.wp_create_nonce( 'select_shipping_address' . $pre ).'"
+                            style="color:white;" >เลือก</a>'
+        );
+
+        wp_send_json_success($return);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
 }
 
 
@@ -2268,7 +2443,7 @@ function tamzang_bp_user_driver_nav_adder()
 
     bp_core_new_nav_item(
         array(
-            'name' => 'driver',
+            'name' => 'ข้อมูล Driver',
             'slug' => 'driver',
             'position' => 102,
             'show_for_displayed_user' => false,
@@ -2297,7 +2472,7 @@ function tamzang_user_driver_screen_content()
     <?php
         global $wpdb, $current_user;
 
-        $driver_approve = $wpdb->get_var(
+        $driver_approve = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT approve FROM register_driver where wp_user_id = %d ", array($current_user->ID)
             )
@@ -2306,7 +2481,7 @@ function tamzang_user_driver_screen_content()
         if(empty($driver_approve)){
             get_template_part( 'driver/driver', 'register' ); 
         }else{
-            if($driver_approve)
+            if($driver_approve->approve)
                 get_template_part( 'driver/driver', 'transaction_details' );
             else
                 get_template_part( 'driver/driver', 'pending' ); 
@@ -2324,8 +2499,8 @@ function register_driver_callback(){
   global $wpdb, $current_user;
   $data = $_POST;
 //   file_put_contents( dirname(__FILE__).'/debug/POST.log', var_export( $_POST, true));
-//   file_put_contents( dirname(__FILE__).'/debug/FILES.log', var_export( $_FILES, true));
-
+//    file_put_contents( dirname(__FILE__).'/debug/register_driver.log', var_export( $_FILES, true));
+//    wp_send_json_error();
   if ( check_ajax_referer( 'register_driver_' . $current_user->ID, 'nonce', false ) == false ) {
       wp_send_json_error();
   }
@@ -2347,38 +2522,33 @@ function register_driver_callback(){
     
         $current_date = $dt->format("Y-m-d H:i:s");
 
-        $uploads = wp_upload_dir();
-        $path = $uploads['basedir'] . '/driver_avatars/';
-        $valid_extensions = array('jpeg', 'jpg', 'png');
-        $img = $_FILES['image']['name'];
-        $tmp = $_FILES['image']['tmp_name'];
-      
-        $ext = strtolower(pathinfo($img, PATHINFO_EXTENSION));
-
-        if(!in_array($ext, $valid_extensions))
-            wp_send_json_error("allow jpeg jpg png");
-      
-        if ( !is_dir( $path ) ) {
-            wp_mkdir_p( $path );
-        }
-
-        $path = $path.strtolower($current_user->ID.'.'.$ext);
-        if(move_uploaded_file($tmp,$path)) 
-        {
-            $file_name = '/driver_avatars/'.$current_user->ID.'.'.$ext;
-            $wpdb->query(
-                $wpdb->prepare(
-                  "INSERT INTO register_driver SET wp_user_id = %d, name = %s, phone = %s, note = %s, regis_date = %s, approve = %d, profile_pic = %s ",
-                  array($current_user->ID, $data['name'], $data['phone'], $data['note'], $current_date, 0, $file_name)
-                )
-            );
-    
-            wp_send_json_success();
-        }else{
-            wp_send_json_error("move_uploaded_file error");
-        }
-
         
+        $result_car_licence = tamzang_upload_picture('/driver_car_licence/', $_FILES['image_car_licence']['name'], $_FILES['image_car_licence']['tmp_name']);
+        if(!$result_car_licence['result'])
+            wp_send_json_error($result_car_licence['msg']);
+
+        $result_licence = tamzang_upload_picture('/driver_licence/', $_FILES['image_licence']['name'], $_FILES['image_licence']['tmp_name']);
+        if(!$result_licence['result'])
+            wp_send_json_error($result_licence['msg']);
+
+        $result_id_card = tamzang_upload_picture('/driver_id_card/', $_FILES['image_id_card']['name'], $_FILES['image_id_card']['tmp_name']);
+        if(!$result_id_card['result'])
+            wp_send_json_error($result_id_card['msg']);
+
+        $result_avatars = tamzang_upload_picture('/driver_avatars/', $_FILES['image']['name'], $_FILES['image']['tmp_name']);
+        if(!$result_avatars['result'])
+            wp_send_json_error($result_avatars['msg']);
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO register_driver SET wp_user_id = %d, name = %s, phone = %s, note = %s, regis_date = %s, approve = %d,
+                 profile_pic = %s, id_card = %s, licence = %s, car_licence = %s ",
+                array($current_user->ID, $data['name'], $data['phone'], $data['note'], $current_date, 0, 
+                $result_avatars['file_name'], $result_id_card['file_name'], $result_licence['file_name'], $result_car_licence['file_name'])
+            )
+        );
+
+        wp_send_json_success();
     }
     else{
         wp_send_json_error("ท่านได้สมัครสมาชิคแล้ว");
@@ -2387,6 +2557,56 @@ function register_driver_callback(){
       wp_send_json_error($e->getMessage());
   }
 
+}
+
+//Ajax functions
+add_action('wp_ajax_driver_update_picture', 'driver_update_picture_callback');
+
+function driver_update_picture_callback(){
+    global $current_user;
+    $data = $_POST;
+    //file_put_contents( dirname(__FILE__).'/debug/driver_update_picture.log', var_export( $_FILES, true));
+    //wp_send_json_error($_FILES['file']['name'].'--test--'.$_FILES['file']['tmp_name']);
+    //check the nonce
+    if ( check_ajax_referer( 'driver_update_picture_' . $data['driver_id'], 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    if($current_user->ID != $data['driver_id'])
+        wp_send_json_error();
+  
+    $result = tamzang_upload_picture('/driver_avatars/', $_FILES['file']['name'], $_FILES['file']['tmp_name']);
+
+    if($result['result'])
+        wp_send_json_success($result['msg']);
+    else
+        wp_send_json_error($result['msg']);
+
+}
+
+function tamzang_upload_picture($folder,$img,$tmp){
+    global $current_user;
+    $uploads = wp_upload_dir();
+    $path = $uploads['basedir'] . $folder;
+    $valid_extensions = array('jpeg', 'jpg', 'png');
+    
+    $ext = strtolower(pathinfo($img, PATHINFO_EXTENSION));
+
+    if(!in_array($ext, $valid_extensions))
+        return array('msg' => "allow jpeg jpg png", 'result' => false);
+    
+    if ( !is_dir( $path ) ) {
+        wp_mkdir_p( $path );
+    }
+
+    $path = $path.strtolower($current_user->ID.'.'.$ext);
+    if(move_uploaded_file($tmp,$path)) 
+    {
+        $file_name = $folder.$current_user->ID.'.'.$ext;
+        return array('msg' => $uploads['baseurl'].$file_name, 'result' => true, 'file_name' => $file_name);
+    }else{
+        return array('msg' => "move_uploaded_file error", 'result' => false);
+    }
 }
 
 //Ajax functions
@@ -2891,9 +3111,12 @@ function driver_next_step_callback(){
           // Check status of the order
           $order = $wpdb->get_row(
               $wpdb->prepare(
-                  "SELECT status, commission, wp_user_id, id, redeem_point FROM orders where id = %d ", array($data['id'])
+                  "SELECT status, commission, wp_user_id, id, redeem_point, cancel_code FROM orders where id = %d ", array($data['id'])
               )
           );
+
+          if(!empty($order->cancel_code) && $order->cancel_code != "ok")
+            wp_send_json_error();
   
           if($order->status < 5){
               $order->status++;
@@ -3827,7 +4050,7 @@ add_action('wp_ajax_get_delivery_fee', 'get_delivery_fee');
 //get list Driver for restaurant
 function get_delivery_fee($pid) {
     global $wpdb;
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "update_head_driver START!", true));
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "update_head_driver START!", true));
 
 	//$post_id = $_POST['postID'];
 	$post_id = $pid;
@@ -3839,10 +4062,10 @@ function get_delivery_fee($pid) {
 			"SELECT latitude,longitude FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array(get_current_user_id())
 		)
     );
-	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "point :".$buyer_point->latitude, true));
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "point :".$buyer_point->latitude, true));
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "ID :".get_current_user_id(), true),FILE_APPEND);
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "POST ID :".$post_id, true),FILE_APPEND);
-	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Point Long :".$buyer_point->longitude, true),FILE_APPEND);
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Point Long :".$buyer_point->longitude, true),FILE_APPEND);
 	
 	//Check point of this address exit
     $deliver_fee_sql = $wpdb->get_row(
@@ -3851,8 +4074,8 @@ function get_delivery_fee($pid) {
         )
     );
 	
-	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price :".$deliver_fee_sql->price, true),FILE_APPEND);
-		file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "! Do Not Have Delivery_fee", true),FILE_APPEND);
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price :".$deliver_fee_sql->price, true),FILE_APPEND);
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "! Do Not Have Delivery_fee", true),FILE_APPEND);
 		//Get Shop Latitude and Longitude from GD_place_detail
 		$post_point = $wpdb->get_row(
 			$wpdb->prepare(
@@ -3862,29 +4085,29 @@ function get_delivery_fee($pid) {
 		//Calculate distance from google
 		$check = $post_point->post_latitude.":".$post_point->post_longitude.":".$buyer_point->latitude.":".$buyer_point->longitude;
 		//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "google distance :".$check, true),FILE_APPEND);
-        //$distance = google_distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude);
-        $distance = distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude,'K');
+        $distance = longdo_distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude);
+        //$distance = distance($post_point->post_latitude,$post_point->post_longitude,$buyer_point->latitude,$buyer_point->longitude,'K');
         $distance = round($distance,3);
 		if($distance != "ขณะนี้ไม่สามารถคำนวนระยะทางของผู้ซื้อได้ชั่วคราว")
 		{
 			//Calculate delivery Fee
-			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Pass from Google".$distance, true),FILE_APPEND);
+			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Pass from Google".$distance, true),FILE_APPEND);
 			$delivery_value = $wpdb->get_row(
 				$wpdb->prepare(
 					"SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d ", array($post_id)
 				)
 			);
 			$range_t1 = (($delivery_value->km_tier1)>=$distance)? $distance:$delivery_value->km_tier1;			
-			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T1:".$range_t1, true),FILE_APPEND);
+			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T1:".$range_t1, true),FILE_APPEND);
             $range_t2 = (($delivery_value->km_tier1)<=$distance)?((($delivery_value->km_tier2)>=$distance-$range_t1)? $distance-($delivery_value->km_tier1):$delivery_value->km_tier2-$delivery_value->km_tier1):0;
-            file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2 :".$range_t2, true),FILE_APPEND);
+            //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2 :".$range_t2, true),FILE_APPEND);
             $range_t3 = ($delivery_value->km_tier2<=$distance)?($distance-$delivery_value->km_tier2):0;
-			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T3 :".$range_t3, true),FILE_APPEND);
+			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T3 :".$range_t3, true),FILE_APPEND);
 			$deliver_fee = ($delivery_value->base + $delivery_value->base_adjust)+ ($range_t1*$delivery_value->km_tier1_value)+($range_t2*$delivery_value->km_tier2_value)+($range_t3*$delivery_value->km_tier3_value);
 			$deliver_fee = round($deliver_fee,2);    
             
             if(empty($deliver_fee_sql->distance)){
-                file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price empty Ins new ", true),FILE_APPEND);
+                //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price empty Ins new ", true),FILE_APPEND);
                 $wpdb->query(
                     $wpdb->prepare(
                     "INSERT INTO delivery_fee SET wp_user_id = %d, post_id = %d, latitude = %s, longitude = %s, price = %f, distance = %s",
@@ -3893,7 +4116,7 @@ function get_delivery_fee($pid) {
                 );
             }            
             else{
-                file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price 0 update new ", true),FILE_APPEND);
+               // file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Price 0 update new ", true),FILE_APPEND);
 
                 $wpdb->query(
                     $wpdb->prepare(
@@ -3903,7 +4126,7 @@ function get_delivery_fee($pid) {
                 );
             }
 			
-			file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Delivery_fee :".$deliver_fee, true),FILE_APPEND);
+			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Delivery_fee :".$deliver_fee, true),FILE_APPEND);
 			return array($deliver_fee,$distance);
 		}
 		else{
@@ -3911,11 +4134,15 @@ function get_delivery_fee($pid) {
 		}	
 }
 
-function google_distance($post_lat,$post_lng,$buyer_lat,$buyer_lng) {
+function longdo_distance($post_lat,$post_lng,$buyer_lat,$buyer_lng) {
 	
 	// google map geocode api url
 
-	$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$post_lat,$post_lng&destinations=$buyer_lat,$buyer_lng&key=AIzaSyC3mypqGAf0qnl5xGwsxwQinUIfeiTIYtM";
+    //$url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=$post_lat,$post_lng&destinations=$buyer_lat,$buyer_lng&key=AIzaSyC3mypqGAf0qnl5xGwsxwQinUIfeiTIYtM";
+    
+    $url ="https://mmmap15.longdo.com/mmroute/json/route/guide?flon=$post_lng&flat=$post_lat&tlon=$buyer_lng&tlat=$buyer_lat&key=1cc1885ba40b08c2ca002276b8d4bd92";
+
+    
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "google URL :".$url, true),FILE_APPEND);
 	
 
@@ -3926,21 +4153,23 @@ function google_distance($post_lat,$post_lng,$buyer_lat,$buyer_lng) {
 	// decode the json
 	$resp = json_decode($resp_json, true);
 
-
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Distance : ".$resp_json, true),FILE_APPEND);
 	// response status will be 'OK', if able to geocode given address
 
-	if($resp['status'] == "OK")
+    
+	if($resp['status'] != "410")
 	{
 		// get the important data
-		$distance = $resp['rows'][0]['elements'][0]['distance']['value'];
+		$distance = $resp['data'][0]['distance'];
 		$int_distance = (float)$distance;
 		$final_distance = $int_distance/1000;
-		file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Distance : ".$final_distance, true),FILE_APPEND);
-		return $final_distance;
+		file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Distance data : ".$final_distance, true),FILE_APPEND);
+        return $final_distance;
 	}
 	else{
 		return "ขณะนี้ไม่สามารถคำนวนระยะทางของผู้ซื้อได้ชั่วคราว";
-	}
+    }
+    
 	
 }
 //Ajax functions
@@ -4197,12 +4426,6 @@ function updateOneSignaliOS($queery_sql,$device_id,$user_id,$device_type){
                           );
 			$wpdb->query($query);
 			file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
-		}
-	}
-	else {
-		if($queery_sql == "DELETE"){
-		$wpdb->query($wpdb->prepare("DELETE FROM onesignal WHERE device_id = %d", $device_id));
-		file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal Delete".$device_id, true),FILE_APPEND);
 		}
 	}
 }
@@ -4740,7 +4963,7 @@ function tamzang_modify_home_nav_menu_objects( $items, $args ) {
 
     $driver = '';
     if(!empty($is_driver))
-        $driver = '<li class="menu-item "><a href="'.home_url('/driver_orders/').'" class="">driver</a></li>';
+        $driver = '<li class="menu-item "><a href="'.home_url('/driver_orders/').'" class="">รับงานตามสั่ง</a></li>';
     
     return $items.$about_me.$driver;
     
@@ -4778,6 +5001,28 @@ add_action('wp_ajax_refresh_seller_page', 'refresh_seller_page');
 function refresh_seller_page(){    
     get_template_part( 'ajax-order-status' );
     wp_die();
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_list_driver_marker', 'list_driver_marker');
+function list_driver_marker(){   
+    file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!", true));
+    $driverList  = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM driver",array()          
+        )
+    );
+    foreach ($driverList as $driver) {
+        $assign_drivers = array();
+	    $assign_drivers['id'] = $driver->Driver_id;;
+		$assign_drivers['name'] = $driver->driver_name;
+		$assign_drivers['lat'] =$driver->latitude;
+		$assign_drivers['lon'] = $driver->longitude;
+		file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
+		
+		$return_arr[] = $assign_drivers;
+    }
+    wp_send_json_success($return_arr);
 }
 
 ?>

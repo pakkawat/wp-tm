@@ -41,11 +41,10 @@ if ( is_single() ) {
           if ($button.data( 'type' ) == "plus") {
               var newVal = parseFloat(oldValue) + 1;
           } else {
-              // Don't allow decrementing below zero
               if (oldValue > 1) {
                   var newVal = parseFloat(oldValue) - 1;
               } else {
-                  newVal = 1;
+                  newVal = 0;
               }
           }
           $('.wrapper-loading').toggleClass('cart-loading');
@@ -63,17 +62,22 @@ if ( is_single() ) {
 
                     $button.closest('.sp-quantity').find("input.quntity-input").val(newVal);
 
-                    var total = display_currency(msg.data);
-                    $("#"+id+"-total").text(total);
+                    if(msg.data == 0){
+                      $('#' + id).remove();
+                    }else{
+                      var total = display_currency(msg.data);
+                      $("#"+id+"-total").text(total+' บาท');
+                    }
                     var sum = 0;
                     $(".price").each(function() {
                       var value = $(this).text().replace(/,/g, '');
+                      value = value.split(" ")[0];
                       // add only if the value is number
                       if(!isNaN(value) && value.length != 0) {
                           sum += parseFloat(value);
                       }
                     });
-                    $("#sum").text( display_currency(sum));
+                    $("#sum").text( display_currency(sum)+' บาท');
 
                   }
 
@@ -168,21 +172,16 @@ if ( is_single() ) {
           }
         });
 
-        // check where the shoppingcart-div is
         var offset = $('#tamzang-shopping-cart').offset();
         $(window).scroll(function () {
             var scrollTop = $(window).scrollTop();
             // check the visible top of the browser
             if (offset.top<scrollTop) {
-                $('#tamzang-shopping-cart').addClass('tamzang-cart-fixed');
                 $('#tamzang-shopping-cart-button').addClass('tamzang-cart-button-fixed');
             } else {
-                $('#tamzang-shopping-cart').removeClass('tamzang-cart-fixed');
                 $('#tamzang-shopping-cart-button').removeClass('tamzang-cart-button-fixed');
             }
         });
-
-
 
     });
 
@@ -255,29 +254,51 @@ if ( is_single() ) {
     </div>
     <?php } ?>
 
-    <p class="tamzang-shopping-cart-button" id="tamzang-shopping-cart-button" onclick="HideShop()">
+
+    <p class="tamzang-shopping-cart-button" id="tamzang-shopping-cart-button" data-toggle="modal" data-target="#cart-modal">
       <img src="https://www.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/images/shop2.png" alt="ตามสั่ง">
     </p>
-    <div class="tamzang_cart" id="tamzang-shopping-cart" <?php //echo (wp_is_mobile()? 'style="background-color: #f5f5f1;"' : ''); ?>>
-      <div class="wrapper-loading" id="table-my-cart">
-        <?php get_template_part( 'ajax-cart' ); ?>
-      </div>
-      <div style="float:right;">
-        <?php if($user_has_address){ ?>
-          <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
-            <span style="color: #ffffff !important;" class="glyphicon glyphicon-play">สั่งเลย</span>
-          </a>
-        <?php }else{ ?>
+
+    <div class="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header" style="border-bottom: 0 none;padding: 15px 15px 0 15px;">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo get_the_title(get_the_ID());?></h4>
+              </div>
+              <div class="modal-body" style="padding:0;">
+
+
+              <div id="tamzang-shopping-cart" >
+                <div class="wrapper-loading" id="table-my-cart">
+                  <?php get_template_part( 'ajax-cart' ); ?>
+                </div>
+                <div style="float:right;">
+
+                </div>
+              </div>
+
+
+              </div>
+              <div class="modal-footer">
+                <?php if($user_has_address){ ?>
+                    <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
+                      <span style="color: #ffffff !important;" class="glyphicon glyphicon-play">สั่งเลย</span>
+                    </a>
+                  <?php }else{ ?>
 
 
 
-          <button class="btn btn-success" data-toggle="modal" data-target="#no-address"
-            ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
+                    <button class="btn btn-success" data-toggle="modal" data-target="#no-address"
+                      ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
 
 
-        <?php } ?>
+                  <?php } ?>
+              </div>
+          </div>
       </div>
     </div>
+
 
     <?php
   }// if($post_type == "gd_place")

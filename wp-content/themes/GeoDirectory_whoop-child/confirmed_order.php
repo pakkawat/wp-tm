@@ -180,6 +180,35 @@ if ( is_user_logged_in() ){
           }
         });
 
+
+        jQuery(document).on("click", ".select-shipping", function(){
+          var id = $(this).data('id');
+          var nonce = $(this).data('nonce');
+          var shop_id = $(this).data('shop-id');
+
+          $('.address-wrapper-loading').toggleClass('cart-loading');
+          var send_data = 'action=confirm_order_select_shipping&id='+id+'&shop_id='+shop_id+'&nonce='+nonce;
+          $.ajax({
+            type: "POST",
+            url: geodir_var.geodir_ajax_url,
+            data: send_data,
+            success: function(msg){
+                  if(msg.success){
+                    $('#address-'+msg.data.pre_id).html(msg.data.pre);
+                    $('#address-'+id).html(msg.data.select);
+                    $('#shipping-address').text(msg.data.select_address);
+                  }
+
+                  $('.address-wrapper-loading').toggleClass('cart-loading');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(textStatus);
+              $('.address-wrapper-loading').toggleClass('cart-loading');
+            }
+          });
+
+        });
+
     });
 
 	// When the user clicks on div, open the popup
@@ -271,13 +300,31 @@ function myPopupFunc() {
     </div>
 </div>
 
+<div class="modal fade" id="select-shipping" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom: 0 none;padding: 15px 15px 0 15px;">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">เปลี่ยนที่อยู่ในการจัดส่ง</h4>
+                <a class="btn btn-info" href="<?php echo bp_get_loggedin_user_link().'address/';?>"><span style="color: #ffffff !important;">เพิ่มที่อยู่</span></a>
+            </div>
+            <div class="modal-body">
+              <div class="address-wrapper-loading">
+                <?php get_template_part( 'address/select', 'shipping' ); ?>
+              </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <div id="geodir_wrapper" class="geodir-single">
 <?php 
   echo '<strong>ร้าน:</strong> <a href="'.get_page_link($pid).'">'.get_the_title($pid).'</a><br>';
-  echo "<strong>ที่อยู่ในการจัดส่ง:</strong> ".$user_address->address." ".$user_address->district." ".$user_address->province." ".$user_address->postcode." ";
+  echo '<strong>ที่อยู่ในการจัดส่ง:</strong> <div id="shipping-address">'.$user_address->address." ".$user_address->district." ".$user_address->province." ".$user_address->postcode."</div> ";
 ?>
-<a class="btn btn-info" href="<?php echo bp_get_loggedin_user_link().'address/';?>"><span style="color: #ffffff !important;" >แก้ไขที่อยู่</span></a>
+<a class="btn btn-info" data-toggle="modal" data-target="#select-shipping" ><span style="color: #ffffff !important;" >แก้ไขที่อยู่</span></a>
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
     <div id="geodir_content" class="" role="main" style="width: 100%">

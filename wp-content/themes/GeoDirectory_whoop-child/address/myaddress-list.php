@@ -1,6 +1,7 @@
 <?php /* Template Name: myaddress-list */ ?>
-<script src="https://www.openlayers.org/api/OpenLayers.js"></script>
+<script type="text/javascript" src="https://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/OpenLayers.js"></script>
 <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+<script type="text/javascript" src="https://api.longdo.com/map/?key=1cc1885ba40b08c2ca002276b8d4bd92"></script>
 <?php
 global $wpdb, $current_user;
 
@@ -119,18 +120,74 @@ jQuery(document).ready(function($){
 </div>
 
 <div class="order-row">
-  <div class="order-col-3" style="text-align:left;">
+  <div class="order-col-12" style="text-align:center;">
     <h1>สมุดที่อยู่</h1>
   </div>
-  <div class="order-col-4" style="text-align:center;">
-    <button type="button" id="shipping-form" class="btn btn-info">ที่อยู่ในการจัดส่ง ตามที่ได้ระบุไว้</button>
+  <br>
+  <div class="order-col-12" style="text-align:center;">
+    <button type="button" id="shipping-form" class="btn btn-info" style="width: 275px;">ที่อยู่ในการจัดส่ง ตามที่ได้ระบุไว้</button>
   </div>
-  <div class="order-col-4" style="text-align:center;">
+  <br>
+  <div class="order-col-12" style="text-align:center;">
     <button type="button" id="billing-form" class="btn btn-info">ที่อยู่ในการออกใบกำกับภาษี ตามที่ได้ระบุไว้</button>
   </div>
+  <br>
+  <div class="order-col-12" style="text-align:center;">
+    <button type="button" id="address-form" class="btn btn-success" style="width: 275px;">เพิ่มที่อยู่ใหม่</button>
+  </div>  
 </div>
 <div class="order-clear"></div>
 <br>
+<?php
+// 20190809 bank Add mobile version
+if( wp_is_mobile() )
+{
+  
+?>
+
+<div class="table-responsive">
+  <table id="product_table" class="table">
+    <thead>      
+      <th>ที่อยู่</th>
+    </thead>
+    <tbody>
+    <?php
+    
+      foreach ($arrAddress as $address) {
+        echo '<tr id="tr_row_'.$address->id.'">';
+        echo '<td>'.$address->name.'<br>';
+        echo $address->address.'<br>';
+        echo $address->province.'-'.$address->district.'-'.$address->postcode.'<br>';
+        echo 'โทร :'.$address->phone.'<br>';
+        if($address->shipping_address && $address->billing_address)
+        {
+          echo '- ที่อยู่ในการจัดส่ง<br>';
+          echo '- ที่อยู่ในการออกใบเสร็จ ตามที่ได้ระบุไว้';
+        }
+        else if($address->shipping_address)
+          echo '- ที่อยู่ในการจัดส่ง';
+        else if($address->billing_address)
+          echo '- ที่อยู่ในการออกใบเสร็จ ตามที่ได้ระบุไว้';
+        echo '<br>';
+        echo '<button type="button" class="btn btn-primary btn-edit" href="#" data-id="'.$address->id.'">แก้ไข</button> ';
+        echo '<button type="button" class="btn btn-danger btn-xs" href="#" data-record-id="'.$address->id.'" data-record-nonce="'.wp_create_nonce( 'delete_user_address_' . $address->id ).'" data-toggle="modal" data-target="#confirm-delete" style="width:50px;">ลบ</button>';
+        echo '</td>';
+        echo '</tr>';
+      }
+      
+    ?>
+    </tbody>
+  </table>
+</div>
+
+<?php
+
+//echo "Mobile!";
+}
+else{
+  //echo "PC!";
+  
+?>
 <div class="table-responsive">
   <table id="product_table" class="table">
     <thead>
@@ -163,9 +220,15 @@ jQuery(document).ready(function($){
         echo '<td><button type="button" class="btn btn-danger btn-xs" href="#" data-record-id="'.$address->id.'" data-record-nonce="'.wp_create_nonce( 'delete_user_address_' . $address->id ).'" data-toggle="modal" data-target="#confirm-delete" style="width:50px;">ลบ</button></td>';
         echo '</tr>';
       }
-
     ?>
     </tbody>
   </table>
 </div>
-<button type="button" id="address-form" class="btn btn-success">เพิ่มที่อยู่ใหม่</button>
+<?php
+
+}
+?>
+
+
+
+

@@ -267,7 +267,19 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     curl_exec($ch);
     // close cURL resource, and free up system resources
     curl_close($ch);
-    file_put_contents( dirname(__FILE__).'/debug/autoassign.log', var_export( "Start :".$order_id."\n", true));
+    //file_put_contents( dirname(__FILE__).'/debug/autoassign.log', var_export( "Start :".$order_id."\n", true));
+
+    
+    $ch = curl_init();
+    // set URL and other appropriate options
+    curl_setopt($ch, CURLOPT_URL, "https://tamzang.com:3443/?buyer-confirm");
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    // grab URL and pass it to the browser
+    curl_exec($ch);
+    // close cURL resource, and free up system resources
+    curl_close($ch);
+    
+
   }// end if !empty
 
 
@@ -278,6 +290,7 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
 $uploads = wp_upload_dir();
 
 get_header(); ?>
+
 
 <script>
 jQuery(document).ready(function($){
@@ -600,9 +613,12 @@ jQuery(document).ready(function($){
       });
 
     });
+    
 
 });
 </script>
+<script src="http://test02.tamzang.com/JS/node_modules/socket.io-client/dist/socket.io.js"></script>
+<script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient.js" defer></script>
 
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
@@ -752,6 +768,9 @@ jQuery(document).ready(function($){
 		  <!-- bank change div panel into 100% from 900px -->
           <div class="panel <?php echo ($order->status == 99 ? 'panel-danger' : 'panel-default'); ?>" id="panel_<?php echo $order->id; ?>" style="width:100%;">
             <div class="panel-heading">
+              <div class="order-col-12">
+                <?php echo tamzang_thai_datetime($order->order_date); ?>
+              </div>
               <div class="order-col-12">
                 Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
               </div>
@@ -962,57 +981,97 @@ jQuery(document).ready(function($){
                       <?php } ?>
                 
                 <div class="order-row">
-                  <div class="order-col-4" style="text-align:left;min-height:1px;">
-                    <?php if($order->status == 1 || $order->status == 2){ ?>
-                      <button class="btn btn-danger" href="#" data-id="<?php echo $order->id; ?>"
-                        data-nonce="<?php echo wp_create_nonce( 'update_order_status_'.$order->id); ?>"
-                        data-toggle="modal" data-target="#confirm-delete" >ยกเลิกคำสั่งซื้อ</button>
-                    <?php } ?>
-                  </div>
-
-                  <div class="order-col-4" style="text-align:center;min-height:1px;">
-                      <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
-                        id="flip"
-                      >แสดงรูปภาพ</button>
-                    </div>
-
-                  <?php //if($order->payment_type == 1) { ?>
-
-                    <div class="order-col-4" style="text-align:right;min-height:1px;">
-                      <?php if($order->deliver_ticket == 'Y' && $order->status < 5){ ?>
-                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
-                          data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
-                          data-toggle="modal" data-target="#add-transfer-slip"
-                        >อัพโหลดรูปภาพ</button>
-                      <?php }else if($order->status < 4){ ?>
-                        <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
-                          data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
-                          data-toggle="modal" data-target="#add-transfer-slip"
-                        >อัพโหลดรูปภาพ</button>
+                  <?php if ( wp_is_mobile() ){ ?>
+                    <div class="order-col-12" style="text-align:center;min-height:1px;">
+                      <?php if($order->status == 1 || $order->status == 2){ ?>
+                        <button class="btn btn-danger" href="#" data-id="<?php echo $order->id; ?>"
+                          data-nonce="<?php echo wp_create_nonce( 'update_order_status_'.$order->id); ?>"
+                          data-toggle="modal" data-target="#confirm-delete" >ยกเลิก</button>
                       <?php } ?>
                     </div>
-                  <?php //} ?>
+                    <br>
+                    <div class="order-col-12" style="text-align:center;min-height:1px;">
+                        <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
+                          id="flip"
+                        >รูปภาพ</button>
+                      </div>
+                    <br>
+                    <?php //if($order->payment_type == 1) { ?>
+
+                      <div class="order-col-12" style="text-align:center;min-height:1px;">
+                        <?php if($order->deliver_ticket == 'Y' && $order->status < 5){ ?>
+                          <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                            data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
+                            data-toggle="modal" data-target="#add-transfer-slip"
+                          >อัพโหลด</button>
+                        <?php }else if($order->status < 4){ ?>
+                          <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                            data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
+                            data-toggle="modal" data-target="#add-transfer-slip"
+                          >อัพโหลด</button>
+                        <?php } ?>
+                      </div>
+                    <?php //} ?>
+                  <?php }else{ ?>
+                    <div class="order-col-4" style="text-align:left;min-height:1px;">
+                      <?php if($order->status == 1 || $order->status == 2){ ?>
+                        <button class="btn btn-danger" href="#" data-id="<?php echo $order->id; ?>"
+                          data-nonce="<?php echo wp_create_nonce( 'update_order_status_'.$order->id); ?>"
+                          data-toggle="modal" data-target="#confirm-delete" >ยกเลิก</button>
+                      <?php } ?>
+                    </div>
+
+                    <div class="order-col-4" style="text-align:center;min-height:1px;">
+                        <button class="btn btn-primary" href="#" data-id="<?php echo $order->id; ?>"
+                          id="flip"
+                        >รูปภาพ</button>
+                      </div>
+
+                    <?php //if($order->payment_type == 1) { ?>
+
+                      <div class="order-col-4" style="text-align:right;min-height:1px;">
+                        <?php if($order->deliver_ticket == 'Y' && $order->status < 5){ ?>
+                          <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                            data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
+                            data-toggle="modal" data-target="#add-transfer-slip"
+                          >อัพโหลด</button>
+                        <?php }else if($order->status < 4){ ?>
+                          <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                            data-nonce="<?php echo wp_create_nonce( 'add_transfer_slip_picture_'.$order->id); ?>"
+                            data-toggle="modal" data-target="#add-transfer-slip"
+                          >อัพโหลด</button>
+                        <?php } ?>
+                      </div>
+                    <?php //} ?>
+                  <?php } ?>
                 </div>
                 <div class="order-clear"></div>
 
                 <div class="order-row" id="toggle_pic_<?php echo $order->id; ?>" style="display:none;text-align:center;">
-                  <div class="order-col-6">
+                  <div class="<?php echo (wp_is_mobile() ? 'order-col-12' : 'order-col-6') ?>">
                     <?php if($order->image_slip != ''){ ?>
-                      <h2>หลักฐาน</h2>
+                      <?php echo (wp_is_mobile() ? '<h4>รูปประกอบจากผู้ซื้อ</h4>' : '<h2>รูปประกอบจากผู้ซื้อ</h2>') ?>
                       <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>" 
                       data-src="<?php echo $uploads['baseurl'].$order->image_slip; ?>"  data-toggle="modal" data-target="#image-modal" />
                     <?php }else{ ?>
                       <div id="div_slip_pic_<?php echo $order->id; ?>" style="display:none;">
-                        <h2>หลักฐาน</h2>
+                        <?php echo (wp_is_mobile() ? '<h4>รูปประกอบจากผู้ซื้อ</h4>' : '<h2>รูปประกอบจากผู้ซื้อ</h2>') ?>
                         <img class="img2" id="slip_pic_<?php echo $order->id; ?>" src="" data-toggle="modal" data-target="#image-modal"  data-src="" />
                       </div>
                     <?php } ?>
                   </div>
-                  <div class="order-col-6">
+                  <div class="<?php echo (wp_is_mobile() ? 'order-col-12' : 'order-col-6') ?>">
                     <?php if($order->tracking_image != ''){ ?>
-                      <h2>หลักฐานการจัดส่ง</h2>
+                      <?php echo (wp_is_mobile() ? '<h4>รูปประกอบจากผู้ขาย</h4>' : '<h2>รูปประกอบจากผู้ขาย</h2>') ?>
                       <img class="img2" data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>"
                       id="tracking_pic_<?php echo $order->id; ?>" src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>" />
+                    <?php } ?>
+                  </div>
+                  <div class="<?php echo (wp_is_mobile() ? 'order-col-12' : 'order-col-6') ?>">
+                    <?php if($order->driver_image != ''){ ?>
+                      <?php echo (wp_is_mobile() ? '<h4>รูปประกอบจากพนักงานตามส่ง</h4>' : '<h2>รูปประกอบจากพนักงานตามส่ง</h2>') ?>
+                      <img class="img2" data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$order->driver_image; ?>"
+                       src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" />
                     <?php } ?>
                   </div>
                 </div>

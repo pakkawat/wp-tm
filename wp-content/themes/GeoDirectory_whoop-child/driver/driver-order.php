@@ -25,6 +25,7 @@ if(empty($driver))
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="<?php echo get_stylesheet_directory_uri() . '/js/uploader/jquery.dm-uploader.min.js'; ?>"></script>
 </head>
 
 <style>
@@ -47,6 +48,10 @@ width: 100%;
 height: 100%;
 }
 </style>
+
+<script src="http://test02.tamzang.com/JS/node_modules/socket.io-client/dist/socket.io.js"></script>
+<script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient_driver.js" defer></script>
+
 
 <script>
 
@@ -80,7 +85,7 @@ function showPosition(position) {
 }
 
 jQuery(document).ready(function($){
-
+    //var socket = io.connect('https://tamzang.com:3443',{secure: true});
 
     $('#main_order').on("click", '.page-item a', function(event) { 
         console.log($(this).data("page"));
@@ -121,6 +126,9 @@ jQuery(document).ready(function($){
                         $( ".wrapper-loading" ).html( msg + xhr.status + " " + xhr.statusText );
                         }
                     });
+                    //tricker to websocket maek buyer/seller refresh
+                    driverMessage(order_id);
+                    //socket.emit( 'driver-message-confirm', { message: "Test sendwebsocket",order: order_id } );
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -176,7 +184,7 @@ jQuery(document).ready(function($){
         $('.btn-ok', this).data('nonce', data.nonce);
         $('.btn-reject', this).data('id', data.id);
         $('.btn-reject', this).data('log_id', data.log_id);
-        $('.btn-reject', this).data('nonce', data.nonce);
+        $('.btn-reject', this).data('nonce', data.nonce); 
     });
 
     $('#cancel-order').on('click', '.btn-ok', function(e) {
@@ -192,6 +200,9 @@ jQuery(document).ready(function($){
             data: send_data,
             success: function(msg){
                 $( "#panel_"+order_id ).find(".card-body .btn-danger").replaceWith( msg.data );
+                //tricker websocket buyer to refresh
+                driverMessage(order_id);
+                //socket.emit( 'driver-message-confirm', { message: "Test sendwebsocket",order: order_id } );
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
             console.log(textStatus);
@@ -233,6 +244,8 @@ jQuery(document).ready(function($){
                 console.log( "Order adjusted: " + JSON.stringify(msg) );
                 if(msg.success){
                     $( "#order_adjust_"+order_id ).html('<font color="#eb9316"><b>รอลูกค้ายอมรับ</b></font>');
+                    driverMessage(order_id);
+                    //socket.emit( 'driver-message-confirm', { message: "Test sendwebsocket",order: order_id } );
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -266,7 +279,7 @@ jQuery(document).ready(function($){
             $('.btn-ok', this).data('log_id', data.log_id);
             $('.btn-ok', this).data('nonce', data.nonce);
             $('.btn-ok', this).data('adjust', $('#adjust_'+data.id).val());
-            $('.adjust-text', this).append("คุณต้องการเพิ่มราคาอีก<b><i>"+display_currency(parseFloat($('#adjust_'+data.id).val()))+"</i></b> บาท<br>คุณต้องการดำเนินการต่อหรือไม่?");
+            $('.adjust-text', this).html("คุณต้องการเพิ่มราคาอีก<b><i>"+display_currency(parseFloat($('#adjust_'+data.id).val()))+"</i></b> บาท<br>คุณต้องการดำเนินการต่อหรือไม่?");
         }else{
             $('.btn-ok', this).hide();
             $('.adjust-text', this).text('กรุณาใส่ราคาให้ถูกต้อง');
@@ -331,6 +344,9 @@ jQuery(document).ready(function($){
             success: function(msg){
                 console.log( "driver step Order เรียบร้อย: " + JSON.stringify(msg) );
                 if(msg.success){
+                    // tricker socket order status to buyer and seller
+                    driverMessage(order_id);
+                    //socket.emit( 'driver-message-confirm', { message: "Test sendwebsocket",order: order_id } );
                     if(msg.data == "close" || msg.data == "รับสินค้า"){
                         $( ".wrapper-loading" ).load( ajaxurl+"?action=load_driver_order_template", function( response, status, xhr ) {
                             if ( status == "error" ) {
@@ -390,23 +406,158 @@ jQuery(document).ready(function($){
     });
 
 
-    jQuery(document).on("click", ".transaction_details", function(){
-        
-        $( ".wrapper-loading" ).toggleClass('order-status-loading');
+    function after_upload(element, data)
+    {
+        if(data.success)
+        {
+        ui_single_update_status(element, 'อัพโหลดเรียบร้อย', 'success');
+        $('#tracking_pic_'+data.data.order_id).attr('src', data.data.image+'?dt=' + Math.random());
+        $('#tracking_pic_'+data.data.order_id).attr('data-src', data.data.image);
+        $('#div_tracking_pic_'+data.data.order_id).css("display", "inline");
+        }else
+        {
+        ui_single_update_status(element, 'อัพโหลดไม่ถูกต้อง', 'danger');
+        }
+    }
 
-        $( ".wrapper-loading" ).load( ajaxurl+"?action=load_driver_transaction_details", function( response, status, xhr ) {
-            if ( status == "error" ) {
-                var msg = "Sorry but there was an error: ";
-                $( ".wrapper-loading" ).html( msg + xhr.status + " " + xhr.statusText );
-            }else{
-                $( ".wrapper-loading" ).toggleClass('order-status-loading');
+    function ui_single_update_active(element, active)
+    {
+        element.find('div.progress').toggleClass('d-none', !active);
+        element.find('input[type="text"]').toggleClass('d-none', active);
+
+        element.find('input[type="file"]').prop('disabled', active);
+        element.find('.btn').toggleClass('disabled', active);
+
+        element.find('.btn i').toggleClass('fa-circle-o-notch fa-spin', active);
+        element.find('.btn i').toggleClass('fa-folder-o', !active);
+    }
+
+    function ui_single_update_progress(element, percent, active)
+    {
+        active = (typeof active === 'undefined' ? true : active);
+
+        var bar = element.find('div.progress-bar');
+
+        bar.width(percent + '%').attr('aria-valuenow', percent);
+        bar.toggleClass('progress-bar-striped progress-bar-animated', active);
+
+        if (percent === 0){
+        bar.html('');
+        } else {
+        bar.html(percent + '%');
+        }
+    }
+
+    function ui_single_update_status(element, message, color)
+    {
+        color = (typeof color === 'undefined' ? 'muted' : color);
+
+        element.find('small.status').prop('class','status text-' + color).html(message);
+    }
+
+    $('#drag-and-drop-zone').dmUploader({ //
+        url: ajaxurl+'?action=driver_add_image',
+        maxFileSize: 3000000, // 3 Megs max
+        multiple: false,
+        allowedTypes: 'image/*',
+        extFilter: ['jpg','jpeg','png'],
+        dataType: 'json',
+        extraData: function() {
+        return {
+        "order_id": $('#order_id').val(),
+        "nonce": $('#nonce').val()
+        };
+        },
+        onDragEnter: function(){
+        // Happens when dragging something over the DnD area
+        this.addClass('active');
+        },
+        onDragLeave: function(){
+        // Happens when dragging something OUT of the DnD area
+        this.removeClass('active');
+        },
+        onInit: function(){
+        // Plugin is ready to use
+        //this.find('input[type="text"]').val('');
+        },
+        onComplete: function(){
+        // All files in the queue are processed (success or error)
+
+        },
+        onNewFile: function(id, file){
+        // When a new file is added using the file selector or the DnD area
+
+
+        if (typeof FileReader !== "undefined"){
+            var reader = new FileReader();
+            var img = this.find('img');
+
+            reader.onload = function (e) {
+            img.attr('src', e.target.result);
             }
-        });
+            reader.readAsDataURL(file);
+            img.css("display", "inline");
+        }
+        },
+        onBeforeUpload: function(id){
+        // about tho start uploading a file
 
+        ui_single_update_progress(this, 0, true);
+        //ui_single_update_active(this, true);
+
+        ui_single_update_status(this, 'Uploading...');
+        },
+        onUploadProgress: function(id, percent){
+        // Updating file progress
+        ui_single_update_progress(this, percent);
+        },
+        onUploadSuccess: function(id, data){
+        //var response = JSON.stringify(data);
+
+        // A file was successfully uploaded
+
+        //ui_single_update_active(this, false);
+
+        // You should probably do something with the response data, we just show it
+        //this.find('input[type="text"]').val(response);
+        after_upload(this, data);
+
+        },
+        onUploadError: function(id, xhr, status, message){
+        // Happens when an upload error happens
+        //ui_single_update_active(this, false);
+        ui_single_update_status(this, 'Error: ' + message, 'danger');
+        },
+        onFallbackMode: function(){
+        // When the browser doesn't support this plugin :(
+
+        },
+        onFileSizeError: function(file){
+        ui_single_update_status(this, 'ขนาดรูปภาพเกิน 3MB', 'danger');
+
+        },
+        onFileTypeError: function(file){
+        ui_single_update_status(this, 'ไฟล์ที่อัพโหลดต้องเป็นไฟล์รูปภาพเท่านั้น', 'danger');
+
+        },
+        onFileExtError: function(file){
+        ui_single_update_status(this, 'File extension not allowed', 'danger');
+
+        }
     });
 
+    $('#driver-add-pic').on('show.bs.modal', function(e) {
+        var data = $(e.relatedTarget).data();
+        $('.title', this).text(data.id);
+        $('#nonce', this).val(data.nonce);
+        $('#order_id', this).val(data.id);
+        var bar = $('#drag-and-drop-zone').find('div.progress-bar');
+        bar.width(0 + '%').attr('aria-valuenow', 0);
+        bar.html(0 + '%');
 
-
+        $('#drag-and-drop-zone', this).find('small.status').html('');
+        $('img', this).css("display", "none");
+    });
 
 	
 });
@@ -455,6 +606,54 @@ jQuery(document).ready(function($){
                 <div class="col-6 text-right">
                     <button type="button" class="btn btn-danger btn-ok">ยืนยันยกเลิก</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="driver-add-pic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">รูปภาพประกอบ</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <p>รูปภาพประกอบคำสั่งซื้อรหัส #<b><i class="title"></i></b></p>
+
+                <form class="mb-3 dm-uploader" id="drag-and-drop-zone">
+                <div class="form-row">
+                    <div class="col-md-10 col-sm-12">
+                    <div class="from-group mb-2">
+                        <div class="progress mb-2 d-none">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                            role="progressbar"
+                            style="width: 0%;"
+                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="0">
+                            0%
+                        </div>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="file-upload" class="btn btn-primary">
+                            <i class="fa fa-cloud-upload"></i> กรุณาเลือกไฟล์
+                        </label>
+                        <input id="file-upload" type="file" style="display:none;"/>
+                        <small class="status text-muted">Select a file or drag it over this area..</small>
+                    </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <img class="img-fluid" src="" >
+                    </div>
+                </div>
+                <input type="hidden" id="order_id" value="" />
+                <input type="hidden" id="nonce" value="" />
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
             </div>
         </div>
     </div>

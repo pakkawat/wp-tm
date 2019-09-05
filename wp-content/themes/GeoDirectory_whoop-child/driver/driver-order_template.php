@@ -5,7 +5,7 @@ global $wpdb, $current_user;
 $order = $wpdb->get_row(
     $wpdb->prepare(
         "SELECT orders.id,orders.post_id,orders.adjust_accept,orders.driver_adjust,orders.total_amt,driver_order_log_assign.status,
-        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code, orders.redeem_point
+        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code, orders.redeem_point, orders.driver_image
         FROM orders
         INNER JOIN driver_order_log_assign ON orders.id = driver_order_log_assign.driver_order_id and driver_id = %d 
         and (driver_order_log_assign.status = 1 OR driver_order_log_assign.status = 2)", $current_user->ID)
@@ -274,9 +274,23 @@ $driver = $wpdb->get_row(
 
     <div class="card-footer">
 
-        
-
-        
+    <?php if($order->order_status > 1){ $uploads = wp_upload_dir();?>
+            <div class="row text-center">
+                <div class="col-12">
+                    <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
+                    data-nonce="<?php echo wp_create_nonce( 'driver_add_image_'.$order->id); ?>"
+                    data-toggle="modal" data-target="#driver-add-pic"
+                    >อัพโหลดรูปภาพ</button>
+                </div>
+                <div class="col-12">
+                    <div id="div_tracking_pic_<?php echo $order->id; ?>">
+                        <img class="img-fluid" id="tracking_pic_<?php echo $order->id; ?>"  
+                        src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" data-toggle="modal" data-target="#image-modal"  
+                        data-src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" />
+                    </div>
+                </div>
+            </div>
+    <?php } ?>
 
     </div>
 
