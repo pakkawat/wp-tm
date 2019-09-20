@@ -14,6 +14,8 @@ $query_args = array(
 );
 
 add_filter('geodir_filter_widget_listings_where', 'tamzang_apply_shop_id', 10, 2);
+if(!empty($cat_id))
+  add_filter('geodir_filter_widget_listings_where', 'tamzang_apply_category_id', 10, 2);
 $arrProducts = geodir_get_widget_listings($query_args);
 
 $uploads = wp_upload_dir();
@@ -42,9 +44,13 @@ foreach ( $arrProducts as $product )
   echo '<li>ราคา: '.str_replace(".00", "",number_format($post->geodir_price,2)).' บาท</li>';
   echo '<li>มีสินค้า</li>';
   echo '</ul>';
-  echo '<button type="button" style="color:white;" data-toggle="modal" data-target="#product_'.$product->ID.'">';
-  echo 'เพิ่มลงตะกร้า';
-  echo '</button>';
+  if(!empty($current_post->geodir_tamzang_id)){
+    if($post->geodir_show_addcart){
+      echo '<button type="button" style="color:white;" data-toggle="modal" data-target="#product_'.$product->ID.'">';
+      echo 'เพิ่มลงตะกร้า';
+      echo '</button>';
+    }
+  }
   echo '</aside>';
   echo '</section> ';
 }

@@ -141,7 +141,7 @@ jQuery(document).ready(function($){
 
   $('#drag-and-drop-zone').dmUploader({ //
     url: ajaxurl+'?action=add_tracking_image',
-    maxFileSize: 3000000, // 3 Megs max
+    maxFileSize: 100000000, // 100 Megs max
     multiple: false,
     allowedTypes: 'image/*',
     extFilter: ['jpg','jpeg','png'],
@@ -291,7 +291,7 @@ jQuery(document).ready(function($){
 
   $('#image-modal').on('show.bs.modal', function(e) {
       var data = $(e.relatedTarget).data();
-      $('#img-content').attr('src', data.src);
+      $('#img-content').attr('src', data.src+'?dt=' + Math.random());
   });
 
 });
@@ -360,7 +360,7 @@ jQuery(document).ready(function($){
 
                       </div>
                       <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
                       </div>
                   </div>
               </div>

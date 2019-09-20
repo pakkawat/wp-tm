@@ -114,10 +114,6 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
   if(!empty($arrProducts))
   {
     /* 20190102 Bank put deliver_ticket */
-    $default_category_id = geodir_get_post_meta( $_POST['pid'], 'default_category', true );
-    $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
-    $parent = get_term($default_category->parent);
-
     $tz = 'Asia/Bangkok';
     $timestamp = time();
     $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
@@ -126,36 +122,25 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
 
     $current_date = $dt->format("Y-m-d H:i:s");
 
-    // $stock_results = $wpdb->get_results(
-    //     $wpdb->prepare(
-    //     "SELECT p.id,p.stock - s.qty as result
-    //     FROM products as p
-    //     INNER JOIN shopping_cart as s on s.product_id = p.id
-    //     WHERE s.wp_user_id = %d AND p.post_id = %d AND p.unlimited = false", array($current_user->ID,$_POST['post_id'])
-    // ));
-
-    // if (!empty($stock_results)){
-    //   foreach ( $stock_results as $result ){
-    //     $wpdb->query(
-    //         $wpdb->prepare(
-    //             "UPDATE products SET stock = %d where id = %d ",
-    //             array($result->result, $result->id)
-    //         )
-    //     );
-    //   }
-    // }
-
+    $geodir_delivery_type = geodir_get_post_meta( $_POST['pid'], 'geodir_delivery_type', true );
+    $need_delivery = true;
+    if (strpos($geodir_delivery_type, '0') !== false) {
+      $need_delivery = false;
+    }
     $use_point = false;
       //20190213 Bank Add Delivery Fee if it need delivery
-    if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+    if($need_delivery)
     {
-      list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
+      //list($delivery_fee,$distance) = get_delivery_fee($_POST['pid']);
+      $delivery_fee = $_POST['delivery'];
+      $distance = $_POST['distance'];
+
       if($delivery_fee != 0)
         $use_point = check_user_point($_POST['hidden_up']);
     }	
 
     $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ".
-    (($parent->name == "อาหาร")||($default_category->name == "อาหาร") ? ", deliver_ticket = 'Y'" : "").(($use_point) ? ", redeem_point = true" : ""),
+    ($need_delivery ? ", deliver_ticket = 'Y'" : "").(($use_point) ? ", redeem_point = true" : ""),
       array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'])));
     $order_id = $wpdb->insert_id;
 
@@ -294,7 +279,8 @@ get_header(); ?>
 
 <script>
 jQuery(document).ready(function($){
-
+ 
+  //var socket = io.connect('https://tamzang.com:3443',{secure: true});
   function after_upload(element, data)
   {
     if(data.success)
@@ -346,7 +332,7 @@ jQuery(document).ready(function($){
 
   $('#drag-and-drop-zone').dmUploader({ //
     url: ajaxurl+'?action=add_transfer_slip_picture',
-    maxFileSize: 3000000, // 3 Megs max
+    maxFileSize: 100000000, // 100 Megs max
     multiple: false,
     allowedTypes: 'image/*',
     extFilter: ['jpg','jpeg','png'],
@@ -504,6 +490,11 @@ jQuery(document).ready(function($){
               }else{
                 $( "#panel_"+order_id ).find(".panel-footer .btn-danger").replaceWith( '<font color="FDA50C"><b>'+msg.data+'</b></font>' );
               }
+              //tricker websocket make driver refresh
+              //socket.emit( 'buyer-message-confirm', { message: "Test sendwebsocket",order: order_id } );
+              buyerMessage(order_id);
+              
+
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
            console.log(textStatus);
@@ -554,7 +545,7 @@ jQuery(document).ready(function($){
                   }else{
                     if(button_type){
                       $( "#order_adjust_"+order_id ).html('<font color="green"><b>ยอมรับ</b></font>');
-                      $( "#total_amt_"+order_id ).html(msg.data);
+                      $( "#total_amt_"+order_id ).html(msg.data);                      
                     }else{
                       $( "#panel_"+order_id ).removeClass('panel-default').addClass('panel-danger');
                       $( "#panel_"+order_id ).find(".panel-footer").remove();
@@ -562,6 +553,9 @@ jQuery(document).ready(function($){
                       $( "#order_adjust_"+order_id ).empty();
                     }
                   }
+                  //tricker websocket make driver refresh
+                  //socket.emit( 'buyer-message-confirm', { message: "Test sendwebsocket",order: order_id } );
+                  buyerMessage(order_id);
 
                 }
           },
@@ -605,6 +599,10 @@ jQuery(document).ready(function($){
               }else{
                 $( "#panel_"+order_id ).find('.panel-body .cancel_code .cancel_txt').html('<h4>'+msg.data+'</h4>' );
               }
+              //tricker websocket make driver refresh
+              //socket.emit( 'buyer-message-confirm', { message: "Test sendwebsocket",order: order_id } );
+              buyerMessage(order_id);
+
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
           console.log(textStatus);
@@ -618,7 +616,7 @@ jQuery(document).ready(function($){
 });
 </script>
 <script src="http://test02.tamzang.com/JS/node_modules/socket.io-client/dist/socket.io.js"></script>
-<script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient.js" defer></script>
+<script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient.js" ></script>
 
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
@@ -700,7 +698,7 @@ jQuery(document).ready(function($){
 
                       </div>
                       <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
                       </div>
                   </div>
               </div>

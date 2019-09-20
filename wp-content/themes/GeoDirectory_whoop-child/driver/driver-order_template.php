@@ -283,8 +283,8 @@ $driver = $wpdb->get_row(
                     >อัพโหลดรูปภาพ</button>
                 </div>
                 <div class="col-12">
-                    <div id="div_tracking_pic_<?php echo $order->id; ?>">
-                        <img class="img-fluid" id="tracking_pic_<?php echo $order->id; ?>"  
+                    <div id="div_tracking_pic_<?php echo $order->id; ?>" <?php if (empty($order->driver_image)) echo ' style="display:none;" '; ?>>
+                        <img class="img-fluid" id="tracking_pic_<?php echo $order->id; ?>"
                         src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" data-toggle="modal" data-target="#image-modal"  
                         data-src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" />
                     </div>

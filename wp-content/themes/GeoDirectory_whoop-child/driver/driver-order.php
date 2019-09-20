@@ -85,8 +85,6 @@ function showPosition(position) {
 }
 
 jQuery(document).ready(function($){
-    //var socket = io.connect('https://tamzang.com:3443',{secure: true});
-
     $('#main_order').on("click", '.page-item a', function(event) { 
         console.log($(this).data("page"));
         if($(this).data("page") != null)
@@ -562,6 +560,11 @@ jQuery(document).ready(function($){
 	
 });
 
+function getUserID() {
+  var current_user_id = <?php echo get_current_user_id() ;?>;
+  return current_user_id;
+}
+
 </script>
 <body>
 
@@ -653,7 +656,7 @@ jQuery(document).ready(function($){
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
             </div>
         </div>
     </div>

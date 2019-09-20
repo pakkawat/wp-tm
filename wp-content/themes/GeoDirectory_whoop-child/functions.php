@@ -919,7 +919,7 @@ add_action('wp_ajax_update_order_status', 'update_order_status_callback');
 function update_order_status_callback(){
   global $wpdb, $current_user;
   //$current_user->ID;
-  $current_date = date("Y-m-d H:i:s");
+  $current_date = tamzang_get_current_date();
   $data = $_POST;
   //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
 
@@ -1645,13 +1645,13 @@ function update_shipping_address_callback(){
 add_action('wp_ajax_confirm_order_select_shipping', 'confirm_order_select_shipping_callback');
 
 function confirm_order_select_shipping_callback(){
-    global $wpdb, $current_user;
+    global $wpdb, $current_user;    
 
     $data = $_POST;
     //$data['id'] id ของ table user_address
     //$data['shop_id'] id ร้านค้า
     //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
-  
+    
     // check the nonce
     if ( check_ajax_referer( 'select_shipping_address' . $data['id'], 'nonce', false ) == false ) {
         wp_send_json_error();
@@ -1693,6 +1693,16 @@ function confirm_order_select_shipping_callback(){
                 "SELECT * FROM user_address where id = %d ", array($data['id'])
             )
         );
+        list($delivery_fee,$distance) = get_delivery_fee($data['shop_id']);
+        $sum = $delivery_fee+$data['total'];
+        
+
+        // 20190627 Bank put deliver fee
+        if(($delivery_fee == 0) and ($distance == 0))
+            $button = 0;         
+        else
+            $button = 1; 
+
 
         $return = array(
             'select' => '<img src="'.get_stylesheet_directory_uri().'/js/pass.png" />',
@@ -1700,8 +1710,13 @@ function confirm_order_select_shipping_callback(){
             'pre_id' => $pre,
             'pre'      => '<a class="btn btn-success select-shipping" href="#"
                             data-id="'.$pre.'"
+                            data-shop-id="'.$data['shop_id'].'"
                             data-nonce="'.wp_create_nonce( 'select_shipping_address' . $pre ).'"
-                            style="color:white;" >เลือก</a>'
+                            style="color:white;" >เลือก</a>',
+            'new_sum' => $sum,
+            'new_delivery_fee' => $delivery_fee,
+            'new_distance' => $distance,
+            'new_order_button' => $button
         );
 
         wp_send_json_success($return);
@@ -2155,13 +2170,7 @@ function shop_product_list_content($tab_index){
     global $post;
     if($tab_index == 'product_list')
     {
-        $default_category_id = geodir_get_post_meta( $post->ID, 'default_category', true );
-        $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
-        $parent = get_term($default_category->parent);
-
-        //$geodir_tamzang_id = geodir_get_post_meta( $post->ID, 'geodir_tamzang_id', true );
-
-        if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+        if($post->geodir_shop_product_list == '1')
         {
             echo create_dropdown_categort(1,$post->ID);
             echo '<div id="tamzang-menu">';
@@ -2563,7 +2572,7 @@ function register_driver_callback(){
 add_action('wp_ajax_driver_update_picture', 'driver_update_picture_callback');
 
 function driver_update_picture_callback(){
-    global $current_user;
+    global $wpdb, $current_user;
     $data = $_POST;
     //file_put_contents( dirname(__FILE__).'/debug/driver_update_picture.log', var_export( $_FILES, true));
     //wp_send_json_error($_FILES['file']['name'].'--test--'.$_FILES['file']['tmp_name']);
@@ -2577,8 +2586,20 @@ function driver_update_picture_callback(){
   
     $result = tamzang_upload_picture('/driver_avatars/', $_FILES['file']['name'], $_FILES['file']['tmp_name']);
 
-    if($result['result'])
-        wp_send_json_success($result['msg']);
+    if($result['result']){
+        try
+        {
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE driver SET profile_pic = %s WHERE Driver_id = %d ",
+                    array($result['file_name'], $current_user->ID)
+                )
+            );
+            wp_send_json_success($result['msg']);
+        } catch (Exception $e) {
+            wp_send_json_error($e->getMessage());
+        }
+    }
     else
         wp_send_json_error($result['msg']);
 
@@ -3055,12 +3076,26 @@ function driver_reject_order_callback(){
 
     if($current_user->ID == $owner){
 
-      $wpdb->query(
-          $wpdb->prepare(
-              "UPDATE driver_order_log_assign SET status = 4 where Id = %d ",
-              array($data['log_id'])
-          )
-      );
+        $log_assign = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM driver_order_log_assign where id = %d ", array($data['log_id'])
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO driver_order_log SET
+                tamzang_id = %d,driver_id = %s,driver_order_id =%d,status = 4,assign_date =%s ".(!empty($log_assign->transfer_date) ? ",transfer_date =%s" : ""),
+                array($log_assign->tamzang_id, $log_assign->driver_id, $log_assign->driver_order_id, $log_assign->assign_date, $log_assign->transfer_date)
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver_order_log_assign SET status = 4 where Id = %d ",
+                array($data['log_id'])
+            )
+        );
 
     }
 
@@ -3487,7 +3522,7 @@ add_action('wp_ajax_supervisor_assign_order', 'supervisor_assign_order_callback'
 function supervisor_assign_order_callback(){
   global $wpdb, $current_user;
   //$current_user->ID;
-  $current_date = date("Y-m-d H:i:s");
+  $current_date = tamzang_get_current_date();
 
   $data = $_POST;
   //file_put_contents( dirname(__FILE__).'/debug/debug_delete_user_address.log', var_export( $data, true));
@@ -3617,7 +3652,7 @@ add_action('wp_ajax_assign_order_driver', 'assign_order_driver');
 //get list Driver for restaurant
 function assign_order_driver() {
     global $wpdb;
-	$current_date = date("Y-m-d H:i:s");
+	$current_date = tamzang_get_current_date();
 	$return_arr = array();
 	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_update_driver_piority START!", true));
     $data = $_POST;
@@ -3776,7 +3811,7 @@ function assign_order_driver() {
                 // file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "User name is :".$username, true),FILE_APPEND);
             
                 // สร้าง message
-                $current_date = date("Y-m-d H:i:s");
+                $current_date = tamzang_get_current_date();
                 $thread_id = $wpdb->get_var(
                     $wpdb->prepare(
                     "SELECT thread_id FROM wp_bp_messages_messages ORDER BY thread_id DESC LIMIT 1 ", array()
@@ -3961,8 +3996,8 @@ function approve_driver() {
 	foreach ($result_list as $row => $value )
 	{
 		$query = $wpdb->prepare("INSERT INTO driver SET
-                             Driver_id = %d,driver_name = %s,phone =%d",
-                             array($value['wp_user_id'],$value['name'],$value['phone'])
+                             Driver_id = %d,driver_name = %s,phone =%d, profile_pic = %s ",
+                             array($value['wp_user_id'],$value['name'],$value['phone'],$value['profile_pic'])
                           );
 		$wpdb->query($query);
 		//file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Insert status ".$insert_status, true),FILE_APPEND);
@@ -4443,7 +4478,7 @@ function restaurantName()
 	{
         //echo "WPShout was here.".$post->ID;
         create_product_modal($post,$shop_id);
-        echo '<li><a href="'.get_permalink( $shop_id ).'">'.get_the_title( $shop_id ).'</a></li>';
+        echo '<h2><li><a href="'.get_permalink( $shop_id ).'">'.get_the_title( $shop_id ).'</a></li></h2>';
         
 	}
 }
@@ -4963,7 +4998,7 @@ function tamzang_modify_home_nav_menu_objects( $items, $args ) {
 
     $driver = '';
     if(!empty($is_driver))
-        $driver = '<li class="menu-item "><a href="'.home_url('/driver_orders/').'" class="">รับงานตามสั่ง</a></li>';
+        $driver = '<li class="menu-item "><a href="'.home_url('/driver_orders/').'" class="">เปิดระบบตามส่ง</a></li>';
     
     return $items.$about_me.$driver;
     
@@ -5005,8 +5040,9 @@ function refresh_seller_page(){
 
 //AJAX FUNCTION
 add_action('wp_ajax_list_driver_marker', 'list_driver_marker');
-function list_driver_marker(){   
-    file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!", true));
+function list_driver_marker(){  
+    global $wpdb; 
+    //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!", true));
     $driverList  = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT * FROM driver",array()          
@@ -5018,11 +5054,20 @@ function list_driver_marker(){
 		$assign_drivers['name'] = $driver->driver_name;
 		$assign_drivers['lat'] =$driver->latitude;
 		$assign_drivers['lon'] = $driver->longitude;
-		file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
+		//file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
 		
 		$return_arr[] = $assign_drivers;
     }
     wp_send_json_success($return_arr);
 }
+
+function bangkok_current_time($output) {
+    $tz = 'Asia/Bangkok';
+    $timestamp = time();
+    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+    return $dt->format("Y-m-d H:i:s");
+}
+add_filter('bp_core_current_time', 'bangkok_current_time');
 
 ?>

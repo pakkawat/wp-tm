@@ -239,11 +239,15 @@ jQuery(document).ready(function($){
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">ปิด</button>
             </div>
         </div>
     </div>
 </div>
+
+<h1 class="page-title">
+    รูปประจำตัวผู้ส่ง
+</h1>
 
 <img width="200" height="200" id="driver_pic"  src="<?php echo $uploads['baseurl'].$profile_pic; ?>" />
 
