@@ -188,6 +188,20 @@ $('#image_car_licence').change(function() {
     $('#preview_car_licence img').css({'width':'200px'});
 });
 
+$('#image_car_licence2').change(function() {
+    var file = $(this).get(0).files[0];
+    //var preview = $('#preview');
+    var img = document.createElement('img');
+    img.src = window.URL.createObjectURL(file);
+    $('#preview_car_licence2').html(img);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        window.URL.revokeObjectURL(this.src);
+    }
+    reader.readAsDataURL(file);
+    $('#preview_car_licence2 img').css({'width':'200px'});
+});
+
 });
 </script>
 
@@ -201,24 +215,35 @@ $('#image_car_licence').change(function() {
        <input id="image" name="image" type="file" />
        <div id="preview"></div>
     </div>
+    <hr>
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
        <label>สำเนาบัตรประชาชน<span>*</span> </label>
        <input id="image_id_card" name="image_id_card" type="file" />
        <div id="preview_id_card"></div>
     </div>
+    <hr>
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
        <label>สำเนาใบอนุญาตขับขี่<span>*</span> </label>
        <input id="image_licence" name="image_licence" type="file" />
        <div id="preview_licence"></div>
     </div>
+    <hr>
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
        <label>สำเนาทะเบียนรถ<span>*</span> </label>
        <input id="image_car_licence" name="image_car_licence" type="file" />
        <div id="preview_car_licence"></div>
     </div>
+    <hr>
+
+    <div class="geodir_form_row clearfix gd-fieldset-details">
+       <label>หนังสือยินยอมการใช้รถ(กรณีชื่อเจ้าของรถและผู้สมัครไม่ตรงกัน) </label>
+       <input id="image_car_licence2" name="image_car_licence2" type="file" />
+       <div id="preview_car_licence2"></div>
+    </div>
+    <hr>
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
        <label>ชื่อ-สกุล<span>*</span> </label>
@@ -237,7 +262,7 @@ $('#image_car_licence').change(function() {
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
        <input type="checkbox" name="term_condition" value="1" id="term_condition">
-       <a href="https://tamzang.com/ข้อตกลงการใช้งาน" target="_blank">โปรดยอมรับข้อกำหนดในการให้บริการของเรา</a>
+       <a href="https://www.tamzang.com/driver-agreement/" target="_blank">โปรดยอมรับข้อกำหนดในการให้บริการของเรา</a>
     </div>
 
     <div class="geodir_form_row clearfix gd-fieldset-details">
@@ -261,10 +286,10 @@ $('#image_car_licence').change(function() {
     <br><br>
     <div class="order-row">
       <div class="order-col-6" style="text-align:left;">
-        <button type="submit" class="btn btn-warning">บันทึก</button>
+        <button type="submit" class="btn btn-success">บันทึก</button>
       </div>
       <div class="order-col-6" style="text-align:right;">
-        <button type="button" id="back-address-list" class="btn btn-info">ย้อนกลับ</button>
+        <button type="button" id="back-address-list" class="btn btn-danger">ย้อนกลับ</button>
       </div>
     </div>
   </form>

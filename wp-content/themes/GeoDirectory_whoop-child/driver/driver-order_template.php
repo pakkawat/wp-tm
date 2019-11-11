@@ -5,7 +5,8 @@ global $wpdb, $current_user;
 $order = $wpdb->get_row(
     $wpdb->prepare(
         "SELECT orders.id,orders.post_id,orders.adjust_accept,orders.driver_adjust,orders.total_amt,driver_order_log_assign.status,
-        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code, orders.redeem_point, orders.driver_image
+        orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code, orders.redeem_point, orders.driver_image,
+        orders.image_slip, orders.tracking_image
         FROM orders
         INNER JOIN driver_order_log_assign ON orders.id = driver_order_log_assign.driver_order_id and driver_id = %d 
         and (driver_order_log_assign.status = 1 OR driver_order_log_assign.status = 2)", $current_user->ID)
@@ -21,7 +22,7 @@ $driver = $wpdb->get_row(
 <div class="row text-center">
     <div class="col-12">
         <div id="status_text">
-        <?php echo $driver->is_ready ?'<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>':'<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>';?>
+        <?php echo $driver->is_ready ?'<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>':'<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>';?>
         </div>
     </div>
 </div>
@@ -275,21 +276,40 @@ $driver = $wpdb->get_row(
     <div class="card-footer">
 
     <?php if($order->order_status > 1){ $uploads = wp_upload_dir();?>
-            <div class="row text-center">
-                <div class="col-12">
+            <div class="row">
+                <div class="col">
+                </div>
+                <div class="col text-center">
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        แสดงรูปภาพ
+                    </button>
+                </div>
+                <div class="col text-right">
                     <button class="btn btn-success" href="#" data-id="<?php echo $order->id; ?>"
                     data-nonce="<?php echo wp_create_nonce( 'driver_add_image_'.$order->id); ?>"
                     data-toggle="modal" data-target="#driver-add-pic"
                     >อัพโหลดรูปภาพ</button>
                 </div>
+            </div>
+            <div class="collapse text-center" id="collapseExample">
                 <div class="col-12">
                     <div id="div_tracking_pic_<?php echo $order->id; ?>" <?php if (empty($order->driver_image)) echo ' style="display:none;" '; ?>>
+                        <h5>รูปประกอบจากพนักงานตามส่ง</h5>
                         <img class="img-fluid" id="tracking_pic_<?php echo $order->id; ?>"
                         src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" data-toggle="modal" data-target="#image-modal"  
                         data-src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" />
                     </div>
                 </div>
+                <div class="col-12" <?php if (empty($order->image_slip)) echo ' style="display:none;" '; ?>>
+                    <h5>รูปประกอบจากผู้ซื้อ</h5>
+                    <img class="img-fluid" src="<?php echo $uploads['baseurl'].$order->image_slip; ?>"  />
+                </div>
+                <div class="col-12" <?php if (empty($order->tracking_image)) echo ' style="display:none;" '; ?>>
+                    <h5>รูปประกอบจากผู้ขาย</h5>
+                    <img class="img-fluid" src="<?php echo $uploads['baseurl'].$order->tracking_image; ?>"  />
+                </div>
             </div>
+
     <?php } ?>
 
     </div>
@@ -356,33 +376,4 @@ if(!empty($arrEmployees)) {
 
 }// if(!empty($order))
 ?>
-<br>
-<div class="row">
-    <div class="col-6" id="chooseHeadDriver">
-        <button class="btn btn-info" style="<?php echo wp_is_mobile() ? 'white-space: nowrap;' : 'text-align:right;';?>">เลือกหัวหน้ากลุ่ม</button>
-	</div>
-    <div class="col-6">
-        <p style="color: green;">หมายเลขไอดีของคุณคือ :  <?php echo $current_user->ID ; ?></p>
-    </div>
-</div>
 
-<div class="row">
-	<div class="col-6" id= "mylocationicon">
-		<button class="btn btn-primary" onclick="getLocation()">ยืนยันตำแหน่ง</button>
-		<p style="color: red;"><em>สำหรับผู้ส่งอิสระกรุณากดปุ่มเพื่อยืนยันความพร้อมก่อนรับอาหาร</p></em>
-	</div>
-	<div class="col-6" style="text-align:right;">
-        <button class="btn <?php echo $driver->is_ready ? 'btn-success' : 'btn-danger';?> driver-ready" data-d-id="<?php echo $current_user->ID; ?>"
-            data-nonce="<?php echo wp_create_nonce( 'driver_ready_'.$current_user->ID); ?>"
-            ><?php echo $driver->is_ready ? 'พร้อมรับงาน' : 'ไม่พร้อมรับงาน';?></button>
-            <div>
-            <?php echo $driver->is_ready ?'<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>':'<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>';?>
-            </div>
-	</div>
-</div>
-
-<div class="row text-center">
-    <div class="col-12">
-    <a class="btn btn-success" href="<?php echo home_url(); ?>">ตามสั่ง</a>
-    </div>
-</div>

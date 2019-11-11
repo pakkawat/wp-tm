@@ -24,7 +24,9 @@
 <?php // end analytics ?>
 
 </head>
-<script type="text/javascript" src="https://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/onesignal_iosandandroid.js"></script>
+<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri(); ?>/onesignal_iosandandroid.js"></script>
+<script type="text/javascript" src="<?php echo get_stylesheet_directory_uri(); ?>/js/mobile.js"></script>
+
 <body <?php body_class(); ?>>
 <div id="container">
   <?php if ( is_front_page() ) { ?>
@@ -356,7 +358,7 @@
           }?>
       </div>
     </header>
-	<?php kento_notify(); ?>
+	
 <?php } ?>
 <script type="text/javascript">
     var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";

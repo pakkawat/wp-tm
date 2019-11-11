@@ -10,17 +10,26 @@ if ( is_user_logged_in() ){
   if (empty($arrProducts))
     wp_redirect(get_page_link($pid));
 
-  /* 20190627 Bank put deliver fee */
-  $default_category_id = geodir_get_post_meta( $pid, 'default_category', true );
-  $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
-  $parent = get_term($default_category->parent);
 
-  //Get Delivery_fee and distance
-  if(($parent->name == "อาหาร")||($default_category->name == "อาหาร"))
+  $delivery_type = geodir_get_post_meta( $pid, 'geodir_delivery_type', true );
+  $groupID = geodir_get_post_meta( $pid, 'groupID', true );
+  $shop_has_driver = false;
+  if($groupID != 0){
+    $check_driver = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT driver_id FROM driver where groupID like '%".$groupID."%' ", array()
+      )
+    );
+  
+    if(!empty($check_driver))
+      $shop_has_driver = true;
+  }
+
+    
+  if($delivery_type != 0)
   {
     list($delivery_fee,$distance) = get_delivery_fee($pid);
-  }	
-
+  }
 
   
   $user_address = $wpdb->get_row(
@@ -41,6 +50,9 @@ if ( is_user_logged_in() ){
 
 <script>
     jQuery(document).ready(function($){
+
+      var uuid = new DeviceUUID().get();
+      console.log("UUID :"+uuid);
 
       function display_currency(money){
         money = (money).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -169,7 +181,7 @@ if ( is_user_logged_in() ){
           }
         });
 
-        $("#place_order").click(function(){
+        jQuery(document).on("click", "#place_order", function(){
           $("#payment-error").hide();
           var rowCount = $('#tb-cart >tbody >tr').length;
           if (rowCount > 2){
@@ -185,9 +197,13 @@ if ( is_user_logged_in() ){
           var id = $(this).data('id');
           var nonce = $(this).data('nonce');
           var shop_id = $(this).data('shop-id');
+          var total = $("#cart-total").data('cart-total');
+          console.log("Nonce: "+total);
+
 
           $('.address-wrapper-loading').toggleClass('cart-loading');
-          var send_data = 'action=confirm_order_select_shipping&id='+id+'&shop_id='+shop_id+'&nonce='+nonce;
+          var dtype = document.getElementById("dtype").value;
+          var send_data = 'action=confirm_order_select_shipping&id='+id+'&shop_id='+shop_id+'&nonce='+nonce+'&total='+total;
           $.ajax({
             type: "POST",
             url: geodir_var.geodir_ajax_url,
@@ -197,9 +213,31 @@ if ( is_user_logged_in() ){
                     $('#address-'+msg.data.pre_id).html(msg.data.pre);
                     $('#address-'+id).html(msg.data.select);
                     $('#shipping-address').text(msg.data.select_address);
+                    //$(".address-wrapper-loading").load(window.location.href +  " .address-wrapper-loading");
+                    
+                         
+                    console.log(msg.data);  
+                    if($delivery_type != 0){
+                      $('#delivery_input').val(msg.data.new_delivery_fee);
+                      $('#distance_input').val(msg.data.new_distance);
+                      $('#delivery').html(msg.data.new_delivery_fee);
+                      $('#sum').html(msg.data.new_sum);
+                    } 
+                    else{
+                      $('#delivery_input').val(0);
+                      $('#distance_input').val(0);
+                      $('#delivery').html(0);
+                      $('#sum').html(total);
+                    }                   
+                    if((msg.data.new_order_button == 0) && ($delivery_type != 0))
+                    {                      
+                      $("#place_order_button").html("<h3>ขณะนี้ระบบไม่สามารถคำนวนค่าจัดส่งได้ กรุณาลองใหม่ภายหลัง ขออภัยในความไม่สะดวก</h3>");
+                    }
+                    else{ 
+                      $("#place_order_button").html("<button type='button' class='btn btn-success' id='place_order'>ดำเนินการสั่งสินค้า <span class='glyphicon glyphicon-play'></span></button>");
+                    } 
                   }
-
-                  $('.address-wrapper-loading').toggleClass('cart-loading');
+                  $('.address-wrapper-loading').toggleClass('cart-loading');                  
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
               console.log(textStatus);
@@ -209,6 +247,91 @@ if ( is_user_logged_in() ){
 
         });
 
+        jQuery(document).on("click", ".select-delivery_type", function(){
+          var pid = $(this).data('pid');
+          var dtype = $(this).data('dtype');
+          var nonce = $(this).data('nonce');
+
+          $('.delivery_type-loading-loading').toggleClass('cart-loading');
+          var send_data = 'action=select_delivery_type&pid='+pid+'&dtype='+dtype+'&nonce='+nonce;
+          $.ajax({
+            type: "POST",
+            url: geodir_var.geodir_ajax_url,
+            data: send_data,
+            success: function(msg){
+                  if(msg.success){
+                    $('#delivery_type_'+msg.data.pre_type).html(msg.data.pre);
+                    $('#delivery_type_'+msg.data.select_type).html(msg.data.select);
+                    $('#dtype').val(msg.data.select_type);
+                  }
+
+                  $('.delivery_type-loading-loading').toggleClass('cart-loading');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(textStatus);
+              $('.delivery_type-loading-loading').toggleClass('cart-loading');
+            }
+          });
+
+        });
+
+        jQuery(document).on("click", ".promotion-input", function(){
+          var pid = $(this).data('pid');
+          var nonce = $(this).data('nonce');
+          var promotion_input = $.trim( $('#promotion_input').val() );
+          OneSignal.push(function() {
+            OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+              if (isEnabled){
+
+                if(promotion_input == "")
+                  return;
+                console.log(promotion_input+'---'+pid);
+
+                $('.wrapper-loading').toggleClass('cart-loading');
+                var send_data = 'action=user_use_promotion&pid='+pid+'&promotion_input='+promotion_input+'&nonce='+nonce;
+                $.ajax({
+                  type: "POST",
+                  url: geodir_var.geodir_ajax_url,
+                  data: send_data,
+                  success: function(msg){
+                        console.log(msg);
+                        if(msg.success){
+                          $('#pcode').val(promotion_input);
+                          var deli_cost = $('#delivery').text();
+                          var discount = ( deli_cost*(1-(msg.data.percent/100))) - msg.data.constant;
+                          var result = 0;
+                          console.log(result+" = "+deli_cost+" - "+discount);
+                          if(discount <= 0){
+                            discount = deli_cost;
+                          }else{
+                            result = discount;
+                            discount = deli_cost - discount;
+                          }
+                          $('#delivery').html(result);
+                          var sum = $('#sum').text();
+                          $('#sum').html(sum - discount);
+                          $('#promotion-msg').html('<font color="green">'+msg.data.name+' ลดค่าส่งไป:'+discount+' บาท</font>');
+                        }else{
+                          $('#promotion-msg').html('<font color="red">'+msg.data+'</font>');
+                        }
+                        $('.wrapper-loading').toggleClass('cart-loading');
+                  },
+                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(textStatus);
+                    $('.wrapper-loading').toggleClass('cart-loading');
+                  }
+                });
+              }
+              else{
+                OneSignal.showSlidedownPrompt();
+                $('#promotion-msg').html('<font color="red">กรูณากดลิงค์ด้านล่าง</font>');
+                //window.location.href = "/"; 
+              }
+                
+            });
+          });
+        });
+
     });
 
 	// When the user clicks on div, open the popup
@@ -216,8 +339,82 @@ function myPopupFunc() {
   var popup = document.getElementById("myPopup");
   popup.classList.toggle("show");
 }
+
+function onManageWebPushSubscriptionButtonClicked(event) {
+        getSubscriptionState().then(function(state) {
+          if (state.isOptedOut) {
+              /* Opted out, opt them back in */
+              OneSignal.setSubscription(true);
+          } else {
+              /* Unsubscribed, subscribe them */
+              OneSignal.registerForPushNotifications();
+          }
+          OneSignal.getUserId().then(function(userId) {
+            console.log("OneSignal User ID:", userId);   
+            jQuery.post( geodir_var.geodir_ajax_url, { action: "updateOnesignal", doing: "INSERT", device_id: userId } );
+          });
+        });
+        event.preventDefault();
+    }
+
+    function updateMangeWebPushSubscriptionButton(buttonSelector) {
+        var hideWhenSubscribed = false;
+        var subscribeText = "กดที่นี่เพื่อยืนยันการใช้โปรโมชั่น";
+        var unsubscribeText = "Unsubscribe from Notifications";
+
+        getSubscriptionState().then(function(state) {
+            var buttonText = !state.isPushEnabled || state.isOptedOut ? subscribeText : unsubscribeText;
+
+            var element = document.querySelector(buttonSelector);
+            if (element === null) {
+                return;
+            }
+
+            element.removeEventListener('click', onManageWebPushSubscriptionButtonClicked);
+            element.addEventListener('click', onManageWebPushSubscriptionButtonClicked);
+            element.textContent = buttonText;
+
+            if (state.isPushEnabled) {
+                element.style.display = "none";
+            } else {
+                element.style.display = "";
+            }
+        });
+    }
+
+    function getSubscriptionState() {
+        return Promise.all([
+          OneSignal.isPushNotificationsEnabled(),
+          OneSignal.isOptedOut()
+        ]).then(function(result) {
+            var isPushEnabled = result[0];
+            var isOptedOut = result[1];
+
+            return {
+                isPushEnabled: isPushEnabled,
+                isOptedOut: isOptedOut
+            };
+        });
+    }
+
+    var OneSignal = OneSignal || [];
+    var buttonSelector = "#my-notification-button";
+
+    /* This example assumes you've already initialized OneSignal */
+    OneSignal.push(function() {
+        // If we're on an unsupported browser, do nothing
+        if (!OneSignal.isPushNotificationsSupported()) {
+            return;
+        }
+        updateMangeWebPushSubscriptionButton(buttonSelector);
+        OneSignal.on("subscriptionChange", function(isSubscribed) {
+            /* If the user's subscription state changes during the page's session, update the button text */
+            updateMangeWebPushSubscriptionButton(buttonSelector);
+        });
+    });
 	
 </script>
+
 
 <?php if(!$user_has_address){ ?>
 <div class="modal fade" id="no-address" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -267,11 +464,7 @@ function myPopupFunc() {
               <div class="modal-body">
                   <p>
                     <?php 
-                      $default_category_id = geodir_get_post_meta( $pid, 'default_category', true );
-                      $default_category = $default_category_id ? get_term( $default_category_id, 'gd_placecategory' ) : '';
-					  //echo print_r($default_category);
-                      $parent = get_term($default_category->parent);
-                      if(($parent->name != "อาหาร")&&($default_category->name != "อาหาร")){
+                      if($delivery_type == 0){
                     ?>
                         <div>
                           <input class="form-check-input" type="radio" name="payment-type" value="1" id="pt-radio1">
@@ -292,7 +485,11 @@ function myPopupFunc() {
               <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">ยกเลิก</button>
                   <input type="hidden" name="pid" value="<?php echo $pid; ?>"/>
+                  <input type="hidden" name="delivery" id="delivery_input" value="<?php echo $delivery_fee; ?>"/>
+                  <input type="hidden" name="distance" id="distance_input" value="<?php echo $distance; ?>"/>
                   <input type="hidden" name="hidden_up" id="hidden_up" />
+                  <input type="hidden" name="dtype" id="dtype" value="<?php echo $delivery_type; ?>" />
+                  <input type="hidden" name="pcode" id="pcode" />
                   <button type="submit" class="btn btn-success btn-ok">ตกลง</button>
               </div>
             </form>
@@ -318,6 +515,26 @@ function myPopupFunc() {
     </div>
 </div>
 
+<?php if($delivery_type == 1 && $shop_has_driver){ ?>
+<div class="modal fade" id="select-delivery_type" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">เลือกพนักงานจัดส่ง</h4>
+            </div>
+            <div class="modal-body">
+            <div class="delivery_type-loading">
+                <?php 
+                  get_template_part( 'select', 'delivery_type' ); 
+                ?>
+              </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<?php } ?>
 
 <div id="geodir_wrapper" class="geodir-single">
 <?php 
@@ -403,7 +620,7 @@ function myPopupFunc() {
                     echo "</td>";
                   echo "</tr>";
                 }
-
+                echo '<div id="cart-total" data-cart-total ="'.str_replace(".00", "",number_format($sum,2)).'" ></div>';
                 $GLOBALS['post'] = $current_post;
                 if (!empty($current_post)) {
                     setup_postdata($current_post);
@@ -420,27 +637,47 @@ function myPopupFunc() {
                     );
                     if(!empty($user_cash_back)){
                       $point = $user_cash_back->add_on_credit * $user_cash_back->redeem_point_rate;
-                      if($point >= $delivery_fee && ($parent->name == "อาหาร" || $default_category->name == "อาหาร") && $delivery_fee != 0){
+                      if($point >= $delivery_fee && ($delivery_type == 1) && $delivery_fee != 0){
                         echo 'ขณะนี้คุณมี point มากพอจะใช้แทนค่าส่งกรุณาเลือก หากต้องการใช้: <input type="checkbox" name="use_point" id="use_point" />';
                       }
                     }
                   ?>
+                   <?php if($delivery_type == 1 && $shop_has_driver){ ?>
+                    <a class="btn btn-info" data-toggle="modal" data-target="#select-delivery_type" style="float: right;">
+                    <span style="color: #ffffff !important;">เลือกพนักงานส่ง</span></a>
+                  <?php } ?>
                 </td>
-                <td><div class="popup" onclick="myPopupFunc()">ค่าจัดส่ง*
-					<span class="popuptext" id="myPopup">ค่าส่งเบื้องต้น 30 บาท รวมกับระยะทาง 3 กม.แรกคิดกม.ล่ะ 10 บาท กม.ถัดไปคิด กม.ล่ะ 15 บาท</span></div>
-				</td>
+                <td>
+                  <div class="popup" onclick="myPopupFunc()">ค่าจัดส่ง*
+					          <span class="popuptext" id="myPopup">ค่าส่งเบื้องต้น 30 บาท รวมกับระยะทาง 3 กม.แรกคิดกม.ล่ะ 10 บาท กม.ถัดไปคิด กม.ล่ะ 15 บาท</span>
+                  </div>
+				        </td>
                 <td class="text-right"><strong><div id="delivery"><?php echo $delivery_fee; ?></div></strong></td>
               </tr>
               <tr>
-                <td></td>
+                <td>
+                  <div class="order-row">
+                    <div class="order-col-6">
+                      <input type="text" id="promotion_input" placeholder="กรุณาระบุโค้ดส่วนลด" value="" style="width:150px;float:right;">
+                    </div>
+                    <div class="order-col-6">
+                      <button class="btn btn-info promotion-input" href="#" 
+                        data-pid="<?php echo $_REQUEST['pid']; ?>"
+                        data-nonce="<?php echo wp_create_nonce( 'user_use_promotion_'.$current_user->ID); ?>" 
+                        >ยืนยัน</button>
+                      <div id="promotion-msg" ></div>
+                      <a href="#" id="my-notification-button" style="display: none;" >กดที่นี่เพื่อรับสิทธิ์การใช้โปรโมชั่น</a>
+                    </div>
+                  </div>
+                </td>
                 <td><h3>รวมทั้งหมด</h3></td>
                 <td class="text-right"><h3><strong><div id="sum"><?php echo str_replace(".00", "",number_format($sum,2)); ?></div></strong></h3></td>
               </tr>
             </tbody>
           </table>
-            <div style="float:right;">
+            <div style="float:right;" id="place_order_button">
               <?php if($user_has_address){
-			  if(($delivery_fee == 0) and ($distance == 0) and (($parent->name == "อาหาร")||($default_category->name == "อาหาร")))
+			  if(($delivery_fee == 0) and ($distance == 0) and ($delivery_type > 0))
 			  {
 				?>
 				<h3>ขณะนี้ระบบไม่สามารถคำนวนค่าจัดส่งได้ ขออภัยในความไม่สะดวก</h3>

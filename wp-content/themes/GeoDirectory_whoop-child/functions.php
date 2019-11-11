@@ -1,5 +1,21 @@
 <?php
 
+function is_tamzang_admin(){
+    global $wp_query, $current_user;
+
+    if ( is_user_logged_in() ){
+        $user = get_userdata( $current_user->ID );
+
+        if(in_array( 'administrator', (array) $user->roles ))
+            return true;
+    }
+
+    $wp_query->set_404();
+    status_header( 404 );
+    get_template_part( 404 );
+    exit();
+}
+
 function tamzang_get_current_date(){
     $tz = 'Asia/Bangkok';
     $timestamp = time();
@@ -552,62 +568,62 @@ function tamzang_get_all_products($post_id, $cat_id){
 }
 
 function create_product_modal($product, $post_id){
-  //global $post;
-//   $post_id = $post->ID;
-//   $arrProducts = tamzang_get_all_products($post_id);
-  $nonce = wp_create_nonce( 'add_to_cart_' . $product->ID );
-//   if (!empty($arrProducts)) {
-//     foreach ( $arrProducts as $product ){
-      $html = '';
-      $html .= '<div class="modal fade" id="product_'.$product->ID.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">';
-      $html .= '<div class="modal-dialog" role="document">';
-      $html .= '<div class="modal-content">';
-      $html .= '<form method="POST" id="add_cart_' . $product->ID . '" name="modal_add_cart">';
-      $html .= '<div class="modal-header">';
-      $html .= '<div class="order-col-9"><h3 class="modal-title" id="exampleModalLabel">'.$product->post_title.'</h3></div>';
-      $html .= '<div class="order-col-3"><button type="button" class="close" data-dismiss="modal" aria-label="Close">';
-      $html .= '<span aria-hidden="true">&times;</span>';
-      $html .= '</button></div>';
-      $html .= '</div>';
-      $html .= '<div class="modal-body">';
-      //$html .= json_encode(tamzang_get_product_images($product->id));
-      $html .= create_product_carousel($product, geodir_get_images($product->ID, 'medium', get_option('geodir_listing_no_img')));
-      // $html .= '<div class="sp-quantity">';
-      // $html .= '<div class="input-group">';
-      // $html .= '<span class="input-group-btn">';
-      // $html .= '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  data-type="minus">';
-      // $html .= '<span class="glyphicon glyphicon-minus"></span>';
-      // $html .= '</button>';
-      // $html .= '</span>';
-      // $html .= '<div class="sp-input">';
-      $html .= '<input type="hidden" class="quntity-input form-control" name="qty" value="1">';
-      // $html .= '</div>';
-      // $html .= '<span class="input-group-btn">';
-      // $html .= '<button type="button" class="btn-tamzang-quantity btn-quantity quantity-right-plus btn btn-success btn-number" data-type="plus">';
-      // $html .= '<span class="glyphicon glyphicon-plus"></span>';
-      // $html .= '</button>';
-      // $html .= '</span>';
-      // $html .= '</div>';
-      // $html .= '</div>';
+    $nonce = wp_create_nonce( 'add_to_cart_' . $product->ID );
+    $html = '';
 
-      $html .= '<input type="hidden" name="post_id" value="'.$post_id.'"  />';
-      $html .= '<input type="hidden" name="product_id" value="'.$product->ID.'"  />';
-      $html .= '<input type="hidden" name="nonce" value="'.$nonce.'"  />';
-      $html .= '<input type="hidden" name="action" value="add_to_cart"  />';
-      $html .= '</div>';
-      $html .= '<div class="modal-footer">';
-      $html .= '<div class="order-col-6" style="text-align: left;">';
-      $html .= '<h3>ราคา: '.str_replace(".00", "",number_format($product->geodir_price,2)).' บาท</h3>';
-      $html .= '</div>';
-      $html .= '<div class="order-col-6">';
-      $html .= '<input type="submit" value="เพิ่มสินค้า" class="btn btn-primary"></input>';
-      $html .= '</div>';
-      $html .= '</div>';
-      $html .= '</form>';
-      $html .= '</div>';
-      $html .= '</div>';
-      $html .= '</div>';
-      echo $html;
+    if ( is_user_logged_in() ){
+        $html .= '<div class="modal fade" id="product_'.$product->ID.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">';
+        $html .= '<div class="modal-dialog" role="document">';
+        $html .= '<div class="modal-content">';
+        $html .= '<form method="POST" id="add_cart_' . $product->ID . '" name="modal_add_cart">';
+        $html .= '<div class="modal-header">';
+        $html .= '<div class="order-col-9"><h3 class="modal-title" id="exampleModalLabel">'.$product->post_title.'</h3></div>';
+        $html .= '<div class="order-col-3"><button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        $html .= '<span aria-hidden="true">&times;</span>';
+        $html .= '</button></div>';
+        $html .= '</div>';
+        $html .= '<div class="modal-body">';
+        $html .= create_product_carousel($product, geodir_get_images($product->ID, 'medium', get_option('geodir_listing_no_img')));
+        $html .= '<input type="hidden" class="quntity-input form-control" name="qty" value="1">';
+        $html .= '<input type="hidden" name="post_id" value="'.$post_id.'"  />';
+        $html .= '<input type="hidden" name="product_id" value="'.$product->ID.'"  />';
+        $html .= '<input type="hidden" name="nonce" value="'.$nonce.'"  />';
+        $html .= '<input type="hidden" name="action" value="add_to_cart"  />';
+        $html .= '</div>';
+        $html .= '<div class="modal-footer">';
+        $html .= '<div class="order-col-6" style="text-align: left;">';
+        $html .= '<h3>ราคา: '.str_replace(".00", "",number_format($product->geodir_price,2)).' บาท</h3>';
+        $html .= '</div>';
+        $html .= '<div class="order-col-6">';
+        $html .= '<input type="submit" value="เพิ่มสินค้า" class="btn btn-primary"></input>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</form>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+    }else{
+        $html .= '<div class="modal fade" id="product_'.$product->ID.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">';
+        $html .= '<div class="modal-dialog" role="document">';
+        $html .= '<div class="modal-content">';
+
+        $html .= '<div class="modal-header">';
+        $html .= '<div class="order-col-9"><h3 class="modal-title" id="exampleModalLabel">'.$product->post_title.'</h3></div>';
+        $html .= '<div class="order-col-3"><button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        $html .= '<span aria-hidden="true">&times;</span>';
+        $html .= '</button></div>';
+        $html .= '</div>';
+
+        $html .= '<div class="modal-body">';
+        $html .= do_shortcode('[gd_login_box]');
+        $html .= '</div>';
+
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+    }
+
+    echo $html;
 //     }
 //   }
 
@@ -1726,6 +1742,46 @@ function confirm_order_select_shipping_callback(){
     }
 }
 
+add_action('wp_ajax_select_delivery_type', 'select_delivery_type_callback');
+
+function select_delivery_type_callback(){
+    global $wpdb, $current_user;    
+
+    $data = $_POST;
+
+    // check the nonce
+    if ( check_ajax_referer( 'select_delivery_type' . $current_user->ID, 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+
+    try {
+
+        $pre = 1;
+        if($data['dtype'] == 1){// พนักงานตามสั่ง
+            $pre = 2;
+
+        }else{// พนักงานประจำร้าน
+            $xx = 0;
+        }
+
+        $return = array(
+            'select' => '<img src="'.get_stylesheet_directory_uri().'/js/pass.png" />',
+            'select_type' => $data['dtype'],
+            'pre_type' => $pre,
+            'pre'      => '<a class="btn btn-success select-delivery_type" href="#"
+                            data-pid="'.$data['pid'].'"
+                            data-dtype="'.$pre.'"
+                            data-nonce="'.wp_create_nonce( 'select_delivery_type'.$current_user->ID ).'"
+                            style="color:white;" >เลือก</a>',
+        );
+
+        wp_send_json_success($return);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
 
 function tamzang_bp_user_address_nav_adder()
 {
@@ -1934,8 +1990,7 @@ function geodirectory_detail_page_google_map_link( $options ) {
     if (($post_type !=gd_product)&&(!empty($post->post_latitude) && !empty($post->post_longitude) )) {
        
         $maps_url = add_query_arg( array(
-                        'q' => get_the_title(),
-                        'sll' => $post->post_latitude . ',' . $post->post_longitude,
+                        'q' => $post->post_latitude . ',' . $post->post_longitude,
                     ), 'https://maps.google.com/maps' );
         ?>
         <div class="direction_button">
@@ -2010,24 +2065,75 @@ function add_hidden_shop_id(){
 
 add_action('geodir_before_detail_fields', 'add_hidden_shop_id', 10);
 
-// function test_request_info($request_info){
-//     file_put_contents( dirname(__FILE__).'/debug/request_info.log', var_export( $request_info, true));
-//     return $request_info;
-// }
+function tamzang_select_geodir_delivery_type($html,$cf){   
 
-// add_filter('geodir_action_get_request_info', 'test_request_info', 10, 1);
+    $groupID = geodir_get_post_meta( $_REQUEST['pid'], 'groupID', true );
+    ob_start(); // Start  buffering;
+    $value = geodir_get_cf_value($cf);
+
+    ?>
+    <div id="<?php echo $cf['name'];?>_row"
+         class="<?php if ($cf['is_required']) echo 'required_field';?> geodir_form_row geodir_custom_fields clearfix gd-fieldset-details">
+        <label>
+            <?php $site_title = __($cf['site_title'], 'geodirectory');
+            echo (trim($site_title)) ? $site_title : '&nbsp;'; ?>
+            <?php if ($cf['is_required']) echo '<span>*</span>';?>
+        </label>
+        <?php
+        $option_values_arr = geodir_string_values_to_options($cf['option_values'], true);
+        $select_options = '';
+        if (!empty($option_values_arr)) {
+            if($groupID == 0)
+                unset($option_values_arr[2]);// hard code
+            foreach ($option_values_arr as $option_row) {
+                if (isset($option_row['optgroup']) && ($option_row['optgroup'] == 'start' || $option_row['optgroup'] == 'end')) {
+                    $option_label = isset($option_row['label']) ? $option_row['label'] : '';
+
+                    $select_options .= $option_row['optgroup'] == 'start' ? '<optgroup label="' . esc_attr($option_label) . '">' : '</optgroup>';
+                } else {
+                    $option_label = isset($option_row['label']) ? $option_row['label'] : '';
+                    $option_value = isset($option_row['value']) ? $option_row['value'] : '';
+                    $selected = $option_value == stripslashes($value) ? 'selected="selected"' : '';
+
+                    $select_options .= '<option value="' . esc_attr($option_value) . '" ' . $selected . '>' . $option_label . '</option>';
+                }
+            }
+        }
+        ?>
+        <select field_type="<?php echo $cf['type'];?>" name="<?php echo $cf['name'];?>" id="<?php echo $cf['name'];?>"
+                class="geodir_textfield textfield_x chosen_select"
+                data-placeholder="<?php echo __('Choose', 'geodirectory') . ' ' . $site_title . '&hellip;';?>"
+                option-ajaxchosen="false"><?php echo $select_options;?></select>
+        <span class="geodir_message_note"><?php _e($cf['desc'], 'geodirectory');?></span>
+        <?php if ($cf['is_required']) { ?>
+            <span class="geodir_message_error"><?php _e($cf['required_msg'], 'geodirectory'); ?></span>
+        <?php } ?>
+    </div>
+
+    <?php
+    $html = ob_get_clean();
+
+
+    return $html;
+
+}
+add_filter('geodir_custom_field_input_select_geodir_delivery_type', 'tamzang_select_geodir_delivery_type', 9, 2);
 
 function add_shop_link(){
     global $post, $preview;
 
     $is_current_user_owner = geodir_listing_belong_to_current_user();
     if (!$preview){
-
+        
         if ($is_current_user_owner){
             $post_id = $post->ID;
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/add-listing/') . '?listing_type=gd_product&shop_id='.$post_id . '">เพิ่มสินค้า</a></p>';
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/product-list/') . '?pid='.$post_id . '">แก้ไขสินค้า</a></p>';
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/shop-order/') . '?pid='.$post_id . '">รายการสั่งซื้อของร้าน</a></p>';
+
+            $group_id = geodir_get_post_meta($post->ID,'groupID',true);
+            if($group_id != 0)
+                echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/shop-driver/') . '?pid='.$post_id . '">เพิ่มคนส่งประจำ</a></p>';
         }
         // else{
         //     echo ' <p class="edit_link"><i class="fa fa-pencil"></i> ' . do_shortcode( '[popup_anything id="34987"]' ) . '</p>';
@@ -2223,26 +2329,21 @@ function load_tamzang_menu_view_callback(){
   wp_die();
 }
 
-function test_echo($html,$cf,$post_type){
-    echo "<h1>html: ".$html."</h1>";
-    echo "<h1>cf: ".print_r($cf)."</h1>";
-    echo "<h1>html: ".$post_type."</h1>";
-}
-
 function create_dropdown_categort($type, $post_id){
     global $wpdb;
     $catList = get_cat_id_from_shop($post_id);
     $result = create_array_categort($catList);
-     $html = '';
-     if(!empty($result)){
-         $html .= '<div class="order-row"><div class="order-col-4" style="float:right">
-         <select id="dd_cat" data-cat_type="'.$type.'" data-id="'.$post_id.'">';
-         foreach($result as $cl) {
-             $html .= '<option value="'.$cl["id"].'">'.$cl["name"].'</option>';
-         }
-         $html .= '</select></div></div><div class="order-clear"></div>';
-     }
-	 return $html;
+    $html = '';
+    if(!empty($result)){
+        $html .= '<div class="order-row"><div class="order-col-4" style="float:right">
+        <select id="dd_cat" data-cat_type="'.$type.'" data-id="'.$post_id.'">';
+        $html .= '<option value="">ทั้งหมด</option>';
+        foreach($result as $cl) {
+            $html .= '<option value="'.$cl["id"].'">'.$cl["name"].'</option>';
+        }
+        $html .= '</select></div></div><div class="order-clear"></div>';
+    }
+    return $html;
 }
 
 function create_array_categort($cat_list){
@@ -2438,7 +2539,7 @@ function listdriver(){
 
 function tamzang_bp_user_driver_nav_adder()
 {
-    global $bp;
+    global $bp, $wpdb;
     if (bp_is_user()) {
         $user_id = $bp->displayed_user->id;
     } else {
@@ -2459,7 +2560,28 @@ function tamzang_bp_user_driver_nav_adder()
             'screen_function' => 'tamzang_user_driver_screen',
             'item_css_id' => 'lists',
             'default_subnav_slug' => 'driver'
-        ));
+        )
+    );
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT id FROM driver where driver_id = %d", array($user_id)
+        )
+    );
+
+    if(!empty($id)){
+        bp_core_new_nav_item(
+            array(
+                'name' => 'กลุ่มคนส่ง',
+                'slug' => 'driver_group',
+                'position' => 103,
+                'show_for_displayed_user' => false,
+                'screen_function' => 'tamzang_driver_group_screen',
+                'item_css_id' => 'lists',
+                'default_subnav_slug' => 'driver_group'
+            )
+        );
+    }
 }
 
 add_action('bp_setup_nav', 'tamzang_bp_user_driver_nav_adder',102);
@@ -2502,6 +2624,17 @@ function tamzang_user_driver_screen_content()
 
 }
 
+function tamzang_driver_group_screen()
+{
+  add_action( 'bp_template_content', 'tamzang_driver_group_screen_content' );
+  bp_core_load_template(apply_filters('bp_core_template_plugin', 'members/single/plugins'));
+}
+
+function tamzang_driver_group_screen_content()
+{
+    get_template_part( 'driver/driver', 'group' ); 
+}
+
 add_action('wp_ajax_register_driver', 'register_driver_callback');
 
 function register_driver_callback(){
@@ -2536,6 +2669,13 @@ function register_driver_callback(){
         if(!$result_car_licence['result'])
             wp_send_json_error($result_car_licence['msg']);
 
+        if(!empty($_FILES['image_car_licence2']['name']))
+        {
+            $result_car_licence2 = tamzang_upload_picture('/driver_car_licence2/', $_FILES['image_car_licence2']['name'], $_FILES['image_car_licence2']['tmp_name']);
+            if(!$result_car_licence2['result'])
+                wp_send_json_error($result_car_licence2['msg']);
+        }
+
         $result_licence = tamzang_upload_picture('/driver_licence/', $_FILES['image_licence']['name'], $_FILES['image_licence']['tmp_name']);
         if(!$result_licence['result'])
             wp_send_json_error($result_licence['msg']);
@@ -2551,9 +2691,9 @@ function register_driver_callback(){
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO register_driver SET wp_user_id = %d, name = %s, phone = %s, note = %s, regis_date = %s, approve = %d,
-                 profile_pic = %s, id_card = %s, licence = %s, car_licence = %s ",
+                 profile_pic = %s, id_card = %s, licence = %s, car_licence = %s, car_licence2 = %s ",
                 array($current_user->ID, $data['name'], $data['phone'], $data['note'], $current_date, 0, 
-                $result_avatars['file_name'], $result_id_card['file_name'], $result_licence['file_name'], $result_car_licence['file_name'])
+                $result_avatars['file_name'], $result_id_card['file_name'], $result_licence['file_name'], $result_car_licence['file_name'], $result_car_licence2['file_name'])
             )
         );
 
@@ -2561,6 +2701,121 @@ function register_driver_callback(){
     }
     else{
         wp_send_json_error("ท่านได้สมัครสมาชิคแล้ว");
+    }
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+add_action('wp_ajax_update_driver_profile', 'update_driver_profile_callback');
+
+function update_driver_profile_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+//   file_put_contents( dirname(__FILE__).'/debug/POST.log', var_export( $_POST, true));
+//    file_put_contents( dirname(__FILE__).'/debug/register_driver.log', var_export( $_FILES, true));
+//    wp_send_json_error();
+  if ( check_ajax_referer( 'update_driver_profile_' . $data['driver_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try
+  {
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT id FROM register_driver where wp_user_id = %d", array($data['driver_id'])
+        )
+    );
+
+    if($id != NULL && !empty($id) ){
+
+        $parameters[] = $data['name'];
+        $parameters[] = $data['phone'];
+        
+    
+        $a = false;
+        if(!empty($_FILES['image']['name']))
+        {
+            $result_avatars = tamzang_upload_picture('/driver_avatars/', $_FILES['image']['name'], $_FILES['image']['tmp_name']);
+            if(!$result_avatars['result'])
+                wp_send_json_error($result_avatars['msg']);
+
+            $parameters[] = $result_avatars['file_name'];
+            $a = true;
+        }
+
+        $b = false;
+        if(!empty($_FILES['image_id_card']['name']))
+        {
+            $result_id_card = tamzang_upload_picture('/driver_id_card/', $_FILES['image_id_card']['name'], $_FILES['image_id_card']['tmp_name']);
+            if(!$result_id_card['result'])
+                wp_send_json_error($result_id_card['msg']);
+
+            $parameters[] = $result_id_card['file_name'];
+            $b = true;
+        }
+
+        $c = false;
+        if(!empty($_FILES['image_licence']['name']))
+        {
+            $result_licence = tamzang_upload_picture('/driver_licence/', $_FILES['image_licence']['name'], $_FILES['image_licence']['tmp_name']);
+            if(!$result_licence['result'])
+                wp_send_json_error($result_licence['msg']);
+
+            $parameters[] = $result_licence['file_name'];
+            $c = true;
+        }
+
+        $d = false;
+        if(!empty($_FILES['image_car_licence']['name']))
+        {
+            $result_car_licence = tamzang_upload_picture('/driver_car_licence/', $_FILES['image_car_licence']['name'], $_FILES['image_car_licence']['tmp_name']);
+            if(!$result_car_licence['result'])
+                wp_send_json_error($result_car_licence['msg']);
+
+            $parameters[] = $result_car_licence['file_name'];
+            $d = true;
+        }
+
+        $e = false;
+        if(!empty($_FILES['image_car_licence2']['name']))
+        {
+            $result_car_licence2 = tamzang_upload_picture('/driver_car_licence2/', $_FILES['image_car_licence2']['name'], $_FILES['image_car_licence2']['tmp_name']);
+            if(!$result_car_licence2['result'])
+                wp_send_json_error($result_car_licence2['msg']);
+
+            $parameters[] = $result_car_licence2['file_name'];
+            $e = true;
+        }
+
+        $parameters[] = $data['note'];
+        $parameters[] = $data['driver_id'];
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE register_driver SET name = %s, phone = %s,  
+                ".($a?'profile_pic = %s, ':'')." 
+                ".($b?'id_card = %s, ':'')." 
+                ".($c?'licence = %s, ':'')." 
+                ".($d?'car_licence = %s, ':'')." 
+                ".($e?'car_licence2 = %s, ':'')." note = %s WHERE wp_user_id = %d ",
+                $parameters
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE register_driver SET name = %s  WHERE wp_user_id = %d ",
+                array($data['name'], $data['driver_id'])
+            )
+        );
+
+        wp_send_json_success();
+    }
+    else{
+        wp_send_json_error("ไม่พบ id");
     }
   } catch (Exception $e) {
       wp_send_json_error($e->getMessage());
@@ -2784,7 +3039,7 @@ function listdriverassign(){
 }
 
 function driver_map( $title, $post_latitude, $post_longitude ) {
-
+/*
     if ( !empty( $title ) && !empty( $post_latitude ) && !empty( $post_longitude ) ) {
         $maps_url = add_query_arg( array(
                         'q' => $title,
@@ -2794,7 +3049,8 @@ function driver_map( $title, $post_latitude, $post_longitude ) {
         <a href="<?php echo $maps_url; ?>" class="btn btn-info" target="_blank"><span style="color: #ffffff !important;" >แผนที่</span></a>
         <?php
     }
-	else if (empty( $title ) && !empty( $post_latitude ) && !empty( $post_longitude ))
+    */
+	if (!empty( $post_latitude ) && !empty( $post_longitude ))
 	{
 		$maps_url = add_query_arg( array(
                         'q' =>$post_latitude . ',' . $post_longitude,
@@ -2969,7 +3225,7 @@ function driver_cancel_order_callback(){
             );
 
              // Send Notification to user who Subscribe with OneSignal
-             $message = "ระบบขอยกเลิกรายการสั่งหาก Driver ไม่สามารถติดต่อท่านได้เกิน 5 นาที";
+             $message = "กรุณาติดต่อ พนักงานส่ง ภายใน 5 นาที หากไม่ดำเนินการระบบจะยกเลิกคำสั่งซื้อนี้";
             
              $sql = $wpdb->prepare(
                  "SELECT device_id FROM onesignal where user_id=%d ", array($buyer->wp_user_id)
@@ -3647,6 +3903,90 @@ function driver_ready_callback(){
 
 }
 
+//Ajax functions
+add_action('wp_ajax_driver_pin_enable', 'driver_pin_enable_callback');
+
+function driver_pin_enable_callback(){
+  global $wpdb, $current_user;
+
+  $data = $_POST;
+
+  // check the nonce
+  if ( check_ajax_referer( 'driver_pin_enable_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error("error nonce");
+  }
+
+  try {
+
+    $owner = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT Driver_id FROM driver where Driver_id = %d ", array($data['id'])
+        )
+    );
+
+    if($current_user->ID == $owner){
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET pin_enable = !pin_enable where Driver_id = %d ",
+                array($data['id'])
+            )
+        );
+
+        wp_send_json_success();
+
+    }else{
+        wp_send_json_error("wrong user");
+    }
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+//Ajax functions
+add_action('wp_ajax_driver_tamzangEnable', 'driver_tamzangEnable_callback');
+
+function driver_tamzangEnable_callback(){
+  global $wpdb, $current_user;
+
+  $data = $_POST;
+
+  // check the nonce
+  if ( check_ajax_referer( 'driver_tamzangEnable_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error("error nonce");
+  }
+
+  try {
+
+    $owner = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT Driver_id FROM driver where Driver_id = %d ", array($data['id'])
+        )
+    );
+
+    if($current_user->ID == $owner){
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET tamzangEnable = !tamzangEnable where Driver_id = %d ",
+                array($data['id'])
+            )
+        );
+
+        wp_send_json_success();
+
+    }else{
+        wp_send_json_error("wrong user");
+    }
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
 // AJAX function
 add_action('wp_ajax_assign_order_driver', 'assign_order_driver');
 //get list Driver for restaurant
@@ -4005,6 +4345,60 @@ function approve_driver() {
 
 }
 
+//Ajax functions
+add_action('wp_ajax_approve_driver2', 'approve_driver2_callback');
+
+function approve_driver2_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  //check the nonce
+  if ( check_ajax_referer( 'approve_driver_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try {
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT id FROM driver where Driver_id = %d", array($data['id'])
+        )
+    );
+    if(!empty($id))
+        wp_send_json_success();
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE register_driver SET approve = !approve, approve_by = %d where wp_user_id = %d ",
+            array($current_user->ID, $data['id'])
+        )
+    );
+
+	$driver = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT * FROM register_driver where wp_user_id = %d ", array($data['id'])
+		)
+    );
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO driver SET
+             Driver_id = %d,driver_name = %s,phone =%s, profile_pic = %s ",
+             array($driver->wp_user_id, $driver->name, $driver->phone, $driver->profile_pic)
+        )
+    );
+
+    wp_send_json_success($data);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
 // AJAX function
 add_action('wp_ajax_update_driver_location', 'update_driver_location');
 //get list Driver for restaurant
@@ -4272,7 +4666,7 @@ function short_des_listview($post){
 add_action('wp_ajax_updateOnesignal', 'updateOnesignal');
 add_action('wp_ajax_nopriv_updateOnesignal', 'updateOnesignal');
 
-function updateOnesignal(){	
+function updateOnesignal(){
 	global $wpdb;
 	$data = $_POST;
 	$queery_sql = $data['doing']; 
@@ -4281,7 +4675,6 @@ function updateOnesignal(){
 	$user_id = get_current_user_id();
 	$device_type = $data['deviceType'];
 	
-	
 	file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal PHP Start", true));
 	file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal PHP Is enable is :".$device_id, true),FILE_APPEND);
 	
@@ -4289,7 +4682,7 @@ function updateOnesignal(){
 	//Check data about this device in DB
 	$super_driver_id = $wpdb->get_var(
       $wpdb->prepare(
-          "SELECT user_id  FROM onesignal WHERE device_id=%d and device_type=%d", array($device_id,$device_type)
+          "SELECT user_id  FROM onesignal WHERE device_id=%s and device_type=%s", array($device_id,$device_type)
       )
 	);
 	if(empty($super_driver_id)){
@@ -4303,10 +4696,18 @@ function updateOnesignal(){
 		}
 	}
 	else {
-		if($queery_sql == "DELETE"){
-		$wpdb->query($wpdb->prepare("DELETE FROM onesignal WHERE device_id = %d", $device_id));
+        if($queery_sql == "INSERT"){
+			$query = $wpdb->prepare("UPDATE onesignal SET
+                             user_id =%d WHERE device_id = %s",
+                             array($user_id,$device_id)
+                          );
+			$wpdb->query($query);
+			//file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal UPDATE".$device_id, true),FILE_APPEND);
+        }		
+    }
+    if($queery_sql == "DELETE"){
+		$wpdb->query($wpdb->prepare("DELETE FROM onesignal WHERE device_id = %s", $device_id));
 		file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal Delete".$device_id, true),FILE_APPEND);
-		}
 	}
 }
 
@@ -4321,17 +4722,86 @@ function my_onesignal_check(){
 <script>
 console.log("Before OneSignal Start:"); 
 
+
+console.log("uuid v1 : "+uuid.v1()); // -> v1 UUID
+console.log("uuid v4 : "+uuid.v4()); // -> v4 UUID
+
+
+function GetGuid() {
+
+var nav = window.navigator;
+var screen = window.screen;
+var guid = nav.mimeTypes.length;
+guid += nav.userAgent.replace(/\D+/g, '');
+guid += nav.plugins.length;
+guid += screen.height || '';
+guid += screen.width || '';
+guid += screen.pixelDepth || '';
+
+return guid;
+};
+
+
+
 var usrlogincheck = <?php echo $usrlogin ?>;
 var usrID = <?php echo get_current_user_id()?>;
 var usrDevice = "<?php echo $device?>";
 
 OneSignal.push(function() {
-	console.log("OneSignal Start!!:");
+    console.log("OneSignal Start!!:");
+    
+    var uuid = new DeviceUUID().get();
+    console.log("UUID :"+uuid);
+    console.log("GUID :"+GetGuid());
+
+    if (window.requestIdleCallback) {
+    requestIdleCallback(function () {
+        Fingerprint2.get(function (components) {
+          console.log("Fingerprint if"); // an array of components: {key: ..., value: ...}
+          console.log(components);
+        })
+    })
+} else {
+    setTimeout(function () {
+        Fingerprint2.get(function (components) {
+          console.log("Fingerprint else"); // an array of components: {key: ..., value: ...}
+          onsole.log(components);
+        })  
+    }, 500)
+}
+
+OneSignal.getUserId(function(deviceId) {
+		console.log(" Not choose subscribe Check User ID:", deviceId);
+		
+    });
+
+    
   OneSignal.isPushNotificationsEnabled(function(isEnabled) {
     <?php
     file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal push-notice  ".$usrDevice." and login is".$usrlogincheck, true),FILE_APPEND);
     ?>
-	console.log("OneSignal Check isEnabled:"+isEnabled);
+    console.log("OneSignal Check isEnabled:"+isEnabled);
+
+    if(!isEnabled){
+        alert("หากต้องการใช้ promotion กรูณา subscirbe");
+    }
+
+    OneSignal.getUserId(function(deviceId) {
+		console.log(" Promotion Check User ID:", deviceId);
+		jQuery.ajax({
+			type: 'POST',
+			dataType: 'json',
+			url: ajaxurl,
+			data: 'action=updatePromotionCheck&doing=INSERT&device_id='+deviceId,
+			success: function(arrayPHP) 
+			{
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				console.log(textStatus);
+			}
+		});
+    });
+        
     if ((isEnabled)&&(usrlogincheck))
 	{
       	OneSignal.getUserId(function(deviceId) {
@@ -4351,12 +4821,11 @@ OneSignal.push(function() {
 			});
 		});
 		console.log("Push notifications are enabled!");
-	}
-	
+	}	
     else
 	{
 		OneSignal.getUserId(function(deviceId) {
-			console.log("OneSignal User ID:", deviceId);
+			console.log(" Else OneSignal User ID:", deviceId);
 			jQuery.ajax({
 				type: 'POST',
 				dataType: 'json',
@@ -4429,18 +4898,41 @@ OneSignal.push(function() {
 add_action('wp_ajax_updateusrnoti', 'updateusrnoti');
 add_action('wp_ajax_nopriv_updateusrnoti', 'updateusrnoti');
 function updateusrnoti(){
+    global $wpdb;
 	$data = $_POST;
     $queery_sql = $data['doing']; 
     
 	$device_id_bfr = $data['device_id'];
     $device_id = trim($device_id_bfr,'Optional(\\")');    
 	$user_id = get_current_user_id();
-	$device_type = $data['deviceType'];	
+    $device_type = $data['deviceType'];	
+
+    //Promotion Log
+    $super_device_id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT user_id  FROM promotion_log WHERE device_id=%s", array($device_id)
+        )
+      );
+      if(empty($super_device_id)){
+          if($queery_sql == "INSERT"){
+              $query = $wpdb->prepare("INSERT INTO promotion_log SET
+                               device_id = %s,user_id =%d",
+                               array($device_id,$user_id)
+                            );
+              $wpdb->query($query);
+              file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
+          }
+      }	
+
+    // Onesignal
 	if($user_id != 0)
 	{
 		updateOneSignaliOS($queery_sql,$device_id,$user_id,$device_type);
 		file_put_contents( dirname(__FILE__).'/debug/iostest.log', var_export( "Check user login".$device_id."user login is ".$user_id."Doing is".$queery_sql, true));
-	}
+    }
+    elseif($user_id == 0){
+        updateOneSignaliOS("DELETE",$device_id,$user_id,$device_type);
+    }
 }
 
 function updateOneSignaliOS($queery_sql,$device_id,$user_id,$device_type){
@@ -4450,9 +4942,11 @@ function updateOneSignaliOS($queery_sql,$device_id,$user_id,$device_type){
 	//Check data about this device in DB
 	$super_driver_id = $wpdb->get_var(
       $wpdb->prepare(
-          "SELECT user_id  FROM onesignal WHERE device_id=%d and device_type=%d", array($device_id,$device_type)
+          "SELECT user_id  FROM onesignal WHERE device_id=%s and device_type=%s", array($device_id,$device_type)
       )
-	);
+    );
+    
+    // Keep OneSignal
 	if(empty($super_driver_id)){
 		if($queery_sql == "INSERT"){
 			$query = $wpdb->prepare("INSERT INTO onesignal SET
@@ -4462,7 +4956,38 @@ function updateOneSignaliOS($queery_sql,$device_id,$user_id,$device_type){
 			$wpdb->query($query);
 			file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
 		}
+    }
+    else {
+        if($queery_sql == "INSERT"){
+			$query = $wpdb->prepare("UPDATE onesignal SET
+                             user_id =%d WHERE device_id = %s",
+                             array($user_id,$device_id)
+                          );
+			$wpdb->query($query);
+			file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
+        }		
+    }
+    if($queery_sql == "DELETE"){
+		$wpdb->query($wpdb->prepare("DELETE FROM onesignal WHERE device_id = %s", $device_id));
+		file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal Delete".$device_id, true),FILE_APPEND);
 	}
+
+    //Promotion Log
+    $super_device_id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT user_id  FROM promotion_log WHERE device_id=%s", array($device_id)
+        )
+    );
+    if(empty($super_device_id)){
+		if($queery_sql == "INSERT"){
+			$query = $wpdb->prepare("INSERT INTO promotion_log SET
+                             device_id = %s,user_id =%d",
+                             array($device_id,$user_id)
+                          );
+			$wpdb->query($query);
+			//file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
+		}
+    } 
 }
 
 
@@ -5026,7 +5551,8 @@ function add_shop_link_at_product_form($type = '', $id = '', $class = ''){
     if($listing_type != "gd_product")
         return;
         
-    echo '<div id="shopname"><a href="'.get_permalink($geodir_shop_id).'">'.get_the_title($geodir_shop_id).'</a></div><br>';
+    //echo '<div id="shopname"><a href="'.get_permalink($geodir_shop_id).'">'.get_the_title($geodir_shop_id).'</a></div><br>';
+    echo '<h2><li><a href="'.get_permalink( $geodir_shop_id ).'">'.get_the_title( $geodir_shop_id ).'</a></li></h2>';
 }
 
 add_action('geodir_wrapper_content_open', 'add_shop_link_at_product_form', 20, 3);
@@ -5042,22 +5568,64 @@ function refresh_seller_page(){
 add_action('wp_ajax_list_driver_marker', 'list_driver_marker');
 function list_driver_marker(){  
     global $wpdb; 
-    //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!", true));
-    $driverList  = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT * FROM driver",array()          
-        )
-    );
-    foreach ($driverList as $driver) {
-        $assign_drivers = array();
-	    $assign_drivers['id'] = $driver->Driver_id;;
-		$assign_drivers['name'] = $driver->driver_name;
-		$assign_drivers['lat'] =$driver->latitude;
-		$assign_drivers['lon'] = $driver->longitude;
-		//file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
-		
-		$return_arr[] = $assign_drivers;
+    
+    $driver_id = $_POST['driver_id'];
+    $type_location = $_POST['typeLocation'];
+    //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!".$driver_id, true));
+    if(empty($driver_id))
+    {
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !! Empty", true));
+        $driverList  = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM driver",array()          
+            )
+        );
     }
+    
+    else
+    {
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!".$driver_id, true));
+        $driverList  = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM driver where Driver_id = %d  ",array($driver_id)          
+            )
+        );
+
+    }
+    
+    
+    if(empty($type_location)||($type_location == "current")){
+        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "current !!".$driver_id, true));
+        foreach ($driverList as $driver) {
+            $assign_drivers = array();
+            $assign_drivers['id'] = $driver->Driver_id;;
+            $assign_drivers['name'] = $driver->driver_name;
+            $assign_drivers['lat'] =$driver->current_latitude;
+            $assign_drivers['lon'] = $driver->current_longitude;
+            //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
+            
+            $return_arr[] = $assign_drivers;
+        }
+    }
+    else{
+        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "PIN !!".$driver_id, true));
+        foreach ($driverList as $driver) {
+            $assign_drivers = array();
+            $assign_drivers['id'] = $driver->Driver_id;;
+            $assign_drivers['name'] = $driver->driver_name;
+            $assign_drivers['lat'] =$driver->latitude;
+            $assign_drivers['lon'] = $driver->longitude;
+            //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
+            
+            $return_arr[] = $assign_drivers;
+        }
+    }
+    if(empty($driverList))
+    {
+        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !! Empty", true));
+        wp_send_json_success("empty");
+    }
+    else
     wp_send_json_success($return_arr);
 }
 
@@ -5069,5 +5637,619 @@ function bangkok_current_time($output) {
     return $dt->format("Y-m-d H:i:s");
 }
 add_filter('bp_core_current_time', 'bangkok_current_time');
+
+// Add + price 0
+add_action('wp_ajax_add_call_order_button', 'add_call_order_button');
+function add_call_order_button(){ 
+    global $wpdb; 
+    file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "add_call_order_button !!", true));
+    
+    $shop_list  = $wpdb->get_results(
+        $wpdb->prepare(
+            "select * from wp_geodir_gd_place_detail
+            where default_category not in (191,183,199,162,150,157,159,154,152,153,190,200,156,164)
+            and ((geodir_tamzang_id is NULL) or (geodir_tamzang_id = ''))
+            and post_id > 290000 and post_id <= 300000"
+            ,array()          
+        )
+    );
+    foreach ($shop_list as $shop) {
+
+        $query = $wpdb->prepare("INSERT INTO wp_posts SET
+                                post_author = %d,post_date = SYSDATE(),post_content ='(โปรดยืนยันราคารวมกับทางร้าน)',post_title =%s,post_status = 'publish',post_type='gd_product',Place_id=%s",
+                                array(1,'#สั่งสินค้าด้วยตัวเอง กรุณาโทร '.$shop->geodir_contact,$shop->post_id)
+                            );
+        $wpdb->query($query);
+        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Finish insert wp_Post !!".$shop->post_id, true),FILE_APPEND);
+    }
+    
+
+    foreach($shop_list as $shop_array){
+        $post_id  = $wpdb->get_row($wpdb->prepare("select * from wp_posts where Place_id = %s",array($shop_array->post_id)));
+        $query = $wpdb->prepare("INSERT INTO wp_geodir_gd_product_detail SET
+                                post_id = %d,post_title = %s,post_status = 'publish',default_category = '248',post_location_id = %d,marker_json =%s,post_locations = %s,
+                                gd_productcategory = ',248,',post_latitude = %s,post_longitude = %s,geodir_price = 0,geodir_show_addcart = '1',geodir_shop_id =%s",
+                                array($post_id->ID,$post_id->post_title,$shop_array->post_location_id,$shop_array->marker_json,$shop_array->post_locations,
+                                $shop_array->post_latitude,$shop_array->post_longitude,$shop_array->post_id)
+                            );
+        $wpdb->query($query);
+        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Finish insert wp_geodir_gd_product_detail !!".$post_id->ID, true),FILE_APPEND);
+    }    
+    
+}
+
+
+add_action('wp_ajax_shop_add_driver_to_group', 'shop_add_driver_to_group_callback');
+function shop_add_driver_to_group_callback(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+    //file_put_contents( dirname(__FILE__).'/debug/driver_update_picture.log', var_export( $_FILES, true));
+    //wp_send_json_error($_FILES['file']['name'].'--test--'.$_FILES['file']['tmp_name']);
+    //check the nonce
+    if ( check_ajax_referer( 'shop_add_driver_to_group_' . $data['pid'], 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    if(!geodir_listing_belong_to_current_user((int)$data['pid']))
+        wp_send_json_error();
+  
+    try
+    {
+        $group_id = geodir_get_post_meta($data['pid'],'groupID',true);
+        $d_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT driver_id FROM driver WHERE driver_id = %d AND groupID like '%".$group_id."%'", array($data['driver_id'])
+            )
+        );
+
+        if(!empty($d_id))
+            wp_send_json_error($d_id." ได้อยู่ในกลุ่มนี้แล้ว");
+
+        $d_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT driver_id FROM request_group WHERE driver_id = %d AND group_id = %d ", array($data['driver_id'],$group_id)
+            )
+        );
+
+        if(!empty($d_id))
+            wp_send_json_error($d_id." อยู่ในรายชื่อที่รอการตอบรับ");
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO request_group SET group_id = %d, Driver_id = %d ",
+                array($group_id,$data['driver_id'])
+            )
+        );
+        $driver = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT driver_id,driver_name FROM driver where driver_id = %d ", array($data['driver_id'])
+            )
+        );
+
+        $return = array(
+            'result' => $driver->driver_id." ".$driver->driver_name,
+            'msg' => "เพิ่ม ".$driver->driver_name." ลงรายชื่อที่รอการตอบรับแล้ว"
+        );
+        wp_send_json_success($return);
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+
+}
+
+add_action('wp_ajax_driver_join_group', 'driver_join_group_callback');
+function driver_join_group_callback(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+
+    if ( check_ajax_referer( 'driver_join_group_' . $current_user->ID, 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    try
+    {
+        $request_group = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM request_group where driver_id = %d AND group_id = %d ", array($current_user->ID, $data['gid'])
+            )
+        );
+
+        if(empty($request_group))
+            wp_send_json_error();
+
+        $driver_group = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT groupID FROM driver WHERE driver_id = %d ", array($current_user->ID)
+            )
+        );
+
+        $array_group = explode(",", $driver_group);
+
+        if (in_array($data['gid'], $array_group))
+            wp_send_json_error();
+
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET groupID = CONCAT(groupID, '".$data['gid'].",') WHERE Driver_id = %d ",
+                array($current_user->ID)
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM request_group where driver_id = %d AND group_id = %d ", array($current_user->ID, $data['gid'])
+            )
+        );
+
+        $group_name = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT group_name FROM serviceGroup WHERE group_id = %d ", array($data['gid'])
+            )
+        );
+
+        // $return = array(
+        //     'gname' => $group_name,
+        //     'gbutton' => '<button class="btn btn-danger" href="#"  data-toggle="modal" data-target="#confirm-group"
+        //                 data-gid="'.$data['gid'].'" data-gname="'.$group_name.'" data-type="2"
+        //                 data-nonce="'.wp_create_nonce( 'driver_quit_group_'.$current_user->ID).'">ออกจากกลุ่ม</button>'
+        // );
+
+        $return .= '<tr id="gid-'.$data['gid'].'">';
+        $return .= '<td>';
+        $return .= $group_name;
+        $return .= '</td>';
+        $return .= '<td style="text-align: center;">';
+        $return .= '<button class="btn btn-info" href="#"  data-toggle="modal" data-target="#list-group"
+                    data-gid="'.$data['gid'].'" data-gname="'.$group_name.'"
+                    data-nonce="'.wp_create_nonce( 'driver_list_group_'.$current_user->ID).'">รายชื่อร้าน</button>';
+        $return .= '</td>';
+        $return .= '<td style="text-align: center;">';
+        $return .= '<button class="btn btn-danger" href="#"  data-toggle="modal" data-target="#confirm-group"
+                    data-gid="'.$data['gid'].'" data-gname="'.$group_name.'" data-type="2"
+                    data-nonce="'.wp_create_nonce( 'driver_quit_group_'.$current_user->ID).'">ออกจากกลุ่ม</button>';
+        $return .= '</td>';
+        $return .= '</tr>';
+
+
+        wp_send_json_success($return);
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+
+}
+
+add_action('wp_ajax_driver_decline_group', 'driver_decline_group_callback');
+function driver_decline_group_callback(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+
+    if ( check_ajax_referer( 'driver_decline_group_' . $current_user->ID, 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    try
+    {
+        $request_group = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM request_group where driver_id = %d AND group_id = %d ", array($current_user->ID, $data['gid'])
+            )
+        );
+
+        if(empty($request_group))
+            wp_send_json_error();
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM request_group where driver_id = %d AND group_id = %d ", array($current_user->ID, $data['gid'])
+            )
+        );
+
+        wp_send_json_success();
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+
+}
+
+add_action('wp_ajax_driver_quit_group', 'driver_quit_group_callback');
+function driver_quit_group_callback(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+
+    if ( check_ajax_referer( 'driver_quit_group_' . $current_user->ID, 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    try
+    {
+        $driver_group = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT groupID FROM driver WHERE driver_id = %d ", array($current_user->ID)
+            )
+        );
+
+        $array_group = explode(",", $driver_group);
+
+        if (!in_array($data['gid'], $array_group))
+            wp_send_json_error();
+
+        if (($key = array_search($data['gid'], $array_group)) !== false) {
+            unset($array_group[$key]);
+        }
+
+        $new_group = implode(",",$array_group);
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET groupID = %s WHERE Driver_id = %d ",
+                array($new_group, $current_user->ID)
+            )
+        );
+
+        wp_send_json_success();
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+
+}
+
+add_action('wp_ajax_driver_list_group', 'driver_list_group_callback');
+function driver_list_group_callback(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+
+    if ( check_ajax_referer( 'driver_list_group_' . $current_user->ID, 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+  
+    try
+    {
+        $driver_group = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT groupID FROM driver WHERE driver_id = %d ", array($current_user->ID)
+            )
+        );
+
+        $array_group = explode(",", $driver_group);
+
+        if (!in_array($data['gid'], $array_group))
+            wp_send_json_error();
+
+
+        $shop_list  = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT post_title FROM wp_geodir_gd_place_detail where groupID = %d  ",array($data['gid'])          
+            )
+        );
+
+        $return = "";
+        foreach ($shop_list as $shop) {
+            $return .= "<li>".$shop->post_title."</li>";
+        }
+
+        wp_send_json_success($return);
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_update_current_location', 'update_current_location');
+function update_current_location(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+    
+    
+    
+    if($data['type'] == "DRIVER"){
+        //file_put_contents( dirname(__FILE__).'/debug/update_current_location.log', var_export( " Type Driver ID : ".$current_user->ID, true));
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET current_latitude = %s, current_longitude =%s WHERE Driver_id = %d ",
+                array($data['lat'], $data['lng'],$current_user->ID)
+            )
+        );
+    }
+    else if($data['type'] == "USER"){
+        file_put_contents( dirname(__FILE__).'/debug/update_current_location.log', var_export( "Type user ID : ".$current_user->ID, true));
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE wp_users SET current_latitude = %s, current_longitude =%s WHERE ID = %d ",
+                array($data['lat'], $data['lng'],$current_user->ID)
+            )
+        );
+    }
+    
+    
+    
+}
+
+// AJAX function
+add_action('wp_ajax_get_place_delivery_setup', 'get_place_delivery_setup');
+//get list Driver for restaurant
+function get_place_delivery_setup() {
+    global $wpdb;
+	$return_arr = array();
+	$return_web = array();
+	$restaurant_array = array();
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST;
+	
+    $Post_id = $data['PlaceId'];
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+	
+	$sql = $wpdb->prepare(
+        "SELECT * FROM delivery_variable WHERE post_id = %d ",array($Post_id)  
+    );	
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
+	$result_list_delivery_variable = $wpdb->get_results($sql);	
+	//$total_driver = $wpdb->num_rows;
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $result_driver, true));
+    if(!empty($result_list_delivery_variable)){
+        foreach ($result_list_delivery_variable as $list)
+        {
+            $assign_drivers = array();
+            $post_id = $list->post_id;
+            $title = $list->title;
+            $base = $list->base;
+            $base_adjust = $list->base_adjust;
+            $km_tier1 = $list->km_tier1;
+            $km_tier1_value = $list->km_tier1_value;
+            $km_tier2 = $list->km_tier2;
+            $km_tier2_value = $list->km_tier2_value;
+            $km_tier3 = $list->km_tier3;
+            $km_tier3_value = $list->km_tier3_value;
+            $km_tier4 = $list->km_tier4;
+            $km_tier4_value = $list->km_tier4_value;
+            $km_tier5 = $list->km_tier5;
+            $km_tier5_value = $list->km_tier5_value;
+            $geodir_delivery_type = $list->geodir_delivery_type;
+            $assign_drivers['post_id'] = $post_id;
+            $assign_drivers['title'] = $title;
+            $assign_drivers['base'] = $base;
+            $assign_drivers['base_adjust'] = $base_adjust;
+            $assign_drivers['km_tier1'] = $km_tier1;
+            $assign_drivers['km_tier1_value'] = $km_tier1_value;
+            $assign_drivers['km_tier2'] = $km_tier2;
+            $assign_drivers['km_tier2_value'] = $km_tier2_value;
+            $assign_drivers['km_tier3'] = $km_tier3;
+            $assign_drivers['km_tier3_value'] = $km_tier3_value;
+            $assign_drivers['km_tier4'] = $km_tier4;
+            $assign_drivers['km_tier4_value'] = $km_tier4_value;
+            $assign_drivers['km_tier5'] = $km_tier5;
+            $assign_drivers['km_tier5_value'] = $km_tier5_value;
+            $assign_drivers['geodir_delivery_type'] = $geodir_delivery_type;
+            file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Not Empty", true));	
+            
+            $return_arr[] = $assign_drivers;
+        }
+    }
+
+    wp_send_json_success($return_arr);
+    wp_die();
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_list_delivery_setup', 'list_delivery_setup');
+function list_delivery_setup(){
+
+
+    $data = $_GET;
+    /*
+	set_query_var( 'total_order', $data['data']); 
+	set_query_var( 'res_id', $data['res_id']);
+    set_query_var( 'order_id', $data['order_id']); */  
+    set_query_var('post_id',$data['post_id']);
+    set_query_var('title',$data['title']);
+    set_query_var('base',$data['base']);
+    set_query_var('base_adjust',$data['base_adjust']);
+    set_query_var('km_tier1',$data['km_tier1']);
+    set_query_var('km_tier1_value',$data['km_tier1_value']);
+    set_query_var('km_tier2',$data['km_tier2']);
+    set_query_var('km_tier2_value',$data['km_tier2_value']);
+    set_query_var('km_tier3',$data['km_tier3']);
+    set_query_var('km_tier3_value',$data['km_tier3_value']);
+    set_query_var('km_tier4',$data['km_tier4']);
+    set_query_var('km_tier4_value',$data['km_tier4_value']);
+    set_query_var('km_tier5',$data['km_tier5']);
+    set_query_var('km_tier5_value',$data['km_tier5_value']);
+    set_query_var('geodir_delivery_type',$data['geodir_delivery_type']); 
+    
+  //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $data['title'], true));
+
+  get_template_part( 'ajax-restaurant-delivery' );
+  wp_die();
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_restaurant_delivery_setup', 'restaurant_delivery_setup');
+function restaurant_delivery_setup(){
+    global $wpdb;
+	$current_date = tamzang_get_current_date();
+	$return_arr = array();
+	file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( "restaurant_delivery_setup", true));
+    $data = $_POST;
+    $check = $_POST['doing_1'];
+    file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( "Check array".$check, true),FILE_APPEND);   
+    /*
+    $status = $_POST['status'];
+	$order_id = $_POST['orderID'];
+    $Tamzang_id = $_POST['TamzangId'];
+    $emer_driver_id = $data['driverID'];
+    $driver_id = $_POST['priority'];
+    */
+
+    for($i = 0; $i < 2; $i++){
+        $doing = $_POST['doing_'.$i];             
+        $post_id = $_POST['postid_'.$i];
+        $title = $_POST['title_'.$i];
+        $base = $_POST['base_'.$i];
+        $base_adjust = $_POST['base_adjust_'.$i];
+        $km_tier1 = $_POST['km_tier1_'.$i];
+        $km_tier1_value = $_POST['km_tier1_value_'.$i];
+        $km_tier2 = $_POST['km_tier2_'.$i];
+        $km_tier2_value = $_POST['km_tier2_value_'.$i];
+        $km_tier3 = $_POST['km_tier3_'.$i];
+        $km_tier3_value = $_POST['km_tier3_value_'.$i];
+        $km_tier4 = $_POST['km_tier4_'.$i];
+        $km_tier4_value = $_POST['km_tier4_value_'.$i];
+        $km_tier5 = $_POST['km_tier5_'.$i];
+        $km_tier5_value = $_POST['km_tier5_value_'.$i];
+        $geodir_delivery_type = $_POST['geodir_delivery_type_'.$i];
+
+        if($doing == "UPDATE"){
+           // file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
+           $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE delivery_variable SET base = %f, base_adjust =%f ,km_tier1 =%f,km_tier1_value = %f, km_tier2 =%f ,km_tier2_value =%f,km_tier3 = %f, km_tier3_value =%f
+                    ,km_tier4 =%f,km_tier4_value = %f, km_tier5 =%f ,km_tier5_value =%f
+                    WHERE geodir_delivery_type = %d and post_id = %d ",
+                    array($base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value,$km_tier4,$km_tier4_value, $km_tier5,$km_tier5_value,$geodir_delivery_type,$post_id)
+                )
+            );
+        }
+        elseif($doing == "INSERT"){
+          //  file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
+          if(!empty($post_id)){
+            $wpdb->query(
+                $wpdb->prepare(
+                 "INSERT INTO delivery_variable SET
+                 post_id = %d,title = %s,base = %f, base_adjust =%f ,km_tier1 =%f,km_tier1_value = %f, km_tier2 =%f ,km_tier2_value =%f,km_tier3 = %f, km_tier3_value =%f
+                    ,km_tier4 =%f,km_tier4_value = %f, km_tier5 =%f ,km_tier5_value =%f,geodir_delivery_type = %d",
+                 array($post_id,$title,$base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value,$km_tier4,$km_tier4_value, $km_tier5,$km_tier5_value,$geodir_delivery_type)
+             )
+            );
+          }
+            
+        }
+        
+    }
+    wp_send_json_success("SUCCESS");
+
+    
+}
+
+
+
+//Ajax functions
+add_action('wp_ajax_user_use_promotion', 'user_use_promotion_callback');
+function user_use_promotion_callback(){
+  global $wpdb, $current_user;
+
+  $data = $_POST;
+
+  // check the nonce
+  if ( check_ajax_referer( 'user_use_promotion_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error("error nonce");
+  }
+
+  try {
+
+    $check = check_promotion($data['promotion_input']);
+
+    if($check['is_valid'])
+    {
+        $return = array(
+            'name' => $check['name'],
+            'constant' => $check['constant'],
+            'percent' => $check['percent'],
+        );
+
+        wp_send_json_success($return);
+    }
+    else
+        wp_send_json_error($check['msg']);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+function check_promotion($promotion_code){
+    global $wpdb, $current_user;
+
+    $tz_date = tamzang_get_current_date();
+    $promotion = $wpdb->get_row(
+        // $wpdb->prepare(
+        //     'SELECT * FROM promotion WHERE uses < max_uses 
+        //     AND start_date < STR_TO_DATE(%s, "%Y-%m-%d %H:%i:%s") 
+        //     AND end_date > STR_TO_DATE(%s, "%Y-%m-%d %H:%i:%s")
+        //     AND code = %s ', array($tz_date, $tz_date, $promotion_code)
+        // )
+        $wpdb->prepare(
+            'SELECT * FROM promotion WHERE uses < max_uses 
+            AND start_date < %s
+            AND end_date > %s
+            AND code = %s ', array($tz_date, $tz_date, $promotion_code)
+        )
+    );
+
+    if(empty($promotion))
+        return array('is_valid' => false, 'msg' => "code invalid");
+
+    $device_id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT device_id  FROM onesignal WHERE user_id=%d", array($current_user->ID)
+        )
+    );
+
+    $check = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT promotion_id FROM promotion_log
+            where instr(promotion_id,%s) >= 1 and (device_id = %s OR user_id = %d) ", 
+            array($promotion->ID, $device_id, $current_user->ID)
+        )
+    );
+
+    // $check = $wpdb->get_var(
+    //     $wpdb->prepare(
+    //         "SELECT promotion_id FROM onesignal
+    //         where instr(promotion_id,%s) >= 1 and user_id = %d ", 
+    //         array($promotion->ID, $current_user->ID)
+    //     )
+    // );
+
+    if(!empty($check))
+        return array('is_valid' => false, 'msg' => "ใช้ code แล้ว");
+
+    return array('is_valid' => true, 'name' => $promotion->name, 'constant' => $promotion->constant, 'percent' => $promotion->percent);
+
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_updatePromotionCheck', 'updatePromotionCheck');
+add_action('wp_ajax_nopriv_updatePromotionCheck', 'updatePromotionCheck');
+
+function updatePromotionCheck(){
+	global $wpdb;
+	$data = $_POST;
+	$queery_sql = $data['doing']; 
+	$device_id_bfr = $data['device_id'];
+	$device_id = trim($device_id_bfr,'Optional(\\")');
+	$user_id = get_current_user_id();	
+	
+	file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal PHP Start", true));
+	file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal PHP Is enable is :".$device_id, true),FILE_APPEND);	
+
+	//Check data about this device in DB
+	$super_device_id = $wpdb->get_var(
+      $wpdb->prepare(
+          "SELECT user_id  FROM promotion_log WHERE device_id=%s", array($device_id)
+      )
+	);
+	if(empty($super_device_id)){
+		if($queery_sql == "INSERT"){
+			$query = $wpdb->prepare("INSERT INTO promotion_log SET
+                             device_id = %s,user_id =%d",
+                             array($device_id,$user_id)
+                          );
+			$wpdb->query($query);
+			file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
+		}
+	}	
+}
 
 ?>

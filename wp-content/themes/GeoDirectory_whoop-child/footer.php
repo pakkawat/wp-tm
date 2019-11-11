@@ -264,7 +264,16 @@ if ( is_single() ) {
           <div class="modal-content">
               <div class="modal-header" style="border-bottom: 0 none;padding: 15px 15px 0 15px;">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo get_the_title(get_the_ID());?></h4>
+                <h4 class="modal-title" id="myModalLabel">
+                <?php 
+                  $post_type = geodir_get_current_posttype();
+                  if($post_type == "gd_place")
+                    echo get_the_title(get_the_ID());
+                  else{
+                    $shop_id = geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true);	
+	                  echo get_the_title($shop_id);
+                  }
+                ?></h4>
               </div>
               <div class="modal-body" style="padding:0;">
 

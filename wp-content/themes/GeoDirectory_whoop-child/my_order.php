@@ -111,6 +111,7 @@ else{
 
 if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้าง order
   $arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
+  $delivery_type_buyer = $_POST['dtype'];
   if(!empty($arrProducts))
   {
     /* 20190102 Bank put deliver_ticket */
@@ -120,13 +121,16 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
     //echo $dt->format('d.m.Y, H:i:s');
 
+
     $current_date = $dt->format("Y-m-d H:i:s");
 
     $geodir_delivery_type = geodir_get_post_meta( $_POST['pid'], 'geodir_delivery_type', true );
     $need_delivery = true;
     if (strpos($geodir_delivery_type, '0') !== false) {
       $need_delivery = false;
+      echo "Need Delivery Inside IF is :";
     }
+    echo "Need Delivery is :".$need_delivery;
     $use_point = false;
       //20190213 Bank Add Delivery Fee if it need delivery
     if($need_delivery)
@@ -139,9 +143,9 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
         $use_point = check_user_point($_POST['hidden_up']);
     }	
 
-    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d ".
+    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d,user_delivery_type =%d ".
     ($need_delivery ? ", deliver_ticket = 'Y'" : "").(($use_point) ? ", redeem_point = true" : ""),
-      array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'])));
+      array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'],$delivery_type_buyer)));
     $order_id = $wpdb->insert_id;
 
     $shipping_id = 0;
@@ -228,7 +232,7 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     );
 
     // Send Notification to user who Subscribe with OneSignal
-    $message = "มี Order อาหารมาใหม่จาก Tamzang";
+    $message = "มี ออร์เดอร์ เข้ามาใหม่จาก #ตามสั่ง#";
 		
     $sql = $wpdb->prepare(
       "SELECT device_id FROM onesignal where user_id=%d ", array($shop_owner)
@@ -243,10 +247,12 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
       //file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "Return :".$return."\n", true));
     }
 
+    file_put_contents( dirname(__FILE__).'/debug/delivery_type.log', var_export( "PlaceOrder Deli type : ".$_POST['dtype'], true));
+    
     $ch = curl_init();
 
     // set URL and other appropriate options
-    curl_setopt($ch, CURLOPT_URL, "http://119.59.97.78:8010/".$order_id);
+    curl_setopt($ch, CURLOPT_URL, "http://119.59.97.78:8010/o".$order_id."&deli_type:".$delivery_type_buyer);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     // grab URL and pass it to the browser
     curl_exec($ch);
@@ -257,7 +263,7 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     
     $ch = curl_init();
     // set URL and other appropriate options
-    curl_setopt($ch, CURLOPT_URL, "https://tamzang.com:3443/?buyer-confirm");
+    curl_setopt($ch, CURLOPT_URL, "https://tamzang.com:3443/?buyer-confirm&order_id:".$order_id."&shop_id:".$_POST['pid']);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     // grab URL and pass it to the browser
     curl_exec($ch);
@@ -289,6 +295,7 @@ jQuery(document).ready(function($){
       $('#slip_pic_'+data.data.order_id).attr('src', data.data.image+'?dt=' + Math.random());
       $('#slip_pic_'+data.data.order_id).attr('data-src', data.data.image);
       $('#div_slip_pic_'+data.data.order_id).css("display", "inline");
+      buyerMessage(data.data.order_id);
     }else
     {
       ui_single_update_status(element, 'อัพโหลดไม่ถูกต้อง', 'danger');
@@ -492,7 +499,7 @@ jQuery(document).ready(function($){
               }
               //tricker websocket make driver refresh
               //socket.emit( 'buyer-message-confirm', { message: "Test sendwebsocket",order: order_id } );
-              buyerMessage(order_id);
+              buyerCancel(order_id);
               
 
         },
@@ -514,11 +521,17 @@ jQuery(document).ready(function($){
         //console.log(data);
     });
 
-
+    /*
     $('[id="flip"]').click(function(){
     	var id = $(this).data('id');
         $("#toggle_pic_"+id).slideToggle("slow");
+    });*/
+    //20190923 Bank change picture button 
+    jQuery(document).on("click", '[id="flip"]', function(){
+      var id = $(this).data('id');
+      $("#toggle_pic_"+id).slideToggle("slow");
     });
+
 
     $('#image-modal').on('show.bs.modal', function(e) {
         var data = $(e.relatedTarget).data();
@@ -555,7 +568,17 @@ jQuery(document).ready(function($){
                   }
                   //tricker websocket make driver refresh
                   //socket.emit( 'buyer-message-confirm', { message: "Test sendwebsocket",order: order_id } );
-                  buyerMessage(order_id);
+                  if(button_type == 1)
+                  {
+                    buyerMessage(order_id);
+                    console.log("Buyer accept");
+                  }
+                  
+                  else if (button_type == 0){
+                    buyerCancel(order_id);
+                    console.log("Buyer Cancel");
+                  }
+                  
 
                 }
           },
@@ -601,6 +624,7 @@ jQuery(document).ready(function($){
               }
               //tricker websocket make driver refresh
               //socket.emit( 'buyer-message-confirm', { message: "Test sendwebsocket",order: order_id } );
+              //console.log("Buyer input code");
               buyerMessage(order_id);
 
         },
@@ -616,8 +640,9 @@ jQuery(document).ready(function($){
 });
 </script>
 <script src="http://test02.tamzang.com/JS/node_modules/socket.io-client/dist/socket.io.js"></script>
-<script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient.js" ></script>
+<script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient.js" defer></script>
 
+<input type="hidden" id="usr_id" value="<?php echo get_current_user_id() ;?>">
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -967,7 +992,7 @@ jQuery(document).ready(function($){
                               style="cursor: pointer;" >
                                 รูปภาพ
                               </a>
-                              <strong>พนักงานตามส่ง:</strong><?php echo $driver->driver_name; ?> <strong>เบอร์โทรศัพท์:</strong><?php echo $driver->phone; ?> 
+                              <strong>พนักงานตามส่ง:</strong><?php echo $driver->driver_name; ?> <i class='fa fa-phone' aria-hidden='true' style = 'color:#007bff'> <a href='tel:<?php echo $driver->phone; ?>'><?php echo $driver->phone; ?></a></i>  
                           </div>
                           <div class="order-clear"></div>
                       <?php }

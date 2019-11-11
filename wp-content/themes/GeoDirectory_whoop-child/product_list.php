@@ -119,7 +119,9 @@ if (isset($pid) && $pid != 0){
     <div id="geodir_content" class="" role="main" style="width: 100%">
       <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
       <article id="post-<?php the_ID(); ?>" <?php post_class( 'cf' ); ?> role="article">
-        <?php echo '<div id="shopname" style="padding:1.5em;"><a href="'.get_permalink($pid).'">'.get_the_title($pid).'</a></div>'; ?>
+        <?php //echo '<div id="shopname" style="padding:1.5em;"><a href="'.get_permalink($pid).'">'.get_the_title($pid).'</a></div>'; 
+              echo '<h2><li><a href="'.get_permalink( $pid ).'">'.get_the_title( $pid ).'</a></li></h2>';
+        ?>
         <header class="article-header">
           <h1 class="page-title entry-title" itemprop="headline" style="padding-bottom:40px;">
             <div style="width:50%;float:left;">

@@ -5,9 +5,9 @@ global $wpdb, $current_user;
 
 $uploads = wp_upload_dir();
 
-$profile_pic = $wpdb->get_var(
+$driver = $wpdb->get_row(
     $wpdb->prepare(
-        "SELECT profile_pic FROM driver where driver_id = %d ", array($current_user->ID)
+        "SELECT profile_pic, balance, add_on_credit FROM driver where driver_id = %d ", array($current_user->ID)
     )
 );
 ?>
@@ -188,8 +188,6 @@ jQuery(document).ready(function($){
             $( ".wrapper-loading" ).toggleClass('order-status-loading');
         });
 
-        // console.log( $.datepicker.parseDate('dd/mm/yy', $( "#start_date" ).val()));
-
     });
 });
 
@@ -245,11 +243,23 @@ jQuery(document).ready(function($){
     </div>
 </div>
 
-<h1 class="page-title">
-    รูปประจำตัวผู้ส่ง
-</h1>
+<div class="order-row">
+    <h1 class="page-title" style="float: left;">
+        หมายเลขไอดี: <?php echo $current_user->ID; ?>
+    </h1>
+    <div style="float: right;"><b>เงินประกันคงเหลือทั้งหมด:</b> <?php echo $driver->balance;?> บาท</div>
+</div>
+<div class="order-clear"></div>
 
-<img width="200" height="200" id="driver_pic"  src="<?php echo $uploads['baseurl'].$profile_pic; ?>" />
+<div class="order-row">
+    <h1 class="page-title" style="float: left;">
+        รูปประจำตัวผู้ส่ง
+    </h1>
+    <div style="float: right;"><b>เครดิตทั้งหมด:</b> <?php echo $driver->add_on_credit;?> พอยท์</div>
+</div>
+<div class="order-clear"></div>
+
+<img width="200" height="200" id="driver_pic"  src="<?php echo $uploads['baseurl'].$driver->profile_pic; ?>" />
 
 <button class="btn btn-info" href="#" data-id="<?php echo $current_user->ID; ?>"
     data-nonce="<?php echo wp_create_nonce( 'driver_update_picture_'.$current_user->ID); ?>"

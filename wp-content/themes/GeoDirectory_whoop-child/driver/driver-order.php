@@ -3,9 +3,9 @@ global $wpdb, $current_user;
 if ( !is_user_logged_in() )
     wp_redirect(home_url());
 
-$driver = $wpdb->get_var(
+$driver = $wpdb->get_row(
     $wpdb->prepare(
-        "SELECT ID FROM driver where Driver_id = %d ", array($current_user->ID)
+        "SELECT is_ready, pin_enable, tamzangEnable FROM driver where Driver_id = %d ", array($current_user->ID)
     )
 );
 
@@ -26,6 +26,9 @@ if(empty($driver))
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="<?php echo get_stylesheet_directory_uri() . '/js/uploader/jquery.dm-uploader.min.js'; ?>"></script>
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  <script type="text/javascript" src="https://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/mobile.js"></script>
 </head>
 
 <style>
@@ -47,6 +50,19 @@ z-index: 1000;
 width: 100%;
 height: 100%;
 }
+
+/* Bootstrap Toggle v2.2.2 corrections for Bootsrtap 4*/
+.toggle-off {
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+.toggle.off {
+    border-color: rgba(0, 0, 0, .25);
+}
+
+.toggle-handle {
+    background-color: white;
+    border: thin rgba(0, 0, 0, .25) solid;
+}
 </style>
 
 <script src="http://test02.tamzang.com/JS/node_modules/socket.io-client/dist/socket.io.js"></script>
@@ -55,13 +71,6 @@ height: 100%;
 
 <script>
 
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else {
-    alert("ไม่สามารถยืนยันตำแหน่งของคุณ ณ ปัจจุบันเพื่อส่งรายการอาหารให้ได้");
-  }
-}
 function showPosition(position) {
 	var user_id = <?php echo get_current_user_id() ;?>;
 	console.log( "update address process" );
@@ -75,8 +84,8 @@ function showPosition(position) {
         data: send_data,
 		success: function() 
 	{
-        alert("ยืนยันตำแหน่งเรียบร้อย");
-		location.reload();
+        // alert("ยืนยันตำแหน่งเรียบร้อย");
+		// location.reload();
     },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
            console.log(textStatus);
@@ -124,8 +133,8 @@ jQuery(document).ready(function($){
                         $( ".wrapper-loading" ).html( msg + xhr.status + " " + xhr.statusText );
                         }
                     });
-                    //tricker to websocket maek buyer/seller refresh
-                    driverMessage(order_id);
+                    //tricker to websocket make buyer/seller refresh
+                    driveraccept(order_id);
                     //socket.emit( 'driver-message-confirm', { message: "Test sendwebsocket",order: order_id } );
                 }
             },
@@ -345,13 +354,16 @@ jQuery(document).ready(function($){
                     // tricker socket order status to buyer and seller
                     driverMessage(order_id);
                     //socket.emit( 'driver-message-confirm', { message: "Test sendwebsocket",order: order_id } );
-                    if(msg.data == "close" || msg.data == "รับสินค้า"){
+                    if(msg.data == "close" || msg.data == "รับสินค้า"){                        
                         $( ".wrapper-loading" ).load( ajaxurl+"?action=load_driver_order_template", function( response, status, xhr ) {
                             if ( status == "error" ) {
                                 var msg = "Sorry but there was an error: ";
                                 $( ".wrapper-loading" ).html( msg + xhr.status + " " + xhr.statusText );
                             }
                         });
+                        if(msg.data == "close"){
+                            driverComplete(order_id);
+                        }
                     }
                     else
                         $('.driver-step').html(msg.data);
@@ -366,44 +378,6 @@ jQuery(document).ready(function($){
 
     });
 
-
-
-    jQuery(document).on("click", ".driver-ready", function(){
-        var id = $(this).data('d-id');
-        var nonce = $(this).data('nonce');
-        var $this = $(this);
-        $( ".wrapper-loading" ).toggleClass('order-status-loading');
-
-        var send_data = 'action=driver_ready&id='+id+'&nonce='+nonce;
-        $.ajax({
-            type: "POST",
-            url: ajaxurl,
-            data: send_data,
-            success: function(msg){
-                if(msg.success){
-                    $this.toggleClass('btn-danger btn-success');
-                    if($this.hasClass('btn-danger')){
-                        $this.text('ไม่พร้อมรับงาน');
-                        $this.next().html('<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>');
-                        $('#status_text').html('<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>');
-                    }else{
-                        $this.text('พร้อมรับงาน');
-                        $this.next().html('<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>');
-                        $('#status_text').html('<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>');
-                    }
-                }
-
-                $( ".wrapper-loading" ).toggleClass('order-status-loading');
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
-                console.log(textStatus);
-                $( ".wrapper-loading" ).html( textStatus );
-            }
-        });
-
-    });
-
-
     function after_upload(element, data)
     {
         if(data.success)
@@ -412,6 +386,7 @@ jQuery(document).ready(function($){
         $('#tracking_pic_'+data.data.order_id).attr('src', data.data.image+'?dt=' + Math.random());
         $('#tracking_pic_'+data.data.order_id).attr('data-src', data.data.image);
         $('#div_tracking_pic_'+data.data.order_id).css("display", "inline");
+        driverMessage(data.data.order_id);
         }else
         {
         ui_single_update_status(element, 'อัพโหลดไม่ถูกต้อง', 'danger');
@@ -455,7 +430,7 @@ jQuery(document).ready(function($){
 
     $('#drag-and-drop-zone').dmUploader({ //
         url: ajaxurl+'?action=driver_add_image',
-        maxFileSize: 3000000, // 3 Megs max
+        maxFileSize: 12000000, // 12 Megs max
         multiple: false,
         allowedTypes: 'image/*',
         extFilter: ['jpg','jpeg','png'],
@@ -557,6 +532,93 @@ jQuery(document).ready(function($){
         $('img', this).css("display", "none");
     });
 
+    $('#toggle-is_ready').change(function() {
+        var id = $(this).data('d-id');
+        var nonce = $(this).data('nonce');
+        var is_ready = $(this);
+
+        $( ".wrapper-loading" ).toggleClass('order-status-loading');
+
+        var send_data = 'action=driver_ready&id='+id+'&nonce='+nonce;
+        $.ajax({
+            type: "POST",
+            url: ajaxurl,
+            data: send_data,
+            success: function(msg){
+                if(msg.success){
+                    if(is_ready.prop('checked')){
+                        $('#status_text').html('<font color="green">สถานะ: ขณะนี้คุณกำลังรอรับคำสั่งซื้อ</font>');
+                    }else{
+                        $('#status_text').html('<font color="red">สถานะ: ขณะนี้คุณจะไม่ได้รับคำสั่งซื้อเพราะไม่พร้อมทำงาน</font>');
+                    }
+                }
+                $( ".wrapper-loading" ).toggleClass('order-status-loading');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(textStatus);
+                $( ".wrapper-loading" ).html( textStatus );
+            }
+        });
+    });
+
+    $('#confirm-location').on('click', '.btn-ok', function(e) {
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } 
+
+        $('#confirm-location').modal('toggle');
+
+    });
+
+    $('#toggle-pin_enable').change(function() {
+        var id = $(this).data('d-id');
+        var nonce = $(this).data('nonce');
+        var check = $(this).prop('checked');
+        $( ".wrapper-loading" ).toggleClass('order-status-loading');
+
+        var send_data = 'action=driver_pin_enable&id='+id+'&nonce='+nonce;
+        $.ajax({
+            type: "POST",
+            url: ajaxurl,
+            data: send_data,
+            success: function(msg){
+
+                if(check){
+                    $('#confirm-location').modal('toggle');
+                }
+                
+
+                $( ".wrapper-loading" ).toggleClass('order-status-loading');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(textStatus);
+                $( ".wrapper-loading" ).html( textStatus );
+            }
+        });
+    });
+
+    $('#toggle-tamzangEnable').change(function() {
+        var id = $(this).data('d-id');
+        var nonce = $(this).data('nonce');
+
+        $( ".wrapper-loading" ).toggleClass('order-status-loading');
+
+        var send_data = 'action=driver_tamzangEnable&id='+id+'&nonce='+nonce;
+        $.ajax({
+            type: "POST",
+            url: ajaxurl,
+            data: send_data,
+            success: function(msg){
+
+                $( ".wrapper-loading" ).toggleClass('order-status-loading');
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log(textStatus);
+                $( ".wrapper-loading" ).html( textStatus );
+            }
+        });
+    });
 	
 });
 
@@ -572,8 +634,8 @@ function getUserID() {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h4 class="modal-title" id="myModalLabel">ยืนยันรับคำสั่งซื้อ</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
                 <p>คุณกำลังจะยืนยันรับคำสั่งซื้อรหัส <b><i class="order-text"></i></b></p>
@@ -595,8 +657,8 @@ function getUserID() {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h4 class="modal-title" id="myModalLabel">ยกเลิกคำสั่งซื้อ</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
                 <p>คุณกำลังจะยกเลิกคำสั่งซื้อรหัส <b><i class="order-text"></i></b></p>
@@ -662,11 +724,75 @@ function getUserID() {
     </div>
 </div>
 
+<div class="modal fade" id="confirm-location" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">ยืนยันตำแหน่ง</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <p>คุณต้องการเปลี่ยนตำแหน่งยืนยันเป็นตำแหน่งปัจจุบันหรือไม่?</p>
+            </div>
+            <div class="modal-footer">
+                <div class="col-4">
+                    <button type="button" class="btn btn-danger btn-reject" data-dismiss="modal" style="float:left;">ปฏิเสธ</button>
+                </div>
+                <div class="col-8 text-right">
+                    <button type="button" class="btn btn-success btn-ok">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container">
 <div id="main_order">
     <div class="wrapper-loading">
         <?php get_template_part( 'driver/driver', 'order_template' ); ?>
     </div>
+
+    <br>
+    <div>
+        <p class="text-center" style="color: green;">หมายเลขไอดีของคุณคือ :  <?php echo $current_user->ID ; ?></p>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <input type="checkbox" <?php echo $driver->tamzangEnable ? 'checked' : '';?> data-toggle="toggle" id="toggle-tamzangEnable"
+                data-d-id="<?php echo $current_user->ID; ?>" data-nonce="<?php echo wp_create_nonce( 'driver_tamzangEnable_'.$current_user->ID); ?>"
+                data-on="ตามสั่ง" data-off="ประจำร้าน" 
+                data-onstyle="success" data-offstyle="primary"
+                data-width="137" data-height="42">
+        </div>
+        <div class="col-6" style="text-align:right;">
+            <input type="checkbox" <?php echo $driver->is_ready ? 'checked' : '';?> data-toggle="toggle" id="toggle-is_ready"
+                data-d-id="<?php echo $current_user->ID; ?>" data-nonce="<?php echo wp_create_nonce( 'driver_ready_'.$current_user->ID); ?>"
+                data-on="พร้อมรับงาน" data-off="ไม่พร้อมรับงาน" 
+                data-onstyle="success" data-offstyle="danger"
+                data-width="137" data-height="42">
+        </div>
+    </div>
+<br>
+    <div class="row">
+        <div class="col-6">
+            <input type="checkbox" <?php echo $driver->pin_enable ? 'checked' : '';?> data-toggle="toggle" id="toggle-pin_enable"
+                    data-d-id="<?php echo $current_user->ID; ?>" data-nonce="<?php echo wp_create_nonce( 'driver_pin_enable_'.$current_user->ID); ?>"
+                    data-on="เปิดใช้ Pin" data-off="ปิดใช้ Pin" 
+                    data-onstyle="success" data-offstyle="danger" >
+        </div>
+        <div class="col-6" style="text-align:right;">
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <div class="col-12">
+        <a href="<?php echo home_url(); ?>">
+            <img src="<?php echo get_stylesheet_directory_uri() . '/images/tamzang.png'; ?>" alt="ตามสั่ง">
+        </a>
+        </div>
+    </div>
+
 </div>
 </div>
 </body>

@@ -98,6 +98,7 @@ jQuery(document).ready(function($){
       $('#tracking_pic_'+data.data.order_id).attr('src', data.data.image+'?dt=' + Math.random());
       $('#tracking_pic_'+data.data.order_id).attr('data-src', data.data.image);
       $('#div_tracking_pic_'+data.data.order_id).css("display", "inline");
+      shoperMessage(data.data.order_id);
     }else
     {
       ui_single_update_status(element, 'อัพโหลดไม่ถูกต้อง', 'danger');
@@ -283,8 +284,8 @@ jQuery(document).ready(function($){
 
   });
 
-  $('[id="flip"]').click(function(){
-    var id = $(this).data('id');
+  jQuery(document).on("click", '[id="flip"]', function(){
+      var id = $(this).data('id');
       $("#toggle_pic_"+id).slideToggle("slow");
   });
 
@@ -300,7 +301,7 @@ jQuery(document).ready(function($){
 <script src="http://test02.tamzang.com/JS/node_modules/socket.io-client/dist/socket.io.js"></script>
 <script src="http://test02.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/js/nodeClient.js" defer></script>
 
-
+<input type="hidden" id="shop_id" value="<?php echo $pid;?>">
 <div id="geodir_wrapper" class="geodir-single">
   <?php //geodir_breadcrumb();?>
   <div class="clearfix geodir-common">
@@ -564,6 +565,13 @@ jQuery(document).ready(function($){
                       <?php echo (wp_is_mobile() ? '<h4>รูปประกอบจากผู้ขาย</h4>' : '<h2>รูปประกอบจากผู้ขาย</h2>') ?>
                         <img class="img2" id="tracking_pic_<?php echo $order->id; ?>"  src="" data-toggle="modal" data-target="#image-modal"  data-src="" />
                       </div>
+                    <?php } ?>
+                  </div>
+                  <div class="<?php echo (wp_is_mobile() ? 'order-col-12' : 'order-col-6') ?>">
+                    <?php if($order->driver_image != ''){ ?>
+                      <?php echo (wp_is_mobile() ? '<h4>รูปประกอบจากพนักงานตามส่ง</h4>' : '<h2>รูปประกอบจากพนักงานตามส่ง</h2>') ?>
+                      <img class="img2" data-toggle="modal" data-target="#image-modal" data-src="<?php echo $uploads['baseurl'].$order->driver_image; ?>"
+                       src="<?php echo $uploads['baseurl'].$order->driver_image; ?>" />
                     <?php } ?>
                   </div>
                 </div>

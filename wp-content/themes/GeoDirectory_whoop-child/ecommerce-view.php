@@ -10,7 +10,7 @@ $query_args = array(
   'is_geodir_loop' => true,
   'post_type' => 'gd_product',
   'posts_per_page' => -1,
-  'order_by' => 'post_title'
+  'order_by' => 'default_category_ASC'
 );
 
 add_filter('geodir_filter_widget_listings_where', 'tamzang_apply_shop_id', 10, 2);
@@ -24,15 +24,34 @@ $uploads = wp_upload_dir();
 
 ?>
 
-<div class="tamzang-flex">
 <?php
 global $post;
 $current_post = $post;
+$group = "";
+$first_loop = true;
 foreach ( $arrProducts as $product )
 {
   $post = $product;
   $GLOBALS['post'] = $post;
   setup_postdata($post);
+  if($post->default_category != $group)
+  {
+
+    if(!$first_loop)
+    {
+      echo '</div>';//<div class="tamzang-flex">
+      echo '</div>';//<div class="order-row">
+      echo '<div class="order-clear"></div><hr>';
+    }
+
+    echo '<div class="order-row">';
+    echo '<div class="order-row" style="text-align: center;">';
+    echo '<h3 class="whoop-title">'.get_term_by('id', $post->default_category, 'gd_productcategory')->name.'</h3>';
+    echo '</div>';
+    echo '<div class="tamzang-flex">';
+    $group = $post->default_category;
+    $first_loop = false;
+  }
   create_product_modal($post, $current_post->ID);
   echo'<section>';
   if($post->featured_image != '')
@@ -59,4 +78,8 @@ if (!empty($current_post)) {
     setup_postdata($current_post);
 }
 ?>
+
 </div>
+</div>
+<div class="order-clear"></div>
+<hr>

@@ -1,7 +1,6 @@
 <?php /* Template Name: driver-transaction_list */ ?>
 
 <?php 
-
 if(!strtotime($start_date) || !strtotime($end_date))
 return;
 
@@ -43,7 +42,7 @@ if ( wp_is_mobile() ){
     <br>
     <table style="width:100%;text-align:right;">
         <tr>
-            <td><b>คงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
+            <td><b>เงินประกันคงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
         </tr>
         <tr>
             <td><b>เครดิตทั้งหมด:</b></td><td><?php echo $driver->add_on_credit;?> พอยท์</td>
@@ -89,7 +88,7 @@ if ( wp_is_mobile() ){
                 <th>รายการ</th>
                 <th>ถอน</th>
                 <th>ฝาก</th>
-                <th>คงเหลือ</th>
+                <th>เงินประกัน</th>
                 <th>เครดิต</th>
             </tr>
         </thead>
@@ -113,7 +112,7 @@ if ( wp_is_mobile() ){
                 <th>รายการ</th>
                 <th>ถอน</th>
                 <th>ฝาก</th>
-                <th>คงเหลือ</th>
+                <th>เงินประกัน</th>
                 <th>เครดิต</th>
             </tr>
         </tfoot>
@@ -121,7 +120,7 @@ if ( wp_is_mobile() ){
     <br><br>
     <table style="width:100%;text-align:right;">
         <tr>
-            <td><b>คงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
+            <td><b>เงินประกันคงเหลือทั้งหมด:</b></td><td><?php echo $driver->balance;?> บาท</td>
         </tr>
         <tr>
             <td><b>เครดิตทั้งหมด:</b></td><td><?php echo $driver->add_on_credit;?> พอยท์</td>
