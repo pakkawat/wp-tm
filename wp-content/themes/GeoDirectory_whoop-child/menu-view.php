@@ -53,7 +53,7 @@ foreach ( $arrProducts as $product )
   echo '</div>';
   echo '<div class="order-col-6">';
   echo '<h3><strong><a href="'.get_the_permalink().'" style="color: #e34f43;">'.$post->post_title.'</a></strong></h3>';
-  echo '<p style="overflow-wrap:break-word;">'.get_the_excerpt().'</p>';
+  echo '<p style="overflow-wrap:break-word;">'.get_the_content().'</p>';
   echo '</div>';
   echo '<div class="order-col-4" style="text-align:right;">';
   echo '<b>'.str_replace(".00", "",number_format($post->geodir_price,2)).' <sup>บาท</sup></b> ';

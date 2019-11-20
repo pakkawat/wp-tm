@@ -5,7 +5,7 @@ is_tamzang_admin();
 
 $order_log = $wpdb->get_results(
     $wpdb->prepare(
-        "SELECT * FROM driver_order_log_assign ORDER by driver_order_id desc  ", array()
+        "SELECT * FROM driver_order_log_assign as d_log inner join orders as o on d_log.driver_order_id = o.id  ", array()
     )
 );
 
@@ -170,6 +170,7 @@ jQuery(document).ready(function() {
             <th class="no-sort">คนส่ง</th>
             <th class="no-sort">id_คนส่ง</th>
             <th>Order_id</th>
+            <th>ชื่อผู้สั่ง</th>
             <th class="no-sort">สถานะ</th>
             <th>วันที่ได้งาน</th>
             <th>วันที่ส่งต่องาน</th>
@@ -183,6 +184,7 @@ jQuery(document).ready(function() {
             echo "<td><a href='".home_url('/driver-edit/')."?d_id=".$log->driver_id."' class='btn btn-info' target='_blank'>คนส่ง</a></td>";
             echo "<td>".$log->driver_id."</td>";
             echo "<td>".$log->driver_order_id."</td>";
+            echo "<td>".get_user_meta( $log->wp_user_id, 'some_meta' , true )."-".$log->wp_user_id."</td>";
             if($log->status == 1)
                 echo "<td>รอคนส่งรับงาน</td>";
             else if($log->status == 4)
@@ -204,6 +206,7 @@ jQuery(document).ready(function() {
             <th>คนส่ง</th>
             <th>id_คนส่ง</th>
             <th>Order_id</th>
+            <th>ชื่อผู้สั่ง</th>
             <th>สถานะ</th>
             <th>วันที่ได้งาน</th>
             <th>วันที่ส่งต่องาน</th>

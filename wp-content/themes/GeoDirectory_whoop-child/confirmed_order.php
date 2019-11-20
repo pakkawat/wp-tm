@@ -28,7 +28,7 @@ if ( is_user_logged_in() ){
     
   if($delivery_type != 0)
   {
-    list($delivery_fee,$distance) = get_delivery_fee($pid);
+    list($delivery_fee,$distance) = get_delivery_fee($pid,$delivery_type);
   }
 
   
@@ -51,8 +51,7 @@ if ( is_user_logged_in() ){
 <script>
     jQuery(document).ready(function($){
 
-      var uuid = new DeviceUUID().get();
-      console.log("UUID :"+uuid);
+    
 
       function display_currency(money){
         money = (money).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -182,9 +181,13 @@ if ( is_user_logged_in() ){
         });
 
         jQuery(document).on("click", "#place_order", function(){
+          if($('#use_point').is(":checked")){
+              console.log(" use point");
+            }else{
+              console.log(" Not use point");
+            }
           $("#payment-error").hide();
-          var rowCount = $('#tb-cart >tbody >tr').length;
-          if (rowCount > 2){
+          if ($('.sp-quantity').length > 0){
             $("#select-payment-type").modal();
           }
           else {
@@ -203,7 +206,7 @@ if ( is_user_logged_in() ){
 
           $('.address-wrapper-loading').toggleClass('cart-loading');
           var dtype = document.getElementById("dtype").value;
-          var send_data = 'action=confirm_order_select_shipping&id='+id+'&shop_id='+shop_id+'&nonce='+nonce+'&total='+total;
+          var send_data = 'action=confirm_order_select_shipping&id='+id+'&shop_id='+shop_id+'&nonce='+nonce+'&total='+total+'&deli_type='+dtype;
           $.ajax({
             type: "POST",
             url: geodir_var.geodir_ajax_url,
@@ -217,21 +220,22 @@ if ( is_user_logged_in() ){
                     
                          
                     console.log(msg.data);  
-                    if($delivery_type != 0){
+                    if(dtype != 0){
                       $('#delivery_input').val(msg.data.new_delivery_fee);
                       $('#distance_input').val(msg.data.new_distance);
                       $('#delivery').html(msg.data.new_delivery_fee);
-                      $('#sum').html(msg.data.new_sum);
+                      $('#sum').html(msg.data.new_sum.toFixed(2));
                     } 
                     else{
                       $('#delivery_input').val(0);
                       $('#distance_input').val(0);
                       $('#delivery').html(0);
-                      $('#sum').html(total);
+                      $('#sum').html(total.toFixed(2));
                     }                   
-                    if((msg.data.new_order_button == 0) && ($delivery_type != 0))
+                    if((msg.data.new_order_button == 0) && (dtype != 0))
                     {                      
                       $("#place_order_button").html("<h3>ขณะนี้ระบบไม่สามารถคำนวนค่าจัดส่งได้ กรุณาลองใหม่ภายหลัง ขออภัยในความไม่สะดวก</h3>");
+
                     }
                     else{ 
                       $("#place_order_button").html("<button type='button' class='btn btn-success' id='place_order'>ดำเนินการสั่งสินค้า <span class='glyphicon glyphicon-play'></span></button>");
@@ -251,9 +255,12 @@ if ( is_user_logged_in() ){
           var pid = $(this).data('pid');
           var dtype = $(this).data('dtype');
           var nonce = $(this).data('nonce');
+          var total = $("#cart-total").data('cart-total');
+
+          console.log("Total"+total);
 
           $('.delivery_type-loading-loading').toggleClass('cart-loading');
-          var send_data = 'action=select_delivery_type&pid='+pid+'&dtype='+dtype+'&nonce='+nonce;
+          var send_data = 'action=select_delivery_type&pid='+pid+'&dtype='+dtype+'&nonce='+nonce+'&total='+total;
           $.ajax({
             type: "POST",
             url: geodir_var.geodir_ajax_url,
@@ -263,6 +270,30 @@ if ( is_user_logged_in() ){
                     $('#delivery_type_'+msg.data.pre_type).html(msg.data.pre);
                     $('#delivery_type_'+msg.data.select_type).html(msg.data.select);
                     $('#dtype').val(msg.data.select_type);
+                    $('#delivery').html(msg.data.new_delivery_fee);
+                    $('#sum').html(msg.data.new_sum.toFixed(2));
+                    $('#delivery_input').val(msg.data.new_delivery_fee);
+
+
+                    if(msg.data.new_order_button == 0)
+                    {             
+                      console.log("No  deli ");         
+                      $("#place_order_button").html("<h3>ขณะนี้ระบบไม่สามารถคำนวนค่าจัดส่งได้ กรุณาลองใหม่ภายหลัง ขออภัยในความไม่สะดวก</h3>");
+                    }
+                    else{ 
+                      console.log("Have  deli "); 
+                      $("#place_order_button").html("<button type='button' class='btn btn-success' id='place_order'>ดำเนินการสั่งสินค้า <span class='glyphicon glyphicon-play'></span></button>");
+                    }
+                    if(msg.data.select_type == 1)
+                    {
+                      document.getElementById("use_point_text").style.display = "block";
+                      document.getElementById("use_point").checked = false;
+                    }
+                    else
+                    {
+                      document.getElementById("use_point_text").style.display = "none";
+                      document.getElementById("use_point").checked = false;
+                    }
                   }
 
                   $('.delivery_type-loading-loading').toggleClass('cart-loading');
@@ -297,7 +328,7 @@ if ( is_user_logged_in() ){
                         console.log(msg);
                         if(msg.success){
                           $('#pcode').val(promotion_input);
-                          var deli_cost = $('#delivery').text();
+                          var deli_cost = $('#default_delivery').text();
                           var discount = ( deli_cost*(1-(msg.data.percent/100))) - msg.data.constant;
                           var result = 0;
                           console.log(result+" = "+deli_cost+" - "+discount);
@@ -308,10 +339,11 @@ if ( is_user_logged_in() ){
                             discount = deli_cost - discount;
                           }
                           $('#delivery').html(result);
-                          var sum = $('#sum').text();
+                          var sum = $('#default_sum').text();
                           $('#sum').html(sum - discount);
                           $('#promotion-msg').html('<font color="green">'+msg.data.name+' ลดค่าส่งไป:'+discount+' บาท</font>');
                         }else{
+                          $('#pcode').val("");
                           $('#promotion-msg').html('<font color="red">'+msg.data+'</font>');
                         }
                         $('.wrapper-loading').toggleClass('cart-loading');
@@ -325,6 +357,7 @@ if ( is_user_logged_in() ){
               else{
                 OneSignal.showSlidedownPrompt();
                 $('#promotion-msg').html('<font color="red">กรูณากดลิงค์ด้านล่าง</font>');
+                $('#pcode').val("");
                 //window.location.href = "/"; 
               }
                 
@@ -588,6 +621,7 @@ function onManageWebPushSubscriptionButtonClicked(event) {
                       //   echo "</div>";
                       // echo "</div>";
                     echo "</td>";
+                    // second column
                     echo '<td>';
 
 
@@ -616,11 +650,16 @@ function onManageWebPushSubscriptionButtonClicked(event) {
                       //echo '<input type="text" class="quntity-input form-control" name="qty" value="'.$product->qty.'">';
                     echo "</td>";
                     echo '<td>';
-                      echo '<strong><div id="'.$post->ID.'-total" class ="price" >'.str_replace(".00", "",number_format($total,2)).'</div></strong>';
+                      //echo '<strong><div id="'.$post->ID.'-total" class ="price" >'.str_replace(".00", "",number_format($total,2)).'</div></strong>';
+                      // 20191108 bank make number have .00
+                      echo '<strong><div id="'.$post->ID.'-total" class ="price" >'.number_format($total,2,'.','').'</div></strong>';
                     echo "</td>";
                   echo "</tr>";
                 }
-                echo '<div id="cart-total" data-cart-total ="'.str_replace(".00", "",number_format($sum,2)).'" ></div>';
+                //echo '<div id="cart-total" data-cart-total ="'.str_replace(".00", "",number_format($sum,2)).'" ></div>';
+                // 20191108 bank make number have .00
+                echo '<div id="cart-total" data-cart-total ="'.number_format($sum,2).'" ></div>';
+
                 $GLOBALS['post'] = $current_post;
                 if (!empty($current_post)) {
                     setup_postdata($current_post);
@@ -638,10 +677,18 @@ function onManageWebPushSubscriptionButtonClicked(event) {
                     if(!empty($user_cash_back)){
                       $point = $user_cash_back->add_on_credit * $user_cash_back->redeem_point_rate;
                       if($point >= $delivery_fee && ($delivery_type == 1) && $delivery_fee != 0){
-                        echo 'ขณะนี้คุณมี point มากพอจะใช้แทนค่าส่งกรุณาเลือก หากต้องการใช้: <input type="checkbox" name="use_point" id="use_point" />';
+                        echo '<p id="use_point_text" style = "display: block;">ขณะนี้คุณมี point มากพอจะใช้แทนค่าส่งกรุณาเลือก หากต้องการใช้:  <input type="checkbox" name="use_point" id="use_point" /> </p>';
                       }
                     }
                   ?>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+              </tr>
+              <tr>
+                <td>
                    <?php if($delivery_type == 1 && $shop_has_driver){ ?>
                     <a class="btn btn-info" data-toggle="modal" data-target="#select-delivery_type" style="float: right;">
                     <span style="color: #ffffff !important;">เลือกพนักงานส่ง</span></a>
@@ -652,10 +699,13 @@ function onManageWebPushSubscriptionButtonClicked(event) {
 					          <span class="popuptext" id="myPopup">ค่าส่งเบื้องต้น 30 บาท รวมกับระยะทาง 3 กม.แรกคิดกม.ล่ะ 10 บาท กม.ถัดไปคิด กม.ล่ะ 15 บาท</span>
                   </div>
 				        </td>
-                <td class="text-right"><strong><div id="delivery"><?php echo $delivery_fee; ?></div></strong></td>
+                <td class="text-right">
+                  <strong><div id="delivery"><?php echo $delivery_fee; ?></div></strong>
+                  <div id="default_delivery" style="display:none;"><?php echo $delivery_fee; ?></div>
+                </td>
               </tr>
               <tr>
-                <td>
+              <td>
                   <div class="order-row">
                     <div class="order-col-6">
                       <input type="text" id="promotion_input" placeholder="กรุณาระบุโค้ดส่วนลด" value="" style="width:150px;float:right;">
@@ -665,13 +715,30 @@ function onManageWebPushSubscriptionButtonClicked(event) {
                         data-pid="<?php echo $_REQUEST['pid']; ?>"
                         data-nonce="<?php echo wp_create_nonce( 'user_use_promotion_'.$current_user->ID); ?>" 
                         >ยืนยัน</button>
-                      <div id="promotion-msg" ></div>
+                      <div id="promotion-msg" >
+                        <?php if(!empty($_REQUEST['pmsg'])){ ?>
+                          <p><font color="red">ไม่สามารถใช้โปรโมชั่น <?php echo $_REQUEST['pmsg']; ?></font></p>
+                        <?php } ?>
+                      </div>
                       <a href="#" id="my-notification-button" style="display: none;" >กดที่นี่เพื่อรับสิทธิ์การใช้โปรโมชั่น</a>
                     </div>
                   </div>
                 </td>
-                <td><h3>รวมทั้งหมด</h3></td>
-                <td class="text-right"><h3><strong><div id="sum"><?php echo str_replace(".00", "",number_format($sum,2)); ?></div></strong></h3></td>
+                <td>
+                </td>
+                <td>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <h3 style ="float: right;">รวมทั้งหมด</h3></td>
+                  <td class="text-right"><h3><strong><div id="sum"><?php //echo str_replace(".00", "",number_format($sum,2)); 
+                  //// 20191108 bank make number have .00
+                  echo number_format($sum,2,'.','');
+                  ?></div></strong></h3>
+                  <div id="default_sum" style="display:none;"><?php echo number_format($sum,2,'.',''); ?></div>
+                </td>
               </tr>
             </tbody>
           </table>

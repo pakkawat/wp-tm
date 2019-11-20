@@ -57,7 +57,7 @@ foreach ( $arrProducts as $product )
   if($post->featured_image != '')
     echo '<img src="'.$uploads['baseurl'].$post->featured_image.'" style="width250px;height:250px;" />';
     echo '<h3><strong><a href="'.get_the_permalink().'" style="color: #e34f43;">'.$post->post_title.'</a></strong></h3>';
-  echo '<p style="overflow-wrap:break-word;">'.get_the_excerpt().'</p>';
+  echo '<p style="overflow-wrap:break-word;">'.get_the_content().'</p>';
   echo '<aside>';
   echo '<ul>';
   echo '<li>ราคา: '.str_replace(".00", "",number_format($post->geodir_price,2)).' บาท</li>';

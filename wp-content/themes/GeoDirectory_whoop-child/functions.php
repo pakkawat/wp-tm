@@ -1709,7 +1709,7 @@ function confirm_order_select_shipping_callback(){
                 "SELECT * FROM user_address where id = %d ", array($data['id'])
             )
         );
-        list($delivery_fee,$distance) = get_delivery_fee($data['shop_id']);
+        list($delivery_fee,$distance) = get_delivery_fee($data['shop_id'],$data['deli_type']);
         $sum = $delivery_fee+$data['total'];
         
 
@@ -1752,17 +1752,27 @@ function select_delivery_type_callback(){
     // check the nonce
     if ( check_ajax_referer( 'select_delivery_type' . $current_user->ID, 'nonce', false ) == false ) {
         wp_send_json_error();
-    }
+    }   
+    
 
     try {
 
         $pre = 1;
         if($data['dtype'] == 1){// พนักงานตามสั่ง
-            $pre = 2;
-
+            $pre = 2; 
         }else{// พนักงานประจำร้าน
-            $xx = 0;
+            $xx = 0;            
         }
+        list($delivery_fee,$distance) = get_delivery_fee($data['pid'],$data['dtype']);
+        $sum = $delivery_fee+$data['total'];
+
+
+
+        // 20191108 Bank put deliver fee Check
+        if(($delivery_fee == 0) && ($distance == 0))
+            $button = 0;     
+        else
+            $button = 1; 
 
         $return = array(
             'select' => '<img src="'.get_stylesheet_directory_uri().'/js/pass.png" />',
@@ -1773,6 +1783,9 @@ function select_delivery_type_callback(){
                             data-dtype="'.$pre.'"
                             data-nonce="'.wp_create_nonce( 'select_delivery_type'.$current_user->ID ).'"
                             style="color:white;" >เลือก</a>',
+                            'new_sum' => $sum,
+                            'new_delivery_fee' => $delivery_fee,
+                            'new_order_button' => $button
         );
 
         wp_send_json_success($return);
@@ -2581,6 +2594,18 @@ function tamzang_bp_user_driver_nav_adder()
                 'default_subnav_slug' => 'driver_group'
             )
         );
+
+        bp_core_new_nav_item(
+            array(
+                'name' => 'driver_money',
+                'slug' => 'driver_money',
+                'position' => 104,
+                'show_for_displayed_user' => false,
+                'screen_function' => 'tamzang_driver_money_screen',
+                'item_css_id' => 'lists',
+                'default_subnav_slug' => 'driver_money'
+            )
+        );
     }
 }
 
@@ -2634,6 +2659,151 @@ function tamzang_driver_group_screen_content()
 {
     get_template_part( 'driver/driver', 'group' ); 
 }
+
+function tamzang_driver_money_screen()
+{
+  add_action( 'bp_template_content', 'tamzang_driver_money_screen_content' );
+  bp_core_load_template(apply_filters('bp_core_template_plugin', 'members/single/plugins'));
+}
+
+add_action('wp_ajax_load_driver_money', 'load_driver_money_callback');
+function load_driver_money_callback(){
+    global $wpdb, $current_user;
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT driver_id FROM driver_bank_account where driver_id = %d", array($current_user->ID)
+        )
+    );
+    if(empty($id))
+        wp_send_json_error();
+
+    get_template_part( 'driver/driver', 'money'  );
+    wp_die();
+}
+
+function tamzang_driver_money_screen_content()
+{
+    global $wpdb, $current_user;
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT driver_id FROM driver_bank_account where driver_id = %d", array($current_user->ID)
+        )
+    );
+    echo '<div class="wrapper-loading">';
+    if(empty($id)){
+        get_template_part( 'driver/driver', 'bankaccount' );
+    }else{
+        get_template_part( 'driver/driver', 'money' );
+    }
+    echo '</div>';
+
+}
+
+add_action('wp_ajax_driver_add_bankaccount', 'driver_add_bankaccount_callback');
+function driver_add_bankaccount_callback(){
+  global $wpdb, $current_user;
+
+  $data = $_POST;
+
+  // check the nonce
+  if ( check_ajax_referer( 'driver_bankaccount_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error("error nonce");
+  }
+
+  try {
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT driver_id FROM driver_bank_account where driver_id = %d", array($current_user->ID)
+        )
+    );
+
+    if(!empty($id))
+        wp_send_json_error();
+
+    $driver_name = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT driver_name FROM driver where Driver_id = %d", array($current_user->ID)
+        )
+    );
+    
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO driver_bank_account SET driver_id = %d, driver_name = %s, bank_account = %s, bank_account_name = %s ",
+            array($current_user->ID, $driver_name, $data['account'], $data['name'])
+        )
+    );
+
+    wp_send_json_success();
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+add_action('wp_ajax_driver_withdraw_money', 'driver_withdraw_money_callback');
+function driver_withdraw_money_callback(){
+  global $wpdb, $current_user;
+
+  $data = $_POST;
+
+  // check the nonce
+  if ( check_ajax_referer( 'driver_withdraw_money_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error("error nonce");
+  }
+
+  try {
+
+    $valid_value = array('0.5', '0.6', '0.7', '0.8', '0.9', '1');
+    
+    if(!in_array($data['dd_value'], $valid_value))
+        wp_send_json_error();
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT ID FROM driver_debit_batch where driver_id = %d AND DATE(date) = CURDATE() ", array($current_user->ID)
+        )
+    );
+    if(!empty($id))
+        wp_send_json_error();
+    
+    $driver = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM driver where driver_id = %d ", array($current_user->ID)
+        )
+    );
+
+    $tz_date = tamzang_get_current_date();
+    $debit = $driver->driver_cash*$data['dd_value'];
+    $driver_new_balance= $driver->driver_cash - $debit;
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO driver_debit_batch SET driver_id = %d, driver_name = %s, driver_cash = %f, date = %s, 	bank_account = %s ",
+            array($driver->Driver_id, $driver->driver_name, $debit, $tz_date, 'bank_account')
+        )
+    );
+    insert_driver_transaction_details("DRIVER_WITHDRAW",
+    array($driver->Driver_id, $debit, $driver_new_balance, "DRIVER_WITHDRAW", $tz_date));
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE driver SET previous_driver_debit_cash = %f, driver_cash = %f  WHERE Driver_id = %d ",
+            array($debit, $driver_new_balance, $driver->Driver_id)
+        )
+    );
+
+    wp_send_json_success();
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
 
 add_action('wp_ajax_register_driver', 'register_driver_callback');
 
@@ -3402,7 +3572,7 @@ function driver_next_step_callback(){
           // Check status of the order
           $order = $wpdb->get_row(
               $wpdb->prepare(
-                  "SELECT status, commission, wp_user_id, id, redeem_point, cancel_code FROM orders where id = %d ", array($data['id'])
+                  "SELECT status, commission, wp_user_id, id, redeem_point, cancel_code, promotion_id FROM orders where id = %d ", array($data['id'])
               )
           );
 
@@ -3434,7 +3604,22 @@ function driver_next_step_callback(){
                     )
                 );
 
-                if($order->commission != 0){
+                // check If buyer use Promotion
+                if($order->promotion_id != 0)
+                {
+                    file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "user used Promiton!!", true));
+                    $shipping_address = $wpdb->get_row(
+                        $wpdb->prepare(
+                            "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
+                        )
+                    );
+                    $shipping_price = $shipping_address->price;
+                    $result = cal_shipping_price_with_promotion($order->promotion_id, $shipping_price);
+                    $driver_promotion_cash = number_format($shipping_price-$result,2,'.','') ;
+
+                }
+
+                $drivercommission = (!empty($order->commission))?$order->commission:0;
 
                     $driver = $wpdb->get_row(
                         $wpdb->prepare(
@@ -3458,10 +3643,10 @@ function driver_next_step_callback(){
                         $cash_back = ( $shipping_price * ($user_cash_back->cash_back_percentage/100)) * $driver->cash_back_point_rate;
     
                         if($driver->cash_back_level == "exclude"){
-                            driver_commission($order->commission, $driver, $current_date, $order->id);
+                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash);
                         }else{
-                            $new_commission = $order->commission - $cash_back;
-                            driver_commission($new_commission, $driver, $current_date, $order->id);
+                            $new_commission = $drivercommission - $cash_back;
+                            driver_commission($new_commission, $driver, $current_date, $order->id,$driver_promotion_cash);
                         }
     
                         $driver_new_balance = $wpdb->get_var(
@@ -3495,11 +3680,20 @@ function driver_next_step_callback(){
                         }
 
                     }else{
-                        driver_commission($order->commission, $driver, $current_date, $order->id);
+                        if($order->promotion_id != 0) // buyer used promotino
+                        {
+                            file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Input promotion on transaction detail!!", true),FILE_APPEND);
+                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash);
+                        }
+                        else{ // No promotion used
+                            file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "No promotion used!!", true),FILE_APPEND);
+                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash);
+                        }
+                        
                     }
 
 
-                }
+                
 
 
                 // Bank Add delete all  in driver_order_log_assign After Job done
@@ -3556,7 +3750,24 @@ function insert_driver_transaction_details($type, $parameters){// ตัด comm
                 $parameters
             )
         );
-    }else{// credit
+    }elseif($type == "PROMOTION_CREDIT"){// balance_driver_cash
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO driver_transaction_details SET
+                driver_id = %d,credit = %f,balance_driver_cash = %f,	transaction_type = %s, transaction_date = %s, order_id = %d",
+                $parameters
+            )
+        );
+    }elseif($type == "DRIVER_WITHDRAW"){
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO driver_transaction_details SET
+                driver_id = %d,debit = %f, balance_driver_cash = %f, transaction_type = %s, transaction_date = %s ",
+                $parameters
+            )
+        );
+    }
+    else{// credit
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO driver_transaction_details SET
@@ -3568,8 +3779,10 @@ function insert_driver_transaction_details($type, $parameters){// ตัด comm
 
 }
 
-function driver_commission($commission, $driver, $current_date, $order_id){
+function driver_commission($commission, $driver, $current_date, $order_id, $driver_promotion_cash){
     global $wpdb;
+
+    file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Driver Cash Promo :".$driver_promotion_cash, true),FILE_APPEND);
 
     if($driver->add_on_credit == 0 || $driver->add_on_credit == ""){// ไม่มี point
         $driver->balance = $driver->balance - $commission;
@@ -3594,6 +3807,20 @@ function driver_commission($commission, $driver, $current_date, $order_id){
         }
     }
 
+    if(!empty($driver_promotion_cash))
+    {
+        $New_driver_balacne_cash = $driver->driver_cash + $driver_promotion_cash;
+        file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "PUT  INTO Transaction detail  :", true),FILE_APPEND);
+        insert_driver_transaction_details("PROMOTION_CREDIT",
+        array($driver->Driver_id, $driver_promotion_cash, $New_driver_balacne_cash, "PROMOTION_CREDIT", $current_date, $order_id));
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET driver_cash = %f where driver_id = %d ",
+                array($New_driver_balacne_cash, $driver->Driver_id)
+            )
+        );
+    }
     $wpdb->query(
         $wpdb->prepare(
             "UPDATE driver SET balance = %f, add_on_credit = %f where driver_id = %d ",
@@ -4477,12 +4704,13 @@ function update_head_driver() {
 // AJAX function
 add_action('wp_ajax_get_delivery_fee', 'get_delivery_fee');
 //get list Driver for restaurant
-function get_delivery_fee($pid) {
+function get_delivery_fee($pid,$deliver_type) {
     global $wpdb;
 	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "update_head_driver START!", true));
 
 	//$post_id = $_POST['postID'];
-	$post_id = $pid;
+    $post_id = $pid;
+    $buyer_delivery_type = $deliver_type;
 	//$buyer_id = $_POST['buyerID'];
 	
 	//Get Buyer Latitude and Longitude from address of user
@@ -4523,9 +4751,12 @@ function get_delivery_fee($pid) {
 			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Pass from Google".$distance, true),FILE_APPEND);
 			$delivery_value = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d ", array($post_id)
+					"SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d and geodir_delivery_type =%d ", array($post_id,$buyer_delivery_type)
 				)
-			);
+            );
+            if(empty($delivery_value)){
+                return array(0,0);
+            }
 			$range_t1 = (($delivery_value->km_tier1)>=$distance)? $distance:$delivery_value->km_tier1;			
 			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T1:".$range_t1, true),FILE_APPEND);
             $range_t2 = (($delivery_value->km_tier1)<=$distance)?((($delivery_value->km_tier2)>=$distance-$range_t1)? $distance-($delivery_value->km_tier1):$delivery_value->km_tier2-$delivery_value->km_tier1):0;
@@ -4556,7 +4787,7 @@ function get_delivery_fee($pid) {
             }
 			
 			//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Delivery_fee :".$deliver_fee, true),FILE_APPEND);
-			return array($deliver_fee,$distance);
+			return array(number_format($deliver_fee,2,'.',''),$distance);
 		}
 		else{
 			return array(0,0);
@@ -4675,6 +4906,7 @@ function updateOnesignal(){
 	$user_id = get_current_user_id();
 	$device_type = $data['deviceType'];
 	
+	file_put_contents( dirname(__FILE__).'/debug/testttt.log', var_export( $_POST, true));
 	file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal PHP Start", true));
 	file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal PHP Is enable is :".$device_id, true),FILE_APPEND);
 	
@@ -4723,23 +4955,8 @@ function my_onesignal_check(){
 console.log("Before OneSignal Start:"); 
 
 
-console.log("uuid v1 : "+uuid.v1()); // -> v1 UUID
-console.log("uuid v4 : "+uuid.v4()); // -> v4 UUID
 
 
-function GetGuid() {
-
-var nav = window.navigator;
-var screen = window.screen;
-var guid = nav.mimeTypes.length;
-guid += nav.userAgent.replace(/\D+/g, '');
-guid += nav.plugins.length;
-guid += screen.height || '';
-guid += screen.width || '';
-guid += screen.pixelDepth || '';
-
-return guid;
-};
 
 
 
@@ -4748,27 +4965,7 @@ var usrID = <?php echo get_current_user_id()?>;
 var usrDevice = "<?php echo $device?>";
 
 OneSignal.push(function() {
-    console.log("OneSignal Start!!:");
-    
-    var uuid = new DeviceUUID().get();
-    console.log("UUID :"+uuid);
-    console.log("GUID :"+GetGuid());
-
-    if (window.requestIdleCallback) {
-    requestIdleCallback(function () {
-        Fingerprint2.get(function (components) {
-          console.log("Fingerprint if"); // an array of components: {key: ..., value: ...}
-          console.log(components);
-        })
-    })
-} else {
-    setTimeout(function () {
-        Fingerprint2.get(function (components) {
-          console.log("Fingerprint else"); // an array of components: {key: ..., value: ...}
-          onsole.log(components);
-        })  
-    }, 500)
-}
+    console.log("OneSignal Start!!:");  
 
 OneSignal.getUserId(function(deviceId) {
 		console.log(" Not choose subscribe Check User ID:", deviceId);
@@ -5566,18 +5763,27 @@ function refresh_seller_page(){
 
 //AJAX FUNCTION
 add_action('wp_ajax_list_driver_marker', 'list_driver_marker');
-function list_driver_marker(){  
-    global $wpdb; 
+function list_driver_marker(){
+    global $wpdb;
     
     $driver_id = $_POST['driver_id'];
     $type_location = $_POST['typeLocation'];
-    //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!".$driver_id, true));
+    $is_ready = $_POST['ready'];
+    file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Is ready !!".$is_ready, true));
+
+    if($is_ready == '1'){
+        $isready_sql = " Where is_ready = 1";
+    }
+
+
+
+    file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!".$isready_sql, true),FILE_APPEND);
     if(empty($driver_id))
     {
         //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !! Empty", true));
         $driverList  = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM driver",array()          
+                "SELECT * FROM driver".$isready_sql,array()         
             )
         );
     }
@@ -5587,15 +5793,14 @@ function list_driver_marker(){
         //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!".$driver_id, true));
         $driverList  = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM driver where Driver_id = %d  ",array($driver_id)          
+                "SELECT * FROM driver where Driver_id = %d  ".$isready_sql,array($driver_id)          
             )
         );
-
     }
     
     
     if(empty($type_location)||($type_location == "current")){
-        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "current !!".$driver_id, true));
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "current !!".$driver_id, true));
         foreach ($driverList as $driver) {
             $assign_drivers = array();
             $assign_drivers['id'] = $driver->Driver_id;;
@@ -5608,7 +5813,7 @@ function list_driver_marker(){
         }
     }
     else{
-        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "PIN !!".$driver_id, true));
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "PIN !!".$driver_id, true));
         foreach ($driverList as $driver) {
             $assign_drivers = array();
             $assign_drivers['id'] = $driver->Driver_id;;
@@ -6173,12 +6378,6 @@ function check_promotion($promotion_code){
 
     $tz_date = tamzang_get_current_date();
     $promotion = $wpdb->get_row(
-        // $wpdb->prepare(
-        //     'SELECT * FROM promotion WHERE uses < max_uses 
-        //     AND start_date < STR_TO_DATE(%s, "%Y-%m-%d %H:%i:%s") 
-        //     AND end_date > STR_TO_DATE(%s, "%Y-%m-%d %H:%i:%s")
-        //     AND code = %s ', array($tz_date, $tz_date, $promotion_code)
-        // )
         $wpdb->prepare(
             'SELECT * FROM promotion WHERE uses < max_uses 
             AND start_date < %s
@@ -6204,19 +6403,28 @@ function check_promotion($promotion_code){
         )
     );
 
-    // $check = $wpdb->get_var(
-    //     $wpdb->prepare(
-    //         "SELECT promotion_id FROM onesignal
-    //         where instr(promotion_id,%s) >= 1 and user_id = %d ", 
-    //         array($promotion->ID, $current_user->ID)
-    //     )
-    // );
-
     if(!empty($check))
         return array('is_valid' => false, 'msg' => "ใช้ code แล้ว");
 
-    return array('is_valid' => true, 'name' => $promotion->name, 'constant' => $promotion->constant, 'percent' => $promotion->percent);
+    return array('is_valid' => true, 'name' => $promotion->name, 'constant' => $promotion->constant, 
+    'percent' => $promotion->percent, 'promotion_id' => $promotion->ID, 'device_id' => $device_id);
 
+}
+
+function cal_shipping_price_with_promotion($promotion_id, $delivery_price){
+    global $wpdb;
+
+    $promotion = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM promotion where ID = %d ", array($promotion_id)
+        )
+    );
+
+    $result = ( $delivery_price*(1-($promotion->percent/100))) - $promotion->constant;
+    if($result <= 0)
+        $result = 0;
+
+    return $result;
 }
 
 //AJAX FUNCTION

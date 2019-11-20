@@ -141,11 +141,38 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
 
       if($delivery_fee != 0)
         $use_point = check_user_point($_POST['hidden_up']);
-    }	
+    }
 
-    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d,user_delivery_type =%d ".
+    $promotion_id = '';
+    if(!$use_point){
+      if(!empty($_POST['pcode'])){
+        $return = check_promotion($_POST['pcode']);
+  
+        if(!$return['is_valid'])
+          wp_redirect(home_url('/confirmed-order/?pid='.$_POST['pid'].'&pmsg='.$return['name']));
+  
+        $promotion_id = $return['promotion_id'];
+
+        $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE promotion SET uses = (uses + 1) where ID = %d ",
+              array($promotion_id)
+          )
+        );
+
+        $wpdb->query(
+          $wpdb->prepare(
+              "UPDATE promotion_log set promotion_id = concat(promotion_id, %s) WHERE device_id = %s ",
+              array($promotion_id.',', $return['device_id'])
+          )
+        );
+      }
+    }
+
+
+    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d,user_delivery_type =%d, promotion_id =%d ".
     ($need_delivery ? ", deliver_ticket = 'Y'" : "").(($use_point) ? ", redeem_point = true" : ""),
-      array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'],$delivery_type_buyer)));
+      array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'],$delivery_type_buyer, $promotion_id)));
     $order_id = $wpdb->insert_id;
 
     $shipping_id = 0;
@@ -810,9 +837,14 @@ jQuery(document).ready(function($){
                       )
                   );
                   $shipping_price = $shipping_address->price;
+                  $old_shipping_price = $shipping_address->price;
                   if($wpdb->num_rows > 0)
                   {
                     echo "".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
+                  }
+
+                  if(!empty($order->promotion_id)){
+                    $shipping_price = cal_shipping_price_with_promotion($order->promotion_id, $shipping_price);
                   }
 
                   ?>
@@ -914,11 +946,33 @@ jQuery(document).ready(function($){
                     ราคาค่าจัดส่ง
                   </div>
                   <div class="order-col-3">
-                    <strong><?php echo str_replace(".00", "",number_format($shipping_price,2)); ?></strong> บาท
+                    <strong><?php echo str_replace(".00", "",number_format($old_shipping_price,2)); ?></strong> บาท
                   </div>
                 </div>
                 <div class="order-clear"></div>
                 <hr>
+
+                <?php if(!empty($order->promotion_id)){ 
+                  $promotion = $wpdb->get_row(
+                    $wpdb->prepare(
+                        "SELECT * FROM promotion where ID = %d ", array($order->promotion_id)
+                    )
+                  );
+                ?>
+                  <div class="order-row" style="color:red;">
+                    <div class="order-col-6" style="text-align:right;">
+                      <?php echo $promotion->name; ?>
+                    </div>
+                    <div class="order-col-3" style="text-align:right;">
+                      <?php echo 'ลดค่าจัดส่ง '.str_replace(".00", "",number_format($old_shipping_price - $shipping_price,2)); ?>
+                    </div>
+                    <div class="order-col-3">
+                      <strong><?php echo 'เหลือค่าจัดส่ง '.str_replace(".00", "",number_format($shipping_price,2)); ?> บาท</strong>
+                    </div>
+                  </div>
+                  <div class="order-clear"></div>
+                  <hr>
+                <?php } ?>
               <?php } ?>
 
 

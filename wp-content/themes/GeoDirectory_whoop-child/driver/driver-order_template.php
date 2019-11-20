@@ -6,11 +6,13 @@ $order = $wpdb->get_row(
     $wpdb->prepare(
         "SELECT orders.id,orders.post_id,orders.adjust_accept,orders.driver_adjust,orders.total_amt,driver_order_log_assign.status,
         orders.status as order_status,driver_order_log_assign.Id as log_id, orders.cancel_code, orders.redeem_point, orders.driver_image,
-        orders.image_slip, orders.tracking_image
+        orders.image_slip, orders.tracking_image, orders.promotion_id
         FROM orders
         INNER JOIN driver_order_log_assign ON orders.id = driver_order_log_assign.driver_order_id and driver_id = %d 
         and (driver_order_log_assign.status = 1 OR driver_order_log_assign.status = 2)", $current_user->ID)
     );
+
+$restaurant_phone = geodir_get_post_meta( $order->post_id, 'geodir_contact', true );
 
 $driver = $wpdb->get_row(
     $wpdb->prepare(
@@ -29,7 +31,16 @@ $driver = $wpdb->get_row(
 
 <?php if(!empty($order)){
     $title = get_the_title($order->post_id);
-    ?>
+
+    if(!empty($order->promotion_id)){
+        $promotion = $wpdb->get_row(
+            $wpdb->prepare(
+                'SELECT * FROM promotion WHERE ID = %d ', array($order->promotion_id)
+            )
+        );
+    }
+
+?>
 
 <div class="modal fade" id="confirm-adjust" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
     <div class="modal-dialog">
@@ -64,6 +75,7 @@ $driver = $wpdb->get_row(
         <div class="row">
             #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo $title; ?></a>
             <?php 
+                echo "&#160<i class='fa fa-phone' aria-hidden='true' style = 'color:#007bff'> <a href='tel:".$restaurant_phone."'>".$restaurant_phone."</a></i>&#160";
                 $lat = geodir_get_post_meta( $order->post_id, 'post_latitude', true );
                 $long = geodir_get_post_meta( $order->post_id, 'post_longitude', true );
                 driver_map($title, $lat, $long);
@@ -81,7 +93,7 @@ $driver = $wpdb->get_row(
             if($wpdb->num_rows > 0)
             {
                 echo "ที่อยู่ผู้รับ: ".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode."<br>";
-                echo "เบอร์โทรศัพท์: ".$shipping_address->phone;
+                echo "&#160<i class='fa fa-phone' aria-hidden='true' style = 'color:#007bff'> <a href='tel:".$shipping_address->phone."'>".$shipping_address->phone."</a></i>&#160";
                 driver_map("", $shipping_address->ship_latitude, $shipping_address->ship_longitude);
             }
 
@@ -159,6 +171,23 @@ $driver = $wpdb->get_row(
                     <strong><?php echo str_replace(".00", "",number_format($shipping_price,2))." บาท";?></strong>
                 </div>
             </div>
+            <?php if(!empty($order->promotion_id)){
+                $result = cal_shipping_price_with_promotion($order->promotion_id, $shipping_price);
+            ?>
+                <div class="row" style="color:red;">
+                    <div class="col-4">
+                        <strong><?php echo $promotion->name;?></strong>
+                    </div>
+                    <div class="col-4">
+                     ลดค่าจัดส่ง <?php echo str_replace(".00", "",number_format($shipping_price-$result,2))." บาท";?>
+                    </div>
+                    <div class="col-4">
+                        <strong>เหลือค่าจัดส่ง <?php echo str_replace(".00", "",number_format($result,2))." บาท";?></strong>
+                    </div>
+                </div>
+            <?php 
+                $shipping_price = $result;
+                } ?>
         <?php } ?>
 
         <hr>
@@ -248,7 +277,7 @@ $driver = $wpdb->get_row(
                                 <?php }else{ ?>
                                     <div class="row text-center" id="order_adjust_<?php echo $order->id; ?>">
                                         <div class="col-12">
-                                            <input type="text" id="adjust_<?php echo $order->id; ?>" value="">
+                                            <input type="text" id="adjust_<?php echo $order->id; ?>" value="" style="text-align:center;">
                                         </div>
                                     </div>
                                     <br>
