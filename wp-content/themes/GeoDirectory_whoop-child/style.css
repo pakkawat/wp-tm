@@ -26,6 +26,7 @@ Update ID: 65902
 
 */
 
+
 body{
 
   background-color:#f5f5f1;
@@ -38,6 +39,18 @@ body{
 
 }
 
+#wp-notify {
+  position: relative;
+
+}
+#wp-notify-comments-box{
+  position: relative;
+}
+
+
+.modal {
+  z-index: 100001 !important;
+}
 
 .tamzang_header{
 
@@ -864,6 +877,9 @@ form .error {
 .geodir_category_list_view li.geodir-listview .geodir-post-img{
     width: 40%;    
 }
+/* Uncomment when want only archive-gd_place to look good for mobile */
+
+/*!!!!!  post-type-archive-gd_place is the one that make differnce from normal search !!!!!
 .post-type-archive-gd_place .geodir-content {
     width: 70%;   
     position: relative;
@@ -875,6 +891,19 @@ form .error {
     height: 155px;
     position: relative;
 }
+*/
+.geodir-content {
+  width: 70%;   
+  position: relative;
+  top: -170px;
+  left: 120px;
+height: 147px;
+}
+.geodir-category-listing {
+  height: 155px;
+  position: relative;
+}
+
 .back-button{
     position: fixed;
     top: 8%;
@@ -962,6 +991,9 @@ margin: 0 auto 1em auto; /*Center the image*/
 .geodir_category_list_view li.geodir-listview .geodir-post-img{
     width: 40%;    
 }
+/* Uncomment when want only archive-gd_place to look good for mobile */
+/*
+ !!!!!  post-type-archive-gd_place is the one that make differnce from normal search !!!!!
 .post-type-archive-gd_place .geodir-content {
     width: 70%;   
     position: relative;
@@ -969,10 +1001,26 @@ margin: 0 auto 1em auto; /*Center the image*/
     left: 150px;
 	height: 147px;
 }
+
 .post-type-archive-gd_place .geodir-category-listing {
     height: 155px;
     position: relative;
 }
+*/
+
+/* use this to make all .geodir-content look same for mobile */
+.geodir-content {
+  width: 70%;   
+  position: relative;
+  top: -170px;
+  left: 150px;
+height: 147px;
+}
+.geodir-category-listing {
+  height: 155px;
+  position: relative;
+}
+
 .back-button{
     position: fixed;
     top: 8%;
@@ -1071,6 +1119,7 @@ margin: 0 auto 1em auto; /*Center the image*/
 .geodir_category_list_view li.geodir-listview .geodir-post-img{
     width: 40%;    
 }
+/*
 .post-type-archive-gd_place .geodir-content {
     width: 70%;   
     position: relative;
@@ -1082,6 +1131,19 @@ margin: 0 auto 1em auto; /*Center the image*/
     height: 155px;
     position: relative;
 }
+*/
+.geodir-content {
+  width: 70%;   
+  position: relative;
+  top: -170px;
+  left: 150px;
+height: 147px;
+}
+.geodir-category-listing {
+  height: 155px;
+  position: relative;
+}
+
 .back-button{
     position: fixed;
     top: 8%;
@@ -1185,6 +1247,7 @@ margin: 0 auto 1em auto; /*Center the image*/
 .geodir_category_list_view li.geodir-listview .geodir-post-img{
     width: 40%;    
 }
+/*
 .geodir_category_list_view li .geodir-content {
     width: 70%;   
     position: relative;
@@ -1197,6 +1260,20 @@ margin: 0 auto 1em auto; /*Center the image*/
     height: 155px;
     position: relative;
 }
+*/
+
+.geodir-content {
+  width: 70%;   
+  position: relative;
+  top: -130px;
+  left: 250px;
+height: 147px;
+}
+.geodir-category-listing {
+  height: 155px;
+  position: relative;
+}
+
 .back-button{
     position: fixed;
     top: 15%;
@@ -1328,6 +1405,7 @@ margin: 0 auto 1em auto; /*Center the image*/
     width: 50%;
 }
 
+/*
 .geodir_category_list_view.whoop-view li.geodir-listview .geodir-content {
     width: 70%;
     position: relative;
@@ -1339,6 +1417,19 @@ margin: 0 auto 1em auto; /*Center the image*/
     height: 155px;
     position: relative;
 }
+*/
+.geodir-content {
+  width: 70%;
+  position: relative;
+  top: -145px;
+  left: 245px;
+}
+.geodir-category-listing {
+  overflow: hidden;
+  height: 155px;
+  position: relative;
+}
+
 .back-button{
     position: fixed;
     top: 15%;
@@ -1432,6 +1523,7 @@ margin: 0 auto 1em auto; /*Center the image*/
     left: 210px;
 }
 
+/*
 .post-type-archive-gd_place .geodir-category-listing {
     overflow: hidden;
     height: 155px;
@@ -1442,7 +1534,17 @@ margin: 0 auto 1em auto; /*Center the image*/
     height: 155px;
     position: relative;
 }
-
+*/
+.geodir-category-listing {
+  overflow: hidden;
+  height: 155px;
+  position: relative;
+}
+.geodir-category-listing {
+  overflow: hidden;
+  height: 155px;
+  position: relative;
+}
 
 .back-button{
     position: fixed;
@@ -1504,6 +1606,11 @@ margin: 0 auto 1em auto; /*Center the image*/
 .archive.post-type-archive .geodir-category-listing {
     overflow: hidden;
     height: 160px;
+}
+
+.page-template.page-template-waiting-cart .geodir-category-listing {
+  overflow: hidden;
+  height: 160px;
 }
 
 .search.search-results .geodir-category-listing {
@@ -1581,9 +1688,15 @@ margin: 0 auto 1em auto; /*Center the image*/
      height: 320px !important;
 }
 
+
 .archive.post-type-archive .geodir-category-listing {
     overflow: hidden;
     height: 160px;
+}
+
+.page-template.page-template-waiting-cart .geodir-category-listing {
+  overflow: hidden;
+  height: 160px;
 }
 
 .search.search-results .geodir-category-listing {
@@ -2014,4 +2127,56 @@ margin: 0 auto 1em auto; /*Center the image*/
   width: 150px;
   height: 45px;
   padding: 12px;
+}
+
+.page-id-471 #gd-sidebar-wrapper.sidebar{
+  display: none;
+}
+
+#suggest[data-v-0299bb4a] {
+  position: absolute;
+  left: 56px;
+  z-index:999!important;
+  width: 150px;
+  padding: 4px;
+  border: 1px solid #888;
+  background: #fff;
+}
+
+.footer-buttons{
+  z-index:10;
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  -webkit-box-pack:center;
+  -ms-flex-pack:center;
+  justify-content:center
+}
+
+.footer-buttons .menu-button{
+  border-radius:0;
+  margin:0;
+  display:-webkit-box;
+  display:-ms-flexbox;
+  display:flex;
+  height:50px;
+  -webkit-box-align:center;
+  -ms-flex-align:center;
+  align-items:center;
+  -webkit-box-pack:center;
+  -ms-flex-pack:center;
+  justify-content:center;
+  width:100%
+}
+
+.menu-button{
+  background-color:#e34f43;
+  box-shadow: 0 3px #c96836;
+  color:#fff;
+  text-align:center;
+  cursor: pointer;
 }

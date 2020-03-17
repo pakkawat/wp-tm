@@ -6,17 +6,17 @@ if ( is_single() ) {
     $post_type = geodir_get_current_posttype();
     if(($post_type == "gd_place")||($post_type == "gd_product")){
     global $wpdb, $current_user;
-    $user_has_address = false;
-    $user_address = $wpdb->get_row(
-        $wpdb->prepare(
-            "SELECT id FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array($current_user->ID)
-        )
-    );
+    // $user_has_address = false;
+    // $user_address = $wpdb->get_row(
+    //     $wpdb->prepare(
+    //         "SELECT id FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array($current_user->ID)
+    //     )
+    // );
 
-    if($wpdb->num_rows > 0)
-    {
-      $user_has_address = true;
-    }
+    // if($wpdb->num_rows > 0)
+    // {
+    //   $user_has_address = true;
+    // }
 
     ?>
     <script>
@@ -172,16 +172,16 @@ if ( is_single() ) {
           }
         });
 
-        var offset = $('#tamzang-shopping-cart').offset();
-        $(window).scroll(function () {
-            var scrollTop = $(window).scrollTop();
-            // check the visible top of the browser
-            if (offset.top<scrollTop) {
-                $('#tamzang-shopping-cart-button').addClass('tamzang-cart-button-fixed');
-            } else {
-                $('#tamzang-shopping-cart-button').removeClass('tamzang-cart-button-fixed');
-            }
-        });
+        // var offset = $('#tamzang-shopping-cart').offset();
+        // $(window).scroll(function () {
+        //     var scrollTop = $(window).scrollTop();
+        //     // check the visible top of the browser
+        //     if (offset.top<scrollTop) {
+        //         $('#tamzang-shopping-cart-button').addClass('tamzang-cart-button-fixed');
+        //     } else {
+        //         $('#tamzang-shopping-cart-button').removeClass('tamzang-cart-button-fixed');
+        //     }
+        // });
 
     });
 
@@ -235,30 +235,25 @@ if ( is_single() ) {
         </div>
     </div>
 
-    <?php if(!$user_has_address){ ?>
-    <div class="modal fade" id="no-address" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel">ข้อความ</h4>
-                </div>
-                <div class="modal-body">
-                    <p>คุณยังไม่ได้เพิ่มที่อยู่ในการจัดส่งกรุณา <a href="<?php echo bp_get_loggedin_user_link().'address/';?>">คลิก</a> เพื่อเพิ่มที่อยู่ในการจัดส่ง</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">ตกลง</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php } ?>
 
-
-    <p class="tamzang-shopping-cart-button" id="tamzang-shopping-cart-button" data-toggle="modal" data-target="#cart-modal">
+    <!-- <p class="tamzang-shopping-cart-button" id="tamzang-shopping-cart-button">
       <img src="https://www.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/images/shop2.png" alt="ตามสั่ง">
-    </p>
+    </p> -->
 
+    <div class="footer-buttons">
+      <div class="menu-button" data-toggle="modal" data-target="#cart-modal">See MENU &amp; Order</div>
+    </div>
+
+    <style>
+    @media (min-width: 992px) {
+      .modal-dialog {
+        width: 900px;
+      }
+      .modal-dialog .modal-content .modal-body{
+        height: 600px;
+      }
+    }
+    </style>
     <div class="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
           <div class="modal-content">
@@ -278,31 +273,14 @@ if ( is_single() ) {
               <div class="modal-body" style="padding:0;">
 
 
-              <div id="tamzang-shopping-cart" >
-                <div class="wrapper-loading" id="table-my-cart">
-                  <?php get_template_part( 'ajax-cart' ); ?>
-                </div>
-                <div style="float:right;">
-
-                </div>
-              </div>
+              <iframe src="https://test02.tamzang.com/tamzang_menu/?pid=<?php echo get_the_ID();?>" height="100%" width="100%"></iframe>
 
 
               </div>
               <div class="modal-footer">
-                <?php if($user_has_address){ ?>
-                    <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
+                <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
                       <span style="color: #ffffff !important;" class="glyphicon glyphicon-play">สั่งเลย</span>
                     </a>
-                  <?php }else{ ?>
-
-
-
-                    <button class="btn btn-success" data-toggle="modal" data-target="#no-address"
-                      ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
-
-
-                  <?php } ?>
               </div>
           </div>
       </div>

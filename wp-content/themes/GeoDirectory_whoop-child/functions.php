@@ -2597,7 +2597,7 @@ function tamzang_bp_user_driver_nav_adder()
 
         bp_core_new_nav_item(
             array(
-                'name' => 'driver_money',
+                'name' => 'กระเป๋าตังค์',
                 'slug' => 'driver_money',
                 'position' => 104,
                 'show_for_displayed_user' => false,
@@ -2764,7 +2764,7 @@ function driver_withdraw_money_callback(){
 
     $id = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT ID FROM driver_debit_batch where driver_id = %d AND DATE(date) = CURDATE() ", array($current_user->ID)
+            "SELECT ID FROM driver_debit_batch where driver_id = %d AND batch_select = 0 AND batch_number is NULL ", array($current_user->ID)
         )
     );
     if(!empty($id))
@@ -3254,6 +3254,12 @@ function driver_confirm_order_callback(){
         )
     );
 
+    $order = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT user_delivery_type FROM orders where Id = %d ", array($owner->driver_order_id)
+        )
+    );
+
     if($current_user->ID == $owner->Driver_id){
 
         $wpdb->query(
@@ -3282,7 +3288,7 @@ function driver_confirm_order_callback(){
         // Get delivery variable for Calculate tier
         $delivery_value = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d ", array($delivery_price->post_id)
+                "SELECT base,base_adjust,km_tier1,km_tier1_value,km_tier2,km_tier2_value,km_tier3_value FROM delivery_variable where post_id = %d  and geodir_delivery_type = %d", array($delivery_price->post_id,$order->user_delivery_type)
             )
         );
         $range_t1 = (($delivery_value->km_tier1)>=$delivery_price->distance)? $delivery_price->distance:$delivery_value->km_tier1;			
@@ -3292,19 +3298,63 @@ function driver_confirm_order_callback(){
         $range_t3 = ($delivery_value->km_tier2<=$delivery_price->distance)?(($delivery_price->distance)-($delivery_value->km_tier2)):0;
         file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T3:".$range_t3, true),FILE_APPEND);
 
-        
-        $commission_value = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT * FROM driver_variable where driver_id = %d ", array($owner->Driver_id)
-            )
-        );  
-        file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2:".$commission_value->tier2_percent, true),FILE_APPEND);
+        // Calculate Commission
+        if($order->user_delivery_type != 1)
+        {
+            $commission_tamzang_value = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'tamzang'", array($owner->Driver_id,$order->user_delivery_type)
+                )
+            ); 
+            $commission_agent_value = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'agent'", array($owner->Driver_id,$order->user_delivery_type)
+                )
+            );
+            if(!empty($commission_tamzang_value)){
+                $commission_tamzang = sprintf("%.2f",$commission_tamzang_value->base_constance + (($commission_tamzang_value->base_percent*$delivery_value->base)/100)
+                        + $commission_tamzang_value->tier1_constance+ (($commission_tamzang_value->tier1_percent*($range_t1*$delivery_value->km_tier1_value))/100)
+                        + $commission_tamzang_value->tier2_constance+ (($commission_tamzang_value->tier2_percent*($range_t2*$delivery_value->km_tier2_value))/100)
+                        + $commission_tamzang_value->tier3_constance+ (($commission_tamzang_value->tier3_percent*($range_t3*$delivery_value->km_tier3_value))/100));
+            }else{
+                $commission_tamzang = 0;
+            }            
+            if(!empty($commission_agent_value)){
+                $commission_agent = sprintf("%.2f",$commission_agent_value->base_constance + (($commission_agent_value->base_percent*$delivery_value->base)/100)
+                        + $commission_agent_value->tier1_constance+ (($commission_agent_value->tier1_percent*($range_t1*$delivery_value->km_tier1_value))/100)
+                        + $commission_agent_value->tier2_constance+ (($commission_agent_value->tier2_percent*($range_t2*$delivery_value->km_tier2_value))/100)
+                        + $commission_agent_value->tier3_constance+ (($commission_agent_value->tier3_percent*($range_t3*$delivery_value->km_tier3_value))/100));
 
-        
-        $commission = sprintf("%.2f",$commission_value->base_constance + (($commission_value->base_percent*$delivery_value->base)/100)
-                    + $commission_value->tier1_constance+ (($commission_value->tier1_percent*($range_t1*$delivery_value->km_tier1_value))/100)
-                    + $commission_value->tier2_constance+ (($commission_value->tier2_percent*($range_t2*$delivery_value->km_tier2_value))/100)
-                    + $commission_value->tier3_constance+ (($commission_value->tier3_percent*($range_t3*$delivery_value->km_tier3_value))/100));
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "UPDATE orders SET commission_agent = %f  where id = %d ",
+                        array($commission_agent,$data['id'])
+                    )
+                );
+
+            }else{
+                $commission_agent = 0;
+            }
+
+            $commission = $commission_tamzang + $commission_agent;
+
+
+        }
+        else{
+            $commission_value = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =%d", array($owner->Driver_id,$order->user_delivery_type)
+                )
+            );  
+            file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Range T2:".$commission_value->tier2_percent, true),FILE_APPEND);
+    
+            
+            $commission = sprintf("%.2f",$commission_value->base_constance + (($commission_value->base_percent*$delivery_value->base)/100)
+                        + $commission_value->tier1_constance+ (($commission_value->tier1_percent*($range_t1*$delivery_value->km_tier1_value))/100)
+                        + $commission_value->tier2_constance+ (($commission_value->tier2_percent*($range_t2*$delivery_value->km_tier2_value))/100)
+                        + $commission_value->tier3_constance+ (($commission_value->tier3_percent*($range_t3*$delivery_value->km_tier3_value))/100));
+        }
+      
 
                     /*
         file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Commissoin Base:".$com_base, true),FILE_APPEND);
@@ -3572,7 +3622,7 @@ function driver_next_step_callback(){
           // Check status of the order
           $order = $wpdb->get_row(
               $wpdb->prepare(
-                  "SELECT status, commission, wp_user_id, id, redeem_point, cancel_code, promotion_id FROM orders where id = %d ", array($data['id'])
+                  "SELECT status, commission, wp_user_id, id, redeem_point, cancel_code, promotion_id, user_delivery_type FROM orders where id = %d ", array($data['id'])
               )
           );
 
@@ -3616,6 +3666,14 @@ function driver_next_step_callback(){
                     $shipping_price = $shipping_address->price;
                     $result = cal_shipping_price_with_promotion($order->promotion_id, $shipping_price);
                     $driver_promotion_cash = number_format($shipping_price-$result,2,'.','') ;
+                    file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Promotion price".$driver_promotion_cash, true),FIEL_APPEND);
+
+                    // Select promotion detail for decied  to transfer money to driver or not
+                    $promotion_detail = $wpdb->get_row(
+                        $wpdb->prepare(
+                            "SELECT * FROM promotion where ID = %d ", array($order->promotion_id)
+                        )
+                    );                    
 
                 }
 
@@ -3643,10 +3701,10 @@ function driver_next_step_callback(){
                         $cash_back = ( $shipping_price * ($user_cash_back->cash_back_percentage/100)) * $driver->cash_back_point_rate;
     
                         if($driver->cash_back_level == "exclude"){
-                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash);
+                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash,$order->user_delivery_type);
                         }else{
                             $new_commission = $drivercommission - $cash_back;
-                            driver_commission($new_commission, $driver, $current_date, $order->id,$driver_promotion_cash);
+                            driver_commission($new_commission, $driver, $current_date, $order->id,$driver_promotion_cash,$order->user_delivery_type);
                         }
     
                         $driver_new_balance = $wpdb->get_var(
@@ -3680,14 +3738,15 @@ function driver_next_step_callback(){
                         }
 
                     }else{
-                        if($order->promotion_id != 0) // buyer used promotino
+                        if(($order->promotion_id != 0) && ($promotion_detail->transfer_to_driver == 1)) // buyer used promotino
                         {
                             file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Input promotion on transaction detail!!", true),FILE_APPEND);
-                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash);
+                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash,$order->user_delivery_type);
                         }
                         else{ // No promotion used
+                            $driver_promotion_cash = NULL;
                             file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "No promotion used!!", true),FILE_APPEND);
-                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash);
+                            driver_commission($drivercommission, $driver, $current_date, $order->id,$driver_promotion_cash,$order->user_delivery_type);
                         }
                         
                     }
@@ -3779,10 +3838,49 @@ function insert_driver_transaction_details($type, $parameters){// ตัด comm
 
 }
 
-function driver_commission($commission, $driver, $current_date, $order_id, $driver_promotion_cash){
+function driver_commission($commission, $driver, $current_date, $order_id, $driver_promotion_cash,$user_delivery_type){
     global $wpdb;
 
-    file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Driver Cash Promo :".$driver_promotion_cash, true),FILE_APPEND);
+    //file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Driver Cash Promo :".$driver_promotion_cash, true),FILE_APPEND);
+
+    if($user_delivery_type != 1){
+        $commission_agent_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT agent_id FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'agent'", array($driver->Driver_id,$user_delivery_type)
+            )
+        );
+
+        $agent_profile = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM driver where driver_id = %d ", array($commission_agent_id)
+            )
+        );
+
+        $commission_agent_value = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT commission_agent FROM orders where id = %d", array($order_id)
+            )
+        );
+        if(!empty($commission_agent_value)){
+
+            $commission = $commission - $commission_agent_value;
+            file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Agent Cash before :".$agent_profile->driver_cash, true));
+            $driver_balacne_cash_bfr = (!empty($agent_profile->driver_cash))?$agent_profile->driver_cash:0 ;
+            $New_driver_balacne_cash = $driver_balacne_cash_bfr + $commission_agent_value;
+            file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Agent Cash After :".$New_driver_balacne_cash, true),FILE_APPEND);
+            insert_driver_transaction_details("PROMOTION_CREDIT", 
+            array($commission_agent_id, $commission_agent_value, $New_driver_balacne_cash, "REVERSE_TO_DRIVER", $current_date, $order_id));
+
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE driver SET driver_cash = %f where driver_id = %d ",
+                    array($New_driver_balacne_cash, $agent_profile->Driver_id)
+                )
+            );
+        
+        }
+    }
+
 
     if($driver->add_on_credit == 0 || $driver->add_on_credit == ""){// ไม่มี point
         $driver->balance = $driver->balance - $commission;
@@ -3995,6 +4093,7 @@ add_action('wp_ajax_load_driver_transaction_list', 'load_driver_transaction_list
 function load_driver_transaction_list_callback(){
   set_query_var( 'start_date', $_POST['start_date'] );
   set_query_var( 'end_date', $_POST['end_date'] );
+  set_query_var( 'type', $_POST['type'] );
   get_template_part( 'driver/driver', 'transaction_list' );
   wp_die();
 }
@@ -4454,7 +4553,7 @@ function sendMessage($player_id,$message){
 		
 		$fields = array(
             //30bcc12c-404d-494a-ac93-ac8ee755744f For Test02 || 73b7d329-0a82-4e80-aa74-c430b7b0705b for Prod
-			'app_id' => "30bcc12c-404d-494a-ac93-ac8ee755744f",
+			'app_id' => "73b7d329-0a82-4e80-aa74-c430b7b0705b",
 			'include_player_ids' => array($playerID),
 			//'include_player_ids' => array("1c072fb6-f1b3-44ba-9f19-7a6fb5534366","646d645e-382d-45d9-aea9-916401fe3954"),
 			'data' => array("foo" => "bar"),
@@ -4719,10 +4818,10 @@ function get_delivery_fee($pid,$deliver_type) {
 			"SELECT latitude,longitude FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array(get_current_user_id())
 		)
     );
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "point :".$buyer_point->latitude, true));
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "ID :".get_current_user_id(), true),FILE_APPEND);
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "POST ID :".$post_id, true),FILE_APPEND);
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Point Long :".$buyer_point->longitude, true),FILE_APPEND);
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "point :".$buyer_point->latitude, true),FILE_APPEND);
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "ID :".get_current_user_id(), true),FILE_APPEND);
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "POST ID :".$post_id, true),FILE_APPEND);
+	file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Point Long :".$buyer_point->longitude, true),FILE_APPEND);
 	
 	//Check point of this address exit
     $deliver_fee_sql = $wpdb->get_row(
@@ -5605,102 +5704,8 @@ function customer_rating(){
     }else return;
 }
 
-add_action('wp_ajax_generateQRpayment', 'generateQRpayment');
-// For operater get Driver for adjust his balance
-function generateQRpayment(){
-    global $wpdb;
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
-    $data = $_POST;
 
-    $Amount_topup = $data['amount'];
-    $user_id = get_current_user_id();
 
-    /*
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
-		$sql = $wpdb->prepare(
-         "SELECT * FROM driver WHERE driver_id = %d ",array($Driver_id)  
-    );
-	$result_driver = $wpdb->get_results($sql);
-    */
-    $scb_token_obj = json_decode(SCBTokenGenerater());
-
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $scb_token_obj, true));
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Token is :".$scb_token_obj->data->accessToken, true),FILE_APPEND);
-
-    $scb_qr_obj = json_decode(SCBQRGenerate($scb_token_obj->data->accessToken,$Amount_topup));
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Data is :".$scb_qr_obj->data->qrRawData, true),FILE_APPEND);
-    wp_send_json_success($scb_qr_obj->data->qrRawData);
-    
-}
-
-function SCBTokenGenerater()
-{
-    $fields = array(        
-        'applicationKey' => "l7e0defea0cc1f4183ab3356ac23932a64",
-        'applicationSecret' => "805247453ba54aa69e0409637e5dd653"   
-    );
-    $fields = json_encode($fields);
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true));
-
-    // API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
-	$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "https://api.partners.scb/partners/sandbox/v1/oauth/token");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:tz-topup-12346'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_POST, TRUE);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-		$response = curl_exec($ch);
-		curl_close($ch);
-		//file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $response, true),FILE_APPEND);
-        return $response;
-}
-function SCBQRGenerate($token,$amount)
-{
-    //ppId = Biller ID :632243887766375
-    $authorization = "Bearer ".$token;
-    $fields = array(        
-        'qrType' => "PP",
-        'ppType' => "BILLERID",
-        "ppId"  => "632243887766375", 
-	    "amount"  => $amount, 
-        "ref1"  => "TZ01", 
-        "ref2"  => "REFERENCE2",
-        "ref3"  => "TZ01" 
-    );
-    $fields = json_encode($fields);
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true));
-
-    // API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
-	$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "https://api.partners.scb/partners/sandbox/v1/payment/qrcode/create");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:tz-topup-12346','authorization:'.$authorization));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_POST, TRUE);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-		$response = curl_exec($ch);
-		curl_close($ch);
-		file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $response, true));
-        return $response;
-}
-/*
-//AJAX FUNCTION
-add_action('wp_ajax_listdrivercredit', 'listdrivercredit');
-function listdrivercredit(){
-    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Ajax listdrivercredit START", true));
-    $driver_assign_array = $_GET;
-    set_query_var('name', $driver_assign_array['driver_name']); 
-    set_query_var('id', $driver_assign_array['driver_id']); 
-    set_query_var('balance', $driver_assign_array['driver_balance']);
-    set_query_var('credit', $driver_assign_array['driver_credit']); 
-    file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( "Driver balance : ".$driver_assign_array['driver_balance'], true),FILE_APPEND);
-    get_template_part( 'ajax-driver-credit' );
-    wp_die();
-}
-*/
 
 function tamzang_modify_home_nav_menu_objects( $items, $args ) {
     global $wpdb, $current_user;
@@ -5807,6 +5812,7 @@ function list_driver_marker(){
             $assign_drivers['name'] = $driver->driver_name;
             $assign_drivers['lat'] =$driver->current_latitude;
             $assign_drivers['lon'] = $driver->current_longitude;
+            $assign_drivers['pin_range'] = $driver->driver_radius;
             //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
             
             $return_arr[] = $assign_drivers;
@@ -5820,6 +5826,7 @@ function list_driver_marker(){
             $assign_drivers['name'] = $driver->driver_name;
             $assign_drivers['lat'] =$driver->latitude;
             $assign_drivers['lon'] = $driver->longitude;
+            $assign_drivers['pin_range'] = $driver->driver_radius;
             //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	
             
             $return_arr[] = $assign_drivers;
@@ -6194,8 +6201,15 @@ function get_place_delivery_setup() {
     //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $result_driver, true));
     if(!empty($result_list_delivery_variable)){
         foreach ($result_list_delivery_variable as $list)
-        {
-            $assign_drivers = array();
+        {           
+            // Get radius_delivery
+            $restaurant_deli_radius = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT radius_delivery FROM wp_geodir_gd_place_detail where post_id = %d ", array($Post_id)
+                )
+            );
+
+            $assign_restaurant = array();
             $post_id = $list->post_id;
             $title = $list->title;
             $base = $list->base;
@@ -6211,25 +6225,25 @@ function get_place_delivery_setup() {
             $km_tier5 = $list->km_tier5;
             $km_tier5_value = $list->km_tier5_value;
             $geodir_delivery_type = $list->geodir_delivery_type;
-            $assign_drivers['post_id'] = $post_id;
-            $assign_drivers['title'] = $title;
-            $assign_drivers['base'] = $base;
-            $assign_drivers['base_adjust'] = $base_adjust;
-            $assign_drivers['km_tier1'] = $km_tier1;
-            $assign_drivers['km_tier1_value'] = $km_tier1_value;
-            $assign_drivers['km_tier2'] = $km_tier2;
-            $assign_drivers['km_tier2_value'] = $km_tier2_value;
-            $assign_drivers['km_tier3'] = $km_tier3;
-            $assign_drivers['km_tier3_value'] = $km_tier3_value;
-            $assign_drivers['km_tier4'] = $km_tier4;
-            $assign_drivers['km_tier4_value'] = $km_tier4_value;
-            $assign_drivers['km_tier5'] = $km_tier5;
-            $assign_drivers['km_tier5_value'] = $km_tier5_value;
-            $assign_drivers['geodir_delivery_type'] = $geodir_delivery_type;
-            file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Not Empty", true));	
-            
-            $return_arr[] = $assign_drivers;
-        }
+            $assign_restaurant['post_id'] = $post_id;
+            $assign_restaurant['title'] = $title;
+            $assign_restaurant['base'] = $base;
+            $assign_restaurant['base_adjust'] = $base_adjust;
+            $assign_restaurant['km_tier1'] = $km_tier1;
+            $assign_restaurant['km_tier1_value'] = $km_tier1_value;
+            $assign_restaurant['km_tier2'] = $km_tier2;
+            $assign_restaurant['km_tier2_value'] = $km_tier2_value;
+            $assign_restaurant['km_tier3'] = $km_tier3;
+            $assign_restaurant['km_tier3_value'] = $km_tier3_value;
+            $assign_restaurant['km_tier4'] = $km_tier4;
+            $assign_restaurant['km_tier4_value'] = $km_tier4_value;
+            $assign_restaurant['km_tier5'] = $km_tier5;
+            $assign_restaurant['km_tier5_value'] = $km_tier5_value;
+            $assign_restaurant['geodir_delivery_type'] = $geodir_delivery_type;
+
+            file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Not Empty", true));            
+            $return_arr[] = $assign_restaurant;
+        }        
     }
 
     wp_send_json_success($return_arr);
@@ -6261,6 +6275,7 @@ function list_delivery_setup(){
     set_query_var('km_tier5',$data['km_tier5']);
     set_query_var('km_tier5_value',$data['km_tier5_value']);
     set_query_var('geodir_delivery_type',$data['geodir_delivery_type']); 
+    set_query_var('radius_deli',$data['radius_deli']); 
     
   //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $data['title'], true));
 
@@ -6285,7 +6300,8 @@ function restaurant_delivery_setup(){
     $emer_driver_id = $data['driverID'];
     $driver_id = $_POST['priority'];
     */
-
+    // restaurant delivery radius have only One
+    $restaurant_deli_radius = $_POST['reasturant_deli_radius'];
     for($i = 0; $i < 2; $i++){
         $doing = $_POST['doing_'.$i];             
         $post_id = $_POST['postid_'.$i];
@@ -6303,6 +6319,7 @@ function restaurant_delivery_setup(){
         $km_tier5 = $_POST['km_tier5_'.$i];
         $km_tier5_value = $_POST['km_tier5_value_'.$i];
         $geodir_delivery_type = $_POST['geodir_delivery_type_'.$i];
+        
 
         if($doing == "UPDATE"){
            // file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
@@ -6314,6 +6331,10 @@ function restaurant_delivery_setup(){
                     array($base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value,$km_tier4,$km_tier4_value, $km_tier5,$km_tier5_value,$geodir_delivery_type,$post_id)
                 )
             );
+
+           
+
+
         }
         elseif($doing == "INSERT"){
           //  file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
@@ -6329,11 +6350,182 @@ function restaurant_delivery_setup(){
           }
             
         }
+
+        // update radius_delivery back to wp_geodir_gd_place_detail
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE wp_geodir_gd_place_detail SET radius_delivery = %f WHERE post_id = %d ",
+                array($restaurant_deli_radius,$post_id)
+            )
+        );
         
     }
     wp_send_json_success("SUCCESS");
 
     
+}
+
+// AJAX function  Driver set up commission
+add_action('wp_ajax_driver_delivery_setup', 'driver_delivery_setup');
+//get list Driver for restaurant
+function driver_delivery_setup() {
+    global $wpdb;
+	$return_arr = array();
+	$return_web = array();
+	$restaurant_array = array();
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST;
+	
+    $Driver_id = $data['DriverID'];
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+    
+    //Get Driver name
+    $driver_name = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT driver_name  FROM driver WHERE driver_id =%d", array($Driver_id)
+        )
+    );
+
+    // Get commission data
+	$sql = $wpdb->prepare(
+        "SELECT * FROM driver_variable WHERE driver_id = %d ",array($Driver_id)  
+    );	
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
+	$result_list_driver_commission_variable = $wpdb->get_results($sql);	
+	//$total_driver = $wpdb->num_rows;
+    //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $result_driver, true));
+    if(!empty($result_list_driver_commission_variable)){
+        foreach ($result_list_driver_commission_variable as $list)
+        {           
+            $assign_restaurant = array();
+            $driver_id = $list->driver_id;
+            $title = $list->title;
+            $base = $list->base_constance;
+            $base_percent = $list->base_percent;
+            $tier1_constance = $list->tier1_constance;
+            $tier1_percent = $list->tier1_percent;
+            $tier2_constance = $list->tier2_constance;
+            $tier2_percent = $list->tier2_percent;
+            $tier3_constance = $list->tier3_constance;
+            $tier3_percent = $list->tier3_percent;
+            $tier4_constance = $list->tier4_constance;
+            $tier4_percent = $list->tier4_percent;
+            $tier5_constance = $list->tier5_constance;
+            $tier5_percent = $list->tier5_percent;
+            $geodir_delivery_type = $list->geodir_delivery_type;
+            $agent_id = $list->agent_id;
+            $assign_restaurant['driver_id'] = $driver_id;
+            $assign_restaurant['title'] = $title;
+            $assign_restaurant['base_constance'] = $base;
+            $assign_restaurant['base_percent'] = $base_percent;
+            $assign_restaurant['tier1_constance'] = $tier1_constance;
+            $assign_restaurant['tier1_percent'] = $tier1_percent;
+            $assign_restaurant['tier2_constance'] = $tier2_constance;
+            $assign_restaurant['tier2_percent'] = $tier2_percent;
+            $assign_restaurant['tier3_constance'] = $tier3_constance;
+            $assign_restaurant['tier3_percent'] = $tier3_percent;
+            $assign_restaurant['tier4_constance'] = $tier4_constance;
+            $assign_restaurant['tier4_percent'] = $tier4_percent;
+            $assign_restaurant['tier5_constance'] = $tier5_constance;
+            $assign_restaurant['tier5_percent'] = $tier5_percent;
+            $assign_restaurant['geodir_delivery_type'] = $geodir_delivery_type;
+            $assign_restaurant['agent_id'] = $agent_id;
+            $assign_restaurant['driver_name'] = $driver_name;
+            file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Not Empty", true));	            
+            $return_arr[] = $assign_restaurant;
+        }        
+    }
+
+    wp_send_json_success($return_arr);
+    wp_die();
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_list_driver_commission_setup', 'list_driver_commission_setup');
+function list_driver_commission_setup(){
+
+
+    $data = $_GET;
+    set_query_var('driver_id',$data['driver_id']);
+    set_query_var('title',$data['title']);
+    set_query_var('base_constance',$data['base_constance']);
+    set_query_var('base_percent',$data['base_percent']);
+    set_query_var('tier1_constance',$data['tier1_constance']);
+    set_query_var('tier1_percent',$data['tier1_percent']);
+    set_query_var('tier2_constance',$data['tier2_constance']);
+    set_query_var('tier2_percent',$data['tier2_percent']);
+    set_query_var('tier3_constance',$data['tier3_constance']);
+    set_query_var('tier3_percent',$data['tier3_percent']);
+    set_query_var('tier4_constance',$data['tier4_constance']);
+    set_query_var('tier4_percent',$data['tier4_percent']);
+    set_query_var('tier5_constance',$data['tier5_constance']);
+    set_query_var('tier5_percent',$data['tier5_percent']);
+    set_query_var('geodir_delivery_type',$data['geodir_delivery_type']);
+    set_query_var('agent_id',$data['agent_id']);
+    set_query_var('driver_name',$data['driver_name']);
+    
+  file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $data['driver_name'], true));
+
+  get_template_part( 'driver/ajax-driver-delivery' );
+  wp_die();
+}
+
+//AJAX FUNCTION
+add_action('wp_ajax_driver_commission_setup', 'driver_commission_setup');
+function driver_commission_setup(){
+    global $wpdb;
+	file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( "driver_commission_setup", true));
+    $data = $_POST;
+    $check = $_POST['doing_1'];
+    file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( "Check array".$check, true),FILE_APPEND);   
+
+
+    for($i = 0; $i < 2; $i++){
+        $doing = $_POST['doing_'.$i];             
+        $driver_id = $_POST['driverid_'.$i];
+        $title = $_POST['title_'.$i];
+        $base = $_POST['base_'.$i];
+        $base_percent = $_POST['base_percent_'.$i];
+        $tier1_constance = $_POST['tier1_constance_'.$i];
+        $tier1_percent = $_POST['tier1_percent_'.$i];
+        $tier2_constance = $_POST['tier2_constance_'.$i];
+        $tier2_percent = $_POST['tier2_percent_'.$i];
+        $tier3_constance = $_POST['tier3_constance_'.$i];
+        $tier3_percent = $_POST['tier3_percent_'.$i];
+        $tier4_constance = $_POST['tier4_constance_'.$i];
+        $tier4_percent = $_POST['tier4_percent_'.$i];
+        $tier5_constance = $_POST['tier5_constance_'.$i];
+        $tier5_percent = $_POST['tier5_percent_'.$i];
+        $geodir_delivery_type = $_POST['geodir_delivery_type_'.$i];
+        $agentId = $_POST['agent_id_'.$i];
+        
+
+        if($doing == "UPDATE"){
+            // file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
+            $wpdb->query(
+                 $wpdb->prepare(
+                     "UPDATE driver_variable SET base_constance = %f, base_percent =%f ,tier1_constance =%f,tier1_percent = %f, tier2_constance =%f ,tier2_percent =%f,tier3_constance = %f, tier3_percent =%f
+                     ,tier4_constance =%f,tier4_percent = %f, tier5_constance =%f ,tier5_percent =%f,agent_id =%d 
+                     WHERE geodir_delivery_type = %d and driver_id = %d ",
+                     array($base, $base_percent,$tier1_constance,$tier1_percent, $tier2_constance,$tier2_percent,$tier3_constance, $tier3_percent,$tier4_constance,$tier4_percent, $tier5_constance,$tier5_percent,$agentId,$geodir_delivery_type,$driver_id)
+                 )
+             );
+         }
+         elseif($doing == "INSERT"){
+           //  file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
+           if(!empty($driver_id)){
+             $wpdb->query(
+                 $wpdb->prepare(
+                  "INSERT INTO driver_variable SET
+                 driver_id = %d,title = %s,base_constance = %f, base_percent =%f ,tier1_constance =%f,tier1_percent = %f, tier2_constance =%f ,tier2_percent =%f,tier3_constance = %f, tier3_percent =%f
+                 ,tier4_constance =%f,tier4_percent = %f, tier5_constance =%f ,tier5_percent =%f,geodir_delivery_type = %d,agent_id =%d",
+                  array($driver_id,$title,$base, $base_percent,$tier1_constance,$tier1_percent, $tier2_constance,$tier2_percent,$tier3_constance, $tier3_percent,$tier4_constance,$tier4_percent, $tier5_constance,$tier5_percent,$geodir_delivery_type,$agentId)
+              )
+             );
+           }            
+         }
+    }
+    wp_send_json_success("SUCCESS");
 }
 
 
@@ -6458,6 +6650,717 @@ function updatePromotionCheck(){
 			file_put_contents( dirname(__FILE__).'/debug/onesignal.log', var_export( "updateOnesignal INSERT".$device_id, true),FILE_APPEND);
 		}
 	}	
+}
+
+
+
+
+add_action('wp_ajax_nopriv_tamzang_express_login', 'tamzang_express_login');
+
+function tamzang_express_login(){
+    global $wpdb;
+    $data = $_POST;
+
+    $username = $data['user'];
+    $email = $data['user'].'@temp.com';
+    $password = $data['user'];
+    $phone = $data['phone'];
+
+    $response = json_decode(sendMessage($username,"คุณได้เข้าระบบตามสั่งแบบด่วนสำเร็จแล้ว"), true);
+    if(empty($response["id"]))
+        wp_send_json_error();
+
+    $user_id = username_exists( $username );
+    if ( !$user_id && email_exists($email) == false ) {
+        $user_id = wp_create_user( $username, $password, $email );
+        if( is_wp_error($user_id) ) {
+            wp_send_json_error();
+        }
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO wp_bp_xprofile_data SET field_id = 17, user_id = %d, value = %s, last_updated = %s ",
+                array($user_id, $phone, tamzang_get_current_date())
+            )
+        );
+    }
+
+    wp_set_current_user($user_id);
+    wp_set_auth_cookie($user_id);
+
+    wp_send_json_success($user_id);
+}
+
+// Driver Top up money
+
+add_action('wp_ajax_driver_topup_money', 'driver_topup_money_callback');
+function driver_topup_money_callback(){
+  global $wpdb, $current_user;
+
+  $data = $_POST;
+
+  // check the nonce
+  if ( check_ajax_referer( 'driver_topup_money_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error("error nonce");
+  }
+
+  try { 
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Start check valid value ", true));
+    $valid_value = array('100', '200', '300', '400', '500', '1000');
+    
+    if(!in_array($data['dd_value'], $valid_value))
+        wp_send_json_error();    
+    $amount = $data['dd_value'];
+    $token = SCBTokenGenerater();
+    $token_decode = json_decode($token);
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After token ", true),FILE_APPLEND);
+    $QR_30_Data = SCBQRGenerate($token_decode->data->accessToken,$amount,$current_user->ID,"DRIVERTOPUP","Driver","QR30");
+    //$QR_30_decode = json_decode($QR_30_Data);  
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After QR ".$QR_30_Data, true),FILE_APPLEND); 
+    wp_send_json_success($QR_30_Data);
+    //return $QR_30_Data;
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+add_action('wp_ajax_generateQRpayment', 'generateQRpayment');
+// For operater get Driver for adjust his balance
+function generateQRpayment(){
+    global $wpdb;
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST;
+
+    $Amount_topup = $data['amount'];
+    $user_id = get_current_user_id();
+
+    /*
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
+		$sql = $wpdb->prepare(
+         "SELECT * FROM driver WHERE driver_id = %d ",array($Driver_id)  
+    );
+	$result_driver = $wpdb->get_results($sql);
+    */
+    $scb_token_obj = json_decode(SCBTokenGenerater());
+
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $scb_token_obj, true));
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Token is :".$scb_token_obj->data->accessToken, true),FILE_APPEND);
+
+    //$scb_qr_obj = json_decode(SCBQRGenerate($scb_token_obj->data->accessToken,$Amount_topup,"DRIVERTOPUP","Driver","QR30"));
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Data is :".$scb_qr_obj->data->qrRawData, true),FILE_APPEND);
+    //wp_send_json_success($scb_qr_obj->data->qrRawData);
+    wp_send_json_success($scb_token_obj->data->accessToken);
+    
+}
+
+add_action('wp_ajax_buyerQRpayment', 'buyerQRpayment');
+// For Buyer QR payment
+function buyerQRpayment(){
+    global $wpdb;
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
+    $data = $_POST; 
+
+    // check the nonce
+    if ( check_ajax_referer( 'buyerQRpayment_'.$data['orderId'], 'nonce', false ) == false ) {
+        wp_send_json_error("error nonce");
+    }
+
+    try { 
+        file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Start check valid value ", true));
+        $order = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM orders where ID = %d ", array($data['orderId'])
+            )
+        );
+        $shipping =  $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM shipping_address where order_id = %d ", array($data['orderId'])
+            )
+        );
+
+           
+        $amount = round($order->total_amt + $shipping->price,2);
+        $token = SCBTokenGenerater();
+        $token_decode = json_decode($token);
+        //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After token ", true),FILE_APPLEND);
+        $QR_30_Data = SCBQRGenerate($token_decode->data->accessToken,$amount,$order->wp_user_id,"ORDER".$data['orderId'],"BUY","QR30");
+        //$QR_30_decode = json_decode($QR_30_Data);  
+        //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After QR ".$QR_30_Data, true),FILE_APPLEND); 
+        wp_send_json_success($QR_30_Data);
+        //return $QR_30_Data;
+    
+      } catch (Exception $e) {
+          wp_send_json_error($e->getMessage());
+      }
+    
+}
+
+
+function SCBTokenGenerater()
+{
+    $fields = array(        
+        'applicationKey' => "l7e0defea0cc1f4183ab3356ac23932a64",
+        'applicationSecret' => "805247453ba54aa69e0409637e5dd653"   
+    );
+    $fields = json_encode($fields);
+    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true));
+
+    // Sandbox  API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
+    // UAT API key: l70640876e6fac4f91afca88654030fb87 , Api Secret:3de09fe32d514725a0e4cc831b74077c
+    // url sandbox https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token || UAT https://api-uat.partners.scb/partners/v1/oauth/token
+    // resourceOwnerId : <Your API Key>
+
+	$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:123456789-01122'));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+		file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "token :".$response, true));
+        return $response;
+}
+
+function SCBQRGenerate($token,$amount,$ref1,$pay_by,$ref3,$qr_type)
+{
+    global $wpdb;
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Generate Start!! ".$qr_type, true),FILE_APPEND);
+    $tz = 'Asia/Bangkok';
+    $timestamp = time();
+    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+
+    $uniq_qr = $dt->format("YmdHis");
+
+    $current_date = tamzang_get_current_date();
+    $ref3_postfix = ($ref3 == "Driver")?$uniq_qr:$uniq_qr.$ref3 ;
+    $ref3 = "KBT".$ref3_postfix;
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "REF3 : ".$ref3, true),FILE_APPEND);
+
+    
+    $user_id = strval($ref1);
+    //ppId = Biller ID :632243887766375
+    $authorization = "Bearer ".$token;
+    
+    if($qr_type == "QR30"){
+        $requestUId = "7f53b03d";
+        /* PROD
+        $fields = array(        
+            'qrType' => "PP",
+            'ppType' => "BILLERID",
+            "ppId"  => "010556017498901", 
+            "amount"  => $amount,
+            "ref1"  => $user_id,
+            "ref2"  => $pay_by,
+            "ref3"  => $ref3
+        );*/
+
+        /* UAT
+        $fields = array(        
+            'qrType' => "PP",
+            'ppType' => "BILLERID",
+            "ppId"  => "311040039475180", 
+            "amount"  => $amount,
+            "ref1"  => $user_id,
+            "ref2"  => $pay_by,
+            "ref3"  => $ref3
+        );*/
+        
+        // Sandbox
+        $fields = array(        
+            'qrType' => "PP",
+            'ppType' => "BILLERID",
+            "ppId"  => "632243887766375", 
+            "amount"  => $amount,
+            "ref1"  => $user_id,
+            "ref2"  => $pay_by,
+            "ref3"  => $ref3
+        );
+        
+
+    }
+    elseif($qr_type == "QRCS"){
+        $requestUId = "7f53b03d-7b9c-42d6-8283-f522ee88ac1c";
+        $fields = array(        
+            'qrType' => "CS",
+            'merchantId' => "534340151318941",
+            "terminalId"  => "395224732472949", 
+            "amount"  => $amount,
+            "invoice"  => "INVOICE 1",
+            "csExtExpiryTime"  => "60"
+        );
+    }
+    
+    $fields = json_encode($fields);
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true),FILE_APPEND);
+
+        // Sandbox  API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
+
+    // UAT API key: l70640876e6fac4f91afca88654030fb87 , Api Secret:3de09fe32d514725a0e4cc831b74077c
+    // Prod API key :l7ec315a7902af465988aae2b792946ef2 , secret 2856b168c2c84f55826254041c21640b
+
+    // URL sandbox https://api-sandbox.partners.scb/partners/sandbox/v1/payment/qrcode/create || UAT https://api-uat.partners.scb/partners/v1/payment/qrcode/create
+	$ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/qrcode/create");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:'.$requestUId,'authorization:'.$authorization));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    $response = curl_exec($ch);
+    curl_close($ch);    
+    
+    
+    $response_decode = json_decode($response);
+
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export($response_decode->status->description, true),FILE_APPEND);
+    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export($response_decode->data->qrRawData, true),FILE_APPEND);
+
+
+    
+    if($response_decode->status->description == "Success"){
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO qr_code SET REF1 = %s, REF2 = %s, REF3 = %s, status = '%d',amount_create = %f,create_date = %s, qrImage=%s",
+                array($user_id,$pay_by,$ref3,1,$amount,$current_date,$response_decode->data->qrImage)
+            )
+        );
+    }   
+    $return_ref = array(
+        "ref1"  => $user_id,
+        "ref2"  => $pay_by,
+        "ref3"  => $ref3
+    );
+    return $return_ref;
+}
+
+function SCBVerifySlip($token,$slipref)
+{
+    $url = "https://api-uat.partners.scb/partners/v1/payment/billpayment/transactions/".$slipref."?sendingBank=014";
+    $authorization = "Bearer ".$token;
+    $requestUId = "85230887-e643-4fa4-84b2-4e56709c4ac4";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:'.$requestUId,'authorization:'.$authorization));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    $response = curl_exec($ch);
+    curl_close($ch); 
+
+    $response_decode = json_decode($response);
+
+    return $response;
+    
+
+}
+
+
+// AJAX longdo get address
+add_action('wp_ajax_longdo_address', 'longdo_address_callback');
+function longdo_address_callback() {
+    global $wpdb, $current_user;
+    file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( "longdo_address Start!! : ", true));
+    $data = $_POST;   
+	
+	// google map geocode api url key = 1cc1885ba40b08c2ca002276b8d4bd92
+        
+    $url ="https://api.longdo.com/map/services/address?lon=".$data['lng']."&lat=".$data['lat']."&key=1cc1885ba40b08c2ca002276b8d4bd92";
+
+    
+	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "google URL :".$url, true),FILE_APPEND);
+	
+
+	//echo $url."<br>";
+	// get the json response
+    $resp_json = file_get_contents($url);
+
+	// decode the json
+    $resp = json_decode($resp_json, true);
+    
+    //$log = print_r($resp, true);
+
+    file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( "Raw Jason : ".$resp_json, true),FILE_APPEND);
+	// response status will be 'OK', if able to geocode given address
+
+    
+    if (strpos($resp, 'Error') !== false) {
+        //echo 'true';    
+		// get the important data
+		$road = (!empty($resp['road'])?$resp['road']." ":"");
+		$subdistrict = (!empty($resp['subdistrict'])?$resp['subdistrict']." ":"");
+        $address = $road.$subdistrict;
+        $province = $resp['province'];
+		$district = $resp['district'];
+        $postcode = $resp['postcode'];
+          
+        
+        file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( " Address : ".$address, true),FILE_APPEND);
+
+        // check user has address or not
+        $user_address = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM user_address where wp_user_id = %d ", array($current_user->ID)
+            )
+        );
+
+        if(!empty($user_address)){
+            //check user has express address or not
+            $express_address = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT * FROM user_address where wp_user_id = %d and name = %s ", array($current_user->ID,"ตำแหน่งที่อยู่ปัจจุบัน")
+                )
+            );
+            if(!empty($express_address)){
+               // update
+               user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],"UPDATE",0);
+            }
+            else{
+                //Insert Not default;
+                user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],"NEW",0);
+            }            
+        }
+        else{
+            //insert default
+            user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],"NEW",1);
+        }        
+        return "Success";
+    }
+	else{
+		return "ระบบจัดหาที่อยู่ปัจจุบันมีปัญหาชั่วคราว";
+    }
+
+}
+
+function user_address_express($address,$district,$province,$postcode,$lat,$lng,$command,$set_default){
+    global $wpdb, $current_user;
+
+    $phone = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM wp_bp_xprofile_data where user_id = %d and field_id = 17 ", array($current_user->ID)
+        )
+    );
+
+
+    file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( "Phone : ".$phone->value, true),FILE_APPEND);
+
+    if($command == "NEW"){
+        file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( " We got New address : ", true),FILE_APPEND);
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO user_address SET wp_user_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s, shipping_address = %s, billing_address = %s, latitude = %s, longitude = %s ",
+                array($current_user->ID,"ตำแหน่งที่อยู่ปัจจุบัน",$address,$district,$province,$postcode,$phone->value,$set_default,$set_default,$lat,$lng)
+            )
+        );
+    }
+    elseif($command == "UPDATE"){
+        file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( " We UPDATE!! address : ", true),FILE_APPEND);
+        file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export($phone, true),FILE_APPEND);
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE user_address SET address = %s, district = %s, province = %s, postcode = %s, phone = %s, latitude = %s, longitude = %s
+                WHERE wp_user_id = %d and name = 'ตำแหน่งที่อยู่ปัจจุบัน' ",
+                array($address,$district,$province,$postcode,$phone->value,$lat,$lng,$current_user->ID)
+            )
+        );
+    } 
+}
+
+add_action('wp_ajax_create_choice_group', 'create_choice_group_callback');
+function create_choice_group_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'create_choice_group_' . $current_user->ID, 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+
+        if($data['optional'] == "0"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "INSERT INTO choice_group SET group_title = %s, shop_id = %d, is_optional = %d, force_min = %d, force_max = %d ",
+                    array($data['group_title'], $data['sid'], $data['optional'], $data['force_min'], $data['force_max'])
+                )
+            );
+        }else{
+            $wpdb->query(
+                $wpdb->prepare(
+                    "INSERT INTO choice_group SET group_title = %s, shop_id = %d, is_optional = %d ",
+                    array($data['group_title'], $data['sid'], $data['optional'])
+                )
+            ); 
+        }
+        $id = $wpdb->insert_id;
+
+        $nonce = wp_create_nonce( 'save_product_options_'.$current_user->ID.$id);
+
+        $return = array(
+            'id' => $wpdb->insert_id,
+            'nonce' => $nonce,
+            'sid' => $data['sid']
+        );
+
+        wp_send_json_success($return);
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_save_product_options', 'save_product_options_callback');
+function save_product_options_callback() {
+    try{
+        global $current_user;
+        $data = $_POST;
+
+        $return = array();
+        if($data['post_data'][0]['name'] == "caid")
+        {
+            if ( check_ajax_referer( 'update_product_options_'.$current_user->ID.$data['post_data'][0]['value'], 'nonce', false ) == false ) {
+                wp_send_json_error();
+            }
+            $return = update_product_options($data);
+        }
+        else
+        {
+            if ( check_ajax_referer( 'save_product_options_'.$current_user->ID.$data['post_data'][0]['value'], 'nonce', false ) == false ) {
+                wp_send_json_error();
+            }
+            $return = create_product_options($data);
+        }
+            
+
+
+
+        wp_send_json_success($return);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+function create_product_options($data){
+    global $wpdb, $current_user;
+
+    $choice_group_id = $data['post_data'][0]['value'];
+    $shop_id = $data['post_data'][2]['value'];
+
+    $is_current_user_owner = geodir_listing_belong_to_current_user((int)$shop_id);
+
+    if(!$is_current_user_owner)
+        wp_send_json_error();
+
+    //file_put_contents( dirname(__FILE__).'/debug/product_options.log', var_export( $data['post_data'], true));
+    for($i = 3; $i < count($data['post_data']); $i+=2) {
+        // do something with $array[$i]
+        //echo $array[$i]['value'].'--'.$array[$i+1]['value'].'<br>';
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO choice_adons SET choice_group_id = %d, choice_adon_detail = %s, extra_price = %d ",
+                array($choice_group_id, $data['post_data'][$i]['value'], $data['post_data'][$i+1]['value'])
+            )
+        ); 
+    }
+
+    $nonce = wp_create_nonce( 'update_product_options_'.$current_user->ID.$wpdb->insert_id);
+
+    return $return = array(
+        'id' => $wpdb->insert_id,
+        'option_name' => $data['post_data'][3]['value'],
+        'option_value' => $data['post_data'][4]['value'],
+        'nonce' => $nonce
+    );
+}
+
+function update_product_options($data){
+    global $wpdb, $current_user;
+
+    $choice_addon_id = $data['post_data'][0]['value'];
+
+
+    $shop_id = $data['post_data'][3]['value'];
+
+    $is_current_user_owner = geodir_listing_belong_to_current_user((int)$shop_id);
+
+    if(!$is_current_user_owner)
+        wp_send_json_error();
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE choice_adons SET choice_adon_detail = %s, 	extra_price = %f where id = %d",
+            array($data['post_data'][4]['value'], $data['post_data'][5]['value'], $choice_addon_id)
+        )
+    );
+
+    return $return = array(
+        'ca_id' => $choice_addon_id,
+        'option_name' => $data['post_data'][4]['value'],
+        'option_value' => $data['post_data'][5]['value']
+    );
+    
+}
+
+add_action('wp_ajax_update_driver_pin_range', 'update_driver_pin_range_callback');
+function update_driver_pin_range_callback() {   
+    global $wpdb;
+    $data = $_POST;
+
+    file_put_contents( dirname(__FILE__).'/debug/driver_pin.log', var_export( $data['pinrange']." and ".$data['driver_id'] , true));
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE driver SET driver_radius = %d where Driver_id = %d",array($data['pinrange'], $data['driver_id'])
+        )
+    );
+    wp_send_json_success("Update succes!!");
+    
+}
+
+
+add_action('wp_ajax_restaurant_insert_menu', 'restaurant_insert_menu');
+// For operater Add menu into restaurant
+function restaurant_insert_menu(){
+    global $wpdb;
+	file_put_contents( dirname(__FILE__).'/debug/restaurant_menu.log', var_export( "restaurant_insert_menu  START!", true));
+    $data = $_POST;
+
+    $res_id = $data['res_id'];
+    $post_title = $data['post_title'];
+    $post_content = $data['post_content'];
+    $geodir_price = $data['geodir_price'];
+    $default_category = $data['default_category'];
+    $category_number = $data['category_number'];
+    $current_date = tamzang_get_current_date();
+    
+    file_put_contents( dirname(__FILE__).'/debug/restaurant_menu.log', var_export( $data, true),FILE_APPEND);
+
+    //Get Data from the restaurant that product add in
+	$place_detail = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT post_address,post_city,post_region,post_country,post_zip,post_latitude,post_longitude FROM  wp_geodir_gd_place_detail where post_id = %d ", array($res_id)
+        )
+    );
+    
+    // make post_name
+    // convert country to hex
+    $constr = $place_detail->post_country;
+    $convertedHex = bin2hex($constr);
+    $strsplit = chunk_split($convertedHex, 2, ' ');
+    $str = "%".str_replace(" ", "%",$strsplit);
+    $strlength = strlen($str);
+    $poststr_country = substr_replace($str,"",$strlength-1);
+    
+    // convert region to hex
+    $constr_region = str_replace(" ", "-",$place_detail->post_region);
+    $convertedHex = bin2hex($constr_region);
+    $strsplit = chunk_split($convertedHex, 2, ' ');
+    $str = "%".str_replace(" ", "%",$strsplit);
+    $strlength = strlen($str);
+    $poststr_region = substr_replace($str,"",$strlength-1);
+    
+    // convert City to hex
+    $constr_city = str_replace(" ", "-",$place_detail->post_city);
+    $convertedHex = bin2hex($constr_city);
+    $strsplit = chunk_split($convertedHex, 2, ' ');
+    $str = "%".str_replace(" ", "%",$strsplit);
+    $strlength = strlen($str);
+    $poststr_city = substr_replace($str,"",$strlength-1);
+    
+    // convert name to hex
+    $constr = str_replace(" ", "-",$post_title);
+    $convertedHex = bin2hex($constr);
+    $strsplit = chunk_split($convertedHex, 2, ' ');
+    $str = "%".str_replace(" ", "%",$strsplit);
+    $strlength = strlen($str);
+    $poststr_name = substr_replace($str,"",$strlength-1);
+    
+    // make guid
+    $guidstr = "https://www.tamzang.com/products/".$place_detail->post_country."/".str_replace(" ", "-",$place_detail->post_region)."/".str_replace(" ", "-",$place_detail->post_city).$poststr_name."/";
+
+    //make post_locations
+    $post_locations = "[$constr_city],[$constr_region],[$place_detail->post_country]";
+    
+    // INSERT into WP_post
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO wp_posts SET post_author = '1', post_date = %s, post_date_gmt = %s, post_content = %s, post_title = %s , post_status ='publish', comment_status ='open' 
+            , ping_status = 'closed', post_password = '', to_ping = '', pinged = '', post_modified = %s, post_modified_gmt = %s, post_content_filtered = '', post_parent = '0'
+            , guid = %s, menu_order = '0', post_type = 'gd_product', post_mime_type = '', comment_count = '0', Place_id = %s",
+          array($current_date,$current_date,$post_content,$post_title,$current_date,$current_date,$guidstr,$res_id)
+        )
+    );
+
+    // Get wp_geodir_post_locations				
+    $post_location = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT location_id FROM  wp_geodir_post_locations where country_slug = %s and region_slug = %s and city_slug = %s ", array($post_country,$constr_region,$constr_city)
+        )
+    );
+
+    // Get Post Id
+
+    $product_post_id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT ID FROM  wp_posts where post_title = %s and Place_id = %s and post_content = %s ", array($post_title,$res_id,$post_content)
+        )
+    );
+
+    $post_name = $post_title."-".$product_post_id;
+
+    // update back to WP_post  Post name is field for make permalink
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE wp_posts SET post_name = %s where ID = %d",array($post_name, $product_post_id)
+        )
+    );
+
+    $json = '{"id":"'.$product_post_id.'","lat_pos": "'.$place_detail->post_latitude.'","long_pos": "'.$place_detail->post_longitude.'","marker_id":"'.$product_post_id.'_'.$category_number.'","icon":"https://tamzang.com/wp-content/uploads/2018/03/tmicon31-01-e1520903727589.png","group":"catgroup'.$category_number.'"}';
+
+    // INSERT into wp_geodir_post_icon
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO wp_geodir_post_icon SET post_id = %d ,post_title = '' ,cat_id = %d,json = %s" ,array($product_post_id, $category_number,$json)
+        )
+    );
+
+    //INSERT into wp_term_relationships
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO wp_term_relationships SET object_id = %d ,term_taxonomy_id = %d ,term_order = '0'" ,array($product_post_id, $category_number)
+        )
+    );   
+
+    $meta_value = 'a:1:{s:18:"gd_productcategory";s:8:"'.$category_number.',y,d:";}';
+
+    //INSERT into wp_postmeta
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO wp_postmeta SET post_id = %d ,meta_key = 'post_categories' ,meta_value = %s" ,array($product_post_id,$meta_value)
+        )
+    );
+
+    // INSERT into wp_geodir_gd_place_detail
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO wp_geodir_gd_product_detail SET post_id = %d ,post_title = %s ,post_status = 'publish' ,default_category = %d ,post_tags = '' ,post_location_id = %s
+            ,marker_json = %s ,claimed = '0' ,is_featured = '0' ,featured_image = '' ,paid_amount = '0' ,package_id = '1' ,alive_days = '0',expire_date = 'Never',submit_time = %s
+            ,submit_ip = '125.25.103.132' ,post_locations = %s, gd_productcategory = %s, post_address = %s, post_city = %s,post_region = %s,post_country = %s,post_zip = %s,post_latitude = %s
+            ,post_longitude = %s,post_latlng = '1' ,geodir_timing = '',geodir_contact = '',geodir_facebook = '',geodir_price = %s,geodir_show_addcart ='1',geodir_shop_id = %s" 
+            ,array($product_post_id,$post_title,$category_number,$post_location,
+            $json,$current_date,
+            $post_locations,$category_number,$place_detail->post_address,$place_detail->post_city,$place_detail->post_region,$place_detail->post_country,$place_detail->post_zip,$place_detail->post_latitude,
+            $place_detail->post_longitude,$geodir_price,$res_id)
+        )
+    );
+    
+    wp_send_json_success("Success");
+    
 }
 
 ?>

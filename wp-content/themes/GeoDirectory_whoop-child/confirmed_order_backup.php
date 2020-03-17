@@ -1,4 +1,3 @@
-
 <?php /* Template Name: confirmed order */ 
 
 global $wpdb, $current_user;
@@ -48,7 +47,6 @@ if ( is_user_logged_in() ){
 }
 ?>
 <?php get_header(); ?>
-
 
 <script>
     jQuery(document).ready(function($){
@@ -307,87 +305,67 @@ if ( is_user_logged_in() ){
           });
 
         });
- 
+
         jQuery(document).on("click", ".promotion-input", function(){
-          var issub = false;
           var pid = $(this).data('pid');
           var nonce = $(this).data('nonce');
           var promotion_input = $.trim( $('#promotion_input').val() );
-          console.log("Check mobile "+isMobileDevice());
-          if(isMobileDevice() === true){
-            //console.log("return from android "+app.makeToast());
-            if (app.makeToast() === true){
-              if(promotion_input == "")
-                return;
-              console.log(promotion_input+'---'+pid);
-              promotion_process(pid,promotion_input,nonce);
-            }
-            else{
-              OneSignal.showSlidedownPrompt();
-              $('#promotion-msg').html('<font color="red">กรูณากดลิงค์ด้านล่าง</font>');
-              //window.location.href = "/";
-            } 
-          }
-          else{
-            OneSignal.push(function() {
-              console.log("One signal start");
-              OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-                console.log("One signal isPushNotificationsEnabled");
-                if (isEnabled){
-                  if(promotion_input == "")
-                    return;
-                  console.log(promotion_input+'---'+pid);   
-                  promotion_process(pid,promotion_input,nonce);
-                }
-                else{
-                  OneSignal.showSlidedownPrompt();
-                  $('#promotion-msg').html('<font color="red">กรูณากดลิงค์ด้านล่าง</font>');
-                  //window.location.href = "/";
-                }          
-              }); 
-            });// end OneSignal.push
-          }
+          OneSignal.push(function() {
+            OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+              if (isEnabled){
+
+                if(promotion_input == "")
+                  return;
+                console.log(promotion_input+'---'+pid);
+
+                $('.wrapper-loading').toggleClass('cart-loading');
+                var send_data = 'action=user_use_promotion&pid='+pid+'&promotion_input='+promotion_input+'&nonce='+nonce;
+                $.ajax({
+                  type: "POST",
+                  url: geodir_var.geodir_ajax_url,
+                  data: send_data,
+                  success: function(msg){
+                        console.log(msg);
+                        if(msg.success){
+                          $('#pcode').val(promotion_input);
+                          var deli_cost = $('#default_delivery').text();
+                          var discount = ( deli_cost*(1-(msg.data.percent/100))) - msg.data.constant;
+                          var result = 0;
+                          console.log(result+" = "+deli_cost+" - "+discount);
+                          if(discount <= 0){
+                            discount = deli_cost;
+                          }else{
+                            result = discount;
+                            discount = deli_cost - discount;
+                          }
+                          $('#delivery').html(result);
+                          var sum = $('#default_sum').text();
+                          $('#sum').html(sum - discount);
+                          $('#promotion-msg').html('<font color="green">'+msg.data.name+' ลดค่าส่งไป:'+discount+' บาท</font>');
+                        }else{
+                          $('#pcode').val("");
+                          $('#promotion-msg').html('<font color="red">'+msg.data+'</font>');
+                        }
+                        $('.wrapper-loading').toggleClass('cart-loading');
+                  },
+                  error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(textStatus);
+                    $('.wrapper-loading').toggleClass('cart-loading');
+                  }
+                });
+              }
+              else{
+                OneSignal.showSlidedownPrompt();
+                $('#promotion-msg').html('<font color="red">กรูณากดลิงค์ด้านล่าง</font>');
+                $('#pcode').val("");
+                //window.location.href = "/"; 
+              }
+                
+            });
+          });
         });
 
-      function promotion_process(pid,promotion_input,nonce){
-        $('.wrapper-loading').toggleClass('cart-loading');
-        var send_data = 'action=user_use_promotion&pid='+pid+'&promotion_input='+promotion_input+'&nonce='+nonce;
-        $.ajax({
-          type: "POST",
-          url: geodir_var.geodir_ajax_url,
-          data: send_data,
-          success: function(msg){
-                console.log(msg);
-                if(msg.success){
-                  $('#pcode').val(promotion_input);
-                  var deli_cost = $('#default_delivery').text();
-                  var discount = Math.round(((deli_cost*(1-(msg.data.percent/100))) - msg.data.constant)*100) /100;
-                  //var discount = ((deli_cost*(1-(msg.data.percent/100))) - msg.data.constant);
-                  var result = 0;
-                  console.log(result+" = "+deli_cost+" - "+discount);   
-                  if(discount <= 0){
-                    discount = deli_cost;
-                  }else{
-                    result = discount;
-                    discount = deli_cost - discount;
-                  }
-                  $('#delivery').html(result);
-                  var sum = $('#default_sum').text();
-                  $('#sum').html( Math.round((sum - discount)*100) / 100 );
-                  $('#promotion-msg').html('<font color="green">'+msg.data.name+' ลดค่าส่งไป:'+Math.round(discount*100)/100+' บาท</font>');
-                }else{
-                  $('#pcode').val("");
-                  $('#promotion-msg').html('<font color="red">'+msg.data+'</font>');
-                }
-                $('.wrapper-loading').toggleClass('cart-loading');
-          },
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
-            console.log(textStatus);
-            $('.wrapper-loading').toggleClass('cart-loading');
-          }
-        });
-      }
-    }); // End Jquery ready
+    });
 
 	// When the user clicks on div, open the popup
 function myPopupFunc() {
@@ -395,18 +373,7 @@ function myPopupFunc() {
   popup.classList.toggle("show");
 }
 
-function isMobileDevice() {
-    //return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-    var ua = navigator.userAgent;
-    if(/Chrome/i.test(ua))
-      return false;
-    else if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua))
-       return true;
-    else
-      return false;
-};
-
-  function onManageWebPushSubscriptionButtonClicked(event) {
+function onManageWebPushSubscriptionButtonClicked(event) {
         getSubscriptionState().then(function(state) {
           if (state.isOptedOut) {
               /* Opted out, opt them back in */
@@ -463,7 +430,7 @@ function isMobileDevice() {
         });
     }
 
-    //var OneSignal = OneSignal || [];
+    var OneSignal = OneSignal || [];
     var buttonSelector = "#my-notification-button";
 
     /* This example assumes you've already initialized OneSignal */
@@ -478,14 +445,6 @@ function isMobileDevice() {
             updateMangeWebPushSubscriptionButton(buttonSelector);
         });
     });
-
-
- 
-
- 
-
-
-
 	
 </script>
 
@@ -617,190 +576,6 @@ function isMobileDevice() {
 ?>
 <a class="btn btn-info" data-toggle="modal" data-target="#select-shipping" ><span style="color: #ffffff !important;" >แก้ไขที่อยู่</span></a>
   <?php //geodir_breadcrumb();?>
-  <?php 
-  if(wp_is_mobile()) // Show display for Mobile
-  {
-  ?>
-  <div class="clearfix geodir-common">
-    <div id="geodir_content" class="" role="main" style="width: 100%">
-        <div class="wrapper-loading">
-          <table class="confirm-table" id="tb-cart">
-            <thead>
-              <tr>
-                <th>รายการสินค้า/บริการ</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-                global $post;
-                $current_post = $post;
-                $sum = 0;
-                $uploads = wp_upload_dir();
-
-                foreach ($arrProducts as $product) {
-                  $post = $product;
-                  $GLOBALS['post'] = $post;
-                  setup_postdata($post);
-                  $total = (float)$post->geodir_price*(int)$post->shopping_cart_qty;
-                  $sum += $total;
-                  echo '<tr id="'.$post->ID.'">';
-                    echo "<td>";
-                      echo '<div class="order-row">';                        
-                        echo '<div class="order-col-12">';
-                          echo '<h4 class="product-name"><strong><a href="'.get_the_permalink().'" style="color: #e34f43;">'.$post->post_title.'</a></strong></h4>';
-                          echo '<p style="overflow-wrap:break-word;">'.get_the_excerpt().'</p>';
-                        echo "</div>";                        
-                      echo "</div>";
-                      echo '<div class="order-clear"></div>';
-                    echo '<div class="order-row">'; 
-                      echo '<div class="order-col-6">';
-                        echo '<div class="sp-quantity">';
-                          echo '<div class="input-group">';
-                            echo '<span class="input-group-btn">';
-                            echo '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  
-                                  data-delete="'.wp_create_nonce( 'delete_product_cart_' . $post->ID ).'"
-                                  data-type="minus" data-id="'.$post->ID.'" data-nonce="'.wp_create_nonce( 'update_product_cart_' . $post->ID ).'">';
-                            echo '<span class="glyphicon glyphicon-minus"></span>';
-                            echo '</button>';
-                            echo '</span>';
-                            echo '<div class="sp-input">';
-                            echo '<p class="quntity-input" style="width:30px;text-align: center;">'.$post->shopping_cart_qty.'</p>';
-                            echo '</div>';
-                            echo '<span class="input-group-btn">';
-                            echo '<button type="button" class="btn-tamzang-quantity btn-quantity quantity-right-plus btn btn-success btn-number" 
-                                  data-type="plus" data-id="'.$post->ID.'" data-nonce="'.wp_create_nonce( 'update_product_cart_' . $post->ID ).'"
-                                  style="margin-left:0px">';
-                            echo '<span class="glyphicon glyphicon-plus"></span>';
-                            echo '</button>';
-                            echo '</span>';
-                          echo '</div>';
-                        echo '</div>';                        
-                      echo "</div>";
-                      echo '<div class="order-col-6">';
-                          echo '<strong><div id="'.$post->ID.'-total" class ="price" style= "text-align: right;padding-top: 13%;" >'.number_format($total,2,'.','').'</div></strong>';
-                      echo "</div>";
-                    echo "</div>";
-                    echo '<div class="order-clear"></div>';
-                    echo "</td>";
-                  echo "</tr>";
-                }
-                //echo '<div id="cart-total" data-cart-total ="'.str_replace(".00", "",number_format($sum,2)).'" ></div>';
-                // 20191108 bank make number have .00
-                echo '<div id="cart-total" data-cart-total ="'.number_format($sum,2).'" ></div>';
-
-                $GLOBALS['post'] = $current_post;
-                if (!empty($current_post)) {
-                    setup_postdata($current_post);
-                }
-				        $sum += $delivery_fee;
-    		      ?>
-			        <tr>
-                <td>
-                  <?php
-                    $user_cash_back = $wpdb->get_row(
-                      $wpdb->prepare(
-                          "SELECT * FROM cash_back where user_id = %d ", array($current_user->ID)
-                      )
-                    );
-                    if(!empty($user_cash_back)){
-                      $point = $user_cash_back->add_on_credit * $user_cash_back->redeem_point_rate;
-                      if($point >= $delivery_fee && ($delivery_type == 1) && $delivery_fee != 0){
-                        echo '<p id="use_point_text" style = "display: block;">ขณะนี้คุณมี point มากพอจะใช้แทนค่าส่งกรุณาเลือก หากต้องการใช้:  <input type="checkbox" name="use_point" id="use_point" /> </p>';
-                      }
-                    }
-                  ?>
-                </td>               
-              </tr>
-              <tr>
-                <td>
-                  <div class="order-row">
-                    <div class="order-col-6">                    
-                      <?php if($delivery_type == 1 && $shop_has_driver){ ?>
-                        <a class="btn btn-info" data-toggle="modal" data-target="#select-delivery_type" >
-                        <span style="color: #ffffff !important;">เลือกพนักงานส่ง</span></a>
-                      <?php } ?>
-                      <p> <p>
-                    </div>
-                    <div class="order-col-6">
-                      <div class="popup" onclick="myPopupFunc()" style = "padding-left: 52%;">ค่าจัดส่ง*
-                        <span class="popuptext" id="myPopup" style="z-index: 10;">ค่าส่งเบื้องต้น 30 บาท รวมกับระยะทาง 3 กม.แรกคิดกม.ล่ะ 10 บาท กม.ถัดไปคิด กม.ล่ะ 15 บาท</span>
-                      </div>
-                      <strong><div id="delivery" style ="text-align: right;"><?php echo $delivery_fee; ?></div></strong>
-                      <div id="default_delivery" style="display:none;"><?php echo $delivery_fee; ?></div>
-                    </div>
-                  </div>
-                  <div class="order-clear"></div>
-                </td>               
-              </tr>
-              <tr>
-              <td>
-                <div class="order-row"> 
-                  <div class="order-col-6">
-                        <button class="btn btn-info promotion-input" href="#" 
-                          data-pid="<?php echo $_REQUEST['pid']; ?>"
-                          data-nonce="<?php echo wp_create_nonce( 'user_use_promotion_'.$current_user->ID); ?>" 
-                          >ยืนยัน</button>                      
-                  </div>
-                  <div class="order-col-6">
-                    <input type="text" id="promotion_input" placeholder="กรุณาระบุโค้ดส่วนลด" value="" style="width:150px;float:right;">
-                  </div>
-                </div>
-                <div class="order-clear"></div>                
-                <div id="promotion-msg" >
-                          <?php if(!empty($_REQUEST['pmsg'])){ ?>
-                            <p><font color="red">ไม่สามารถใช้โปรโมชั่น <?php echo $_REQUEST['pmsg']; ?></font></p>
-                          <?php } ?>
-                </div>
-                <a href="#" id="my-notification-button" style="display: none;" >กดที่นี่เพื่อรับสิทธิ์การใช้โปรโมชั่น</a>
-              </td>     
-              </tr>
-              <tr>
-                <td>                  
-                  <div class="order-row">
-                    <div class="order-col-6">
-                      <h3>รวมทั้งหมด</h3>
-                    </div>
-                    <div class="order-col-6">
-                      <h3><strong><div id="sum" style ="text-align: right;"><?php //echo str_replace(".00", "",number_format($sum,2)); 
-                     //// 20191108 bank make number have .00
-                      echo number_format($sum,2,'.','');
-                      ?></div></strong></h3>
-                      <div id="default_sum" style="display:none;text-align: right;"><?php echo number_format($sum,2,'.',''); ?></div>
-                    </div>
-                  </div>
-                  <div class="order-clear"></div>
-                </td>              
-              </tr>
-            </tbody>
-          </table>
-            <div style="float:right;" id="place_order_button">
-              <?php if($user_has_address){
-			  if(($delivery_fee == 0) and ($distance == 0) and ($delivery_type > 0))
-			  {
-				?>
-				<h3>ขณะนี้ระบบไม่สามารถคำนวนค่าจัดส่งได้ ขออภัยในความไม่สะดวก</h3>
-			  <?php  
-			  }
-			  else{
-			  ?>
-                <button type="button" class="btn btn-success" id="place_order">
-                    ดำเนินการสั่งสินค้า <span class="glyphicon glyphicon-play"></span>
-                </button>
-              <?php }
-			  }else{ ?>
-                <button class="btn btn-success" data-toggle="modal" data-target="#no-address"
-                  ><span class="glyphicon glyphicon-play"></span> สั่งเลย</button>
-              <?php } ?>
-            </div>
-        </div>
-    </div>
-
-  </div>
-</div>
-  <?php  
-  }  // End If mobile 
-  else{ // Show Display for PC
-  ?>
   <div class="clearfix geodir-common">
     <div id="geodir_content" class="" role="main" style="width: 100%">
         <div class="wrapper-loading">
@@ -931,44 +706,39 @@ function isMobileDevice() {
               </tr>
               <tr>
               <td>
-                <div class="order-row">
-                  <div class="order-col-12">
-                    <input type="text" id="promotion_input" placeholder="กรุณาระบุโค้ดส่วนลด" value="" style="width:150px;float:right;">
-                  </div>                    
-                </div>
-              </td>
-              <td>
-                <div class="order-row">
-                  <div class="order-col-12">
-                        <button class="btn btn-info promotion-input" href="#" 
-                          data-pid="<?php echo $_REQUEST['pid']; ?>"
-                          data-nonce="<?php echo wp_create_nonce( 'user_use_promotion_'.$current_user->ID); ?>" 
-                          >ยืนยัน</button>                      
+                  <div class="order-row">
+                    <div class="order-col-6">
+                      <input type="text" id="promotion_input" placeholder="กรุณาระบุโค้ดส่วนลด" value="" style="width:150px;float:right;">
+                    </div>
+                    <div class="order-col-6">
+                      <button class="btn btn-info promotion-input" href="#" 
+                        data-pid="<?php echo $_REQUEST['pid']; ?>"
+                        data-nonce="<?php echo wp_create_nonce( 'user_use_promotion_'.$current_user->ID); ?>" 
+                        >ยืนยัน</button>
+                      <div id="promotion-msg" >
+                        <?php if(!empty($_REQUEST['pmsg'])){ ?>
+                          <p><font color="red">ไม่สามารถใช้โปรโมชั่น <?php echo $_REQUEST['pmsg']; ?></font></p>
+                        <?php } ?>
+                      </div>
+                      <a href="#" id="my-notification-button" style="display: none;" >กดที่นี่เพื่อรับสิทธิ์การใช้โปรโมชั่น</a>
+                    </div>
                   </div>
-                </div>
-                <div id="promotion-msg" >
-                          <?php if(!empty($_REQUEST['pmsg'])){ ?>
-                            <p><font color="red">ไม่สามารถใช้โปรโมชั่น <?php echo $_REQUEST['pmsg']; ?></font></p>
-                          <?php } ?>
-                </div>
-                <a href="#" id="my-notification-button" style="display: none;" >กดที่นี่เพื่อรับสิทธิ์การใช้โปรโมชั่น</a>
-              </td>
-              <td>
-              </td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
               </tr>
               <tr>
-              <td>
-              </td>
-              <td>
-                <h3 style ="float: right;">รวมทั้งหมด</h3>
-              </td>
-              <td class="text-right"><h3><strong><div id="sum"><?php //echo str_replace(".00", "",number_format($sum,2)); 
-                //// 20191108 bank make number have .00
-                echo number_format($sum,2,'.','');
-                ?></div></strong></h3>
-                <div id="default_sum" style="display:none;"><?php echo number_format($sum,2,'.',''); ?></div>
-              </td>
-              
+                <td></td>
+                <td>
+                  <h3 style ="float: right;">รวมทั้งหมด</h3></td>
+                  <td class="text-right"><h3><strong><div id="sum"><?php //echo str_replace(".00", "",number_format($sum,2)); 
+                  //// 20191108 bank make number have .00
+                  echo number_format($sum,2,'.','');
+                  ?></div></strong></h3>
+                  <div id="default_sum" style="display:none;"><?php echo number_format($sum,2,'.',''); ?></div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -993,10 +763,7 @@ function isMobileDevice() {
             </div>
         </div>
     </div>
-    </div>
+
   </div>
-  <?php 
-  } // End If PC 
-  ?>
-  
+</div>
 <?php get_footer(); ?>
