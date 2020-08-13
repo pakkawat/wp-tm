@@ -21,6 +21,7 @@ if ( is_single() ) {
     ?>
     <script>
     jQuery(document).ready(function($){
+      var userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
       function display_currency(money){
         money = (money).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -172,6 +173,20 @@ if ( is_single() ) {
           }
         });
 
+        $("#cart-modal").on('show.bs.modal', function(e) {
+
+          console.log(document.documentElement.scrollTop);
+          document.documentElement.scrollTop = 10;
+          
+          if((isMobileDevice() === true)&&(/android/i.test(userAgent))){
+            console.log("Cart button Click!");
+            var Lat = app.getLatLocation();   
+            var Lng = app.getLngLocation();
+            console.log("Lat "+Lat+" Lng "+Lng);
+            express_address(Lat,Lng);
+          }
+        });
+
         // var offset = $('#tamzang-shopping-cart').offset();
         // $(window).scroll(function () {
         //     var scrollTop = $(window).scrollTop();
@@ -182,8 +197,18 @@ if ( is_single() ) {
         //         $('#tamzang-shopping-cart-button').removeClass('tamzang-cart-button-fixed');
         //     }
         // });
-
     });
+
+  function isMobileDevice() {
+  //return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+  var ua = navigator.userAgent;
+  if(/Chrome/i.test(ua))
+    return false;
+  else if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua))
+     return true;
+  else
+    return false;
+}
 
 	function HideShop() {
           var x = document.getElementById("tamzang-shopping-cart");
@@ -240,10 +265,55 @@ if ( is_single() ) {
       <img src="https://www.tamzang.com/wp-content/themes/GeoDirectory_whoop-child/images/shop2.png" alt="ตามสั่ง">
     </p> -->
 
-    <div class="footer-buttons">
-      <div class="menu-button" data-toggle="modal" data-target="#cart-modal">See MENU &amp; Order</div>
-    </div>
+    <?php 
+    if (geodir_get_current_posttype() == 'gd_place') {
+      $tamzang_id = geodir_get_post_meta( get_the_ID(), 'geodir_tamzang_id', true );
 
+      if(!empty($tamzang_id)){
+        $array_shop_time = check_shop_open(get_the_ID());
+        $is_shop_open = $array_shop_time['is_shop_open'];
+        $shop_time = $array_shop_time['shop_time'];
+        
+        if($is_shop_open){
+          echo '<div class="footer-buttons">';
+          echo '<div class="menu-button" data-toggle="modal" data-target="#cart-modal">สั่งอาหาร หรือ สินค้า (See MENU &amp; Order)</div>';
+          echo '</div>';
+        }else{
+          if(!empty($shop_time)){
+            if($shop_time->owner_close){
+              echo '<div class="footer-buttons">';
+              echo '<div class="menu-button" data-toggle="modal" data-target="#cart-modal">ขณะนี้ร้านปิดสั่งออนไลน์</div>';
+              echo '</div>';
+            }else{// เวลาที่ admin กำหนดในการปิดร้าน
+              if($shop_time->visibility == 4)
+              {
+                $msg = 'สั่งออนไลน์ได้ตั้งแต่เวลา '.$shop_time->show_only_from.' ถึง '.$shop_time->show_only_to;
+                echo '<div class="footer-buttons">';
+                echo '<div class="menu-button" data-toggle="modal" data-target="#cart-modal">'.$msg.'</div>';
+                echo '</div>';
+              }else{
+                $msg = '';
+                if($shop_time->visibility == 2)
+                  $msg = 'ขณะนี้ร้านปิดสั่งออนไลน์';
+                else if($shop_time->visibility == 3){
+                  $date = explode("-", $shop_time->hide_until_date);
+                  $msg = 'ร้านจะเปิดสั่งออนไลน์ในวันที่ '.$date[2].'-'.$date[1].'-'.$date[0].' '.$shop_time->hide_until_time;
+                }
+
+                echo '<div class="footer-buttons">';
+                echo '<div class="menu-button">'.$msg.'</div>';
+                echo '</div>';
+              }
+            }
+          }else{
+            echo '<div class="footer-buttons">';
+            echo '<div class="menu-button">ขณะนี้ร้านปิดสั่งออนไลน์</div>';
+            echo '</div>';
+          }  
+        }
+      }
+    } 
+    ?>
     <style>
     @media (min-width: 992px) {
       .modal-dialog {
@@ -254,36 +324,36 @@ if ( is_single() ) {
       }
     }
     </style>
-    <div class="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header" style="border-bottom: 0 none;padding: 15px 15px 0 15px;">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel">
-                <?php 
-                  $post_type = geodir_get_current_posttype();
-                  if($post_type == "gd_place")
-                    echo get_the_title(get_the_ID());
-                  else{
-                    $shop_id = geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true);	
-	                  echo get_the_title($shop_id);
-                  }
-                ?></h4>
-              </div>
-              <div class="modal-body" style="padding:0;">
+    <div class="modal fade" id="cart-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index: 2147483001 !important;padding-right: 0 !important;"> 
 
+      <div class="header-back" id="header-back" data-dismiss="modal">
+        <?php if(is_english(get_the_title(get_the_ID()))){
+        ?>          
+          <h3 style="color: #000000; <?php echo  strlen(get_the_title(get_the_ID())) < 30 ? "font-size: 30px;" : "font-size: 15px;" ;?> padding-top: 15px;"><   <?php echo get_the_title(get_the_ID());  ?></h3>              
+        <?php }
+        else { 
+        ?>
+          <h3 style="color: #000000; <?php echo  strlen(get_the_title(get_the_ID())) < 60 ? "font-size: 30px;" : "font-size: 15px;" ;?> padding-top: 15px;"><   <?php echo get_the_title(get_the_ID());  ?></h3>
+        <?php }?>
+      </div>
 
-              <iframe src="https://test02.tamzang.com/tamzang_menu/?pid=<?php echo get_the_ID();?>" height="100%" width="100%"></iframe>
-
-
-              </div>
-              <div class="modal-footer">
-                <a id="place_order" class="btn btn-success" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
-                      <span style="color: #ffffff !important;" class="glyphicon glyphicon-play">สั่งเลย</span>
-                    </a>
+      <div class="modal-dialog" style="height: 100%;margin: 0; width:100%;">
+          <div class="modal-content" style ="height: 100%;">              
+              <div class="modal-body" style="padding: 7px 0 0 0; height: 100%;">
+              <iframe src="<?php echo home_url('/tamzang_menu/').'?pid='.get_the_ID();?>" height="100%" width="100%"></iframe>
               </div>
           </div>
       </div>
+      <?php if($is_shop_open){ ?>      
+      <div class="footer-check-out" id="footer-check-out" style="display:none;"> 
+        <div class="menu-button" style="height: 50px;padding-top: 7px;">               
+          <a id="place_order" style="font-size: 30px;color: #f8f9fa;" href="<?php echo home_url('/confirmed-order/').'?pid='.(geodir_get_current_posttype() == 'gd_product'?geodir_get_post_meta(get_the_ID(),'geodir_shop_id',true):get_the_ID()) ?>">
+            สั่งเลย
+          </a> 
+        </div>
+      </div>
+      <?php } ?>
+
     </div>
 
 

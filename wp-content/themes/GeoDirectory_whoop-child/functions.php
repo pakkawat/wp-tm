@@ -1,5 +1,7 @@
 <?php
 
+include get_theme_file_path('scb/scb.php');
+
 function is_tamzang_admin(){
     global $wp_query, $current_user;
 
@@ -615,9 +617,12 @@ function create_product_modal($product, $post_id){
         $html .= '</div>';
 
         $html .= '<div class="modal-body">';
-        $html .= do_shortcode('[gd_login_box]');
+        if(wp_is_mobile() && (strpos($_SERVER['HTTP_USER_AGENT'], 'Mobile') !== false) && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPad') == false)){
+        $html .= '<button class="btn btn-info express-btn" style="position: relative;left: 70%; top: 110px;" href="#">ล๊อกอินด่วน</button>
+                    <div id="express-msg" ></div>';
+        }
+        $html .= do_shortcode('[gd_login_box]');        
         $html .= '</div>';
-
         $html .= '</div>';
         $html .= '</div>';
         $html .= '</div>';
@@ -742,6 +747,194 @@ function add_to_cart_callback(){
 
 }
 
+//Ajax functions
+add_action('wp_ajax_tamzang_menu_add_to_cart', 'tamzang_menu_add_to_cart_callback');
+
+function tamzang_menu_add_to_cart_callback(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  // check the nonce
+  if ( check_ajax_referer( 'tamzang_menu_add_to_cart_' . $data['post_data'][2]['value'].$current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  //wp_send_json_success($data);
+
+  $shop_id = $data['post_data'][1]['value'];
+  $product_id = $data['post_data'][2]['value'];
+  $product_title = $data['post_data'][3]['value'];
+  $product_price = floatval($data['post_data'][4]['value']);
+  $sum_price = $product_price;
+
+  try {
+    $geodir_tamzang_id = geodir_get_post_meta( $shop_id, 'geodir_tamzang_id', true );
+    $show_button = geodir_get_post_meta( $product_id, 'geodir_show_addcart', true );
+
+    if(!empty($geodir_tamzang_id)&&$show_button){
+
+        $special = '';
+        $quantity = 1;
+        $choice_addons = [];
+
+        for($i = 0; $i < count($data['post_data']); $i++) {
+            if (strpos($data['post_data'][$i]['name'], 'choice_adons') !== false) {
+                $value = explode(':', $data['post_data'][$i]['value']);
+                $choice_addons[] = (object) [
+                    "ca_id" => $value[0],
+                    "group_title" => $value[1],
+                    "choice_adon_detail" => $value[2],
+                    "extra_price" => floatval($value[3])
+                ];
+                $sum_price += floatval($value[3]);
+            }else if ($data['post_data'][$i]['name'] == 'Special'){
+                $special = $data['post_data'][$i]['value'];
+            } if($data['post_data'][$i]['name'] == 'quantity'){
+                $quantity = intval($data['post_data'][$i]['value']);
+            }
+        }
+
+        $temp = $choice_addons;
+
+        function cmp($a, $b)
+        {
+            if ($a->ca_id == $b->ca_id) {
+                return 0;
+            }
+            return ($a->ca_id < $b->ca_id) ? -1 : 1;
+        }
+
+        usort($temp, "cmp");
+
+        $choice_addon_ids_str = $product_id.':';
+        $arr_ids = [];
+        foreach($temp as $ca){
+            $choice_addon_ids_str .= $ca->ca_id.',';
+        }
+
+        if(empty($special)){
+            $cart_id = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT id FROM shopping_cart where wp_user_id = %d AND product_id = %d AND choice_adon_ids = %s AND special IS NULL ", array($current_user->ID, $product_id, $choice_addon_ids_str)
+                )
+            );
+        }else{
+            $cart_id = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT id FROM shopping_cart where wp_user_id = %d AND product_id = %d AND choice_adon_ids = %s AND special = %s ", array($current_user->ID, $product_id, $choice_addon_ids_str, $special)
+                )
+            );
+        }
+
+        $last_query = "";
+        if(!empty($cart_id)){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE shopping_cart SET qty = qty + %d WHERE id = %d ",
+                    array($quantity, $cart_id)
+                )
+            );
+
+            $return = array(
+                'cart_id' => $cart_id,
+                'type' => "qty",
+                'quantity' => $quantity,
+                'sum_price' => $sum_price*$quantity
+            );
+    
+            wp_send_json_success($return);
+        }else{
+            $admin_price = geodir_get_post_meta( $product_id, 'admin_price', true );
+            if(empty($special)){
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "INSERT INTO shopping_cart SET wp_user_id = %d, product_id = %d, product_title = %s, qty = %d, product_price = %f, admin_price = %f, choice_adon_ids = %s, price_w_ex = %f ",
+                        array($current_user->ID, $product_id, $product_title, $quantity, $product_price, $admin_price, $choice_addon_ids_str, $sum_price)
+                    )
+                );
+            }else{
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "INSERT INTO shopping_cart SET wp_user_id = %d, product_id = %d, product_title = %s, qty = %d, product_price = %f, admin_price = %f, choice_adon_ids = %s, price_w_ex = %f, special = %s ",
+                        array($current_user->ID, $product_id, $product_title, $quantity, $product_price, $admin_price, $choice_addon_ids_str, $sum_price, $special)
+                    )
+                );
+            }
+
+
+            $shopping_cart_id = $wpdb->insert_id;
+            $last_query = $wpdb->last_query;
+
+            foreach($choice_addons as $ca){
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "INSERT INTO shopping_cart_item_destials SET shopping_cart_id = %d, choice_group_title = %s, choice_adon_detail = %s, extra_price = %f ",
+                        array($shopping_cart_id, $ca->group_title, $ca->choice_adon_detail, $ca->extra_price)
+                    )
+                );
+            }
+
+            $return = array(
+                'cart_id' => $shopping_cart_id,
+                'type' => "new",
+                'quantity' => $quantity,
+                'product_title' => $product_title,
+                'sum_price' => $sum_price*$quantity,
+                'nonce' =>  wp_create_nonce( 'remove_cart_item_'.$current_user->ID.$shopping_cart_id),
+                'choice_addons' => $choice_addons,
+                'special' => $special
+            );
+    
+            wp_send_json_success($return);
+        }
+
+    }else{
+        wp_send_json_error();
+    }
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+//delete_product_cart_callback
+//Ajax functions
+add_action('wp_ajax_remove_cart_item', 'remove_cart_item_callback');
+
+function remove_cart_item_callback(){
+    global $wpdb, $current_user;
+    $data = $_POST;
+    if ( check_ajax_referer( 'remove_cart_item_' .$current_user->ID. $data['cart_id'], 'nonce', false ) == false ) {
+        wp_send_json_error($current_user->ID.'--' .$data['cart_id']);
+    }
+
+    try{
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM shopping_cart WHERE id = %d AND wp_user_id =%d",
+                array($data['cart_id'], $current_user->ID)
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM shopping_cart_item_destials WHERE shopping_cart_id = %d ",
+                array($data['cart_id'])
+            )
+        );
+
+        wp_send_json_success();
+    }catch (Exception $e){
+        wp_send_json_error($e->getMessage());
+    }
+
+}
+
 
 //Ajax functions
 add_action('wp_ajax_delete_product', 'delete_product_callback');
@@ -754,7 +947,7 @@ function delete_product_callback(){
   //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
 
   // check the nonce
-  if ( check_ajax_referer( 'delete_product_' . $data['id'], 'nonce', false ) == false ) {
+  if ( check_ajax_referer( 'delete_product_' . $current_user->ID . $data['id'], 'nonce', false ) == false ) {
       wp_send_json_error();
   }
 
@@ -775,6 +968,7 @@ function delete_product_callback(){
 
     // $wpdb->query($wpdb->prepare("DELETE FROM shopping_cart WHERE product_id = %d", $product_id));
 
+    $wpdb->query($wpdb->prepare("DELETE FROM product_options WHERE product_id = %d", $product_id));
 
     wp_delete_post($product_id);
 
@@ -807,6 +1001,7 @@ function tamzang_cart_count()
 
 function tamzang_get_all_products_in_cart($user_id){
   global $wpdb;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_get_all_products_in_cart_.log', var_export( "ID ".$user_id, true));
 //   $arrProducts = $wpdb->get_results(
 //       $wpdb->prepare(
 //           "SELECT p.id as product_id,p.post_id,p.name,p.short_desc,p.featured_image,p.price,s.qty,p.stock
@@ -826,7 +1021,8 @@ function tamzang_get_all_products_in_cart($user_id){
   
   $arrProducts = geodir_get_widget_listings($query_args);
 
-
+ // file_put_contents( dirname(__FILE__).'/debug/debug_get_all_products_in_cart_.log', var_export( "Array ", true),FILE_APPEND);
+ // file_put_contents( dirname(__FILE__).'/debug/debug_get_all_products_in_cart_.log', var_export( $arrProducts, true),FILE_APPEND);
   return $arrProducts;
 }
 
@@ -837,45 +1033,60 @@ add_action('wp_ajax_update_product_cart', 'update_product_cart_callback');
 function update_product_cart_callback(){
   global $wpdb, $current_user;
   //$current_user->ID;
+  $return_arr = array();
 
   $data = $_POST;
-  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+  file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( "Start !!", true));
 
   // check the nonce
-  if ( check_ajax_referer( 'update_product_cart_' . $data['id'], 'nonce', false ) == false ) {
+  if ( check_ajax_referer( 'update_product_cart_' . $data['cart_id'], 'nonce', false ) == false ) {
       wp_send_json_error();
   }
 
-  $product_id = $data['id'];
   $qty = $data['qty'];
+  $dtype = $data['deli_type']; 
+  $default_deli =  $data['default_delivery'];
 
   try {
-
+      // update Shopping_cart
     $total = 0;
     if($qty == 0){
         $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM shopping_cart WHERE product_id = %d AND wp_user_id =%d",
-                array($product_id, $current_user->ID)
+                "DELETE FROM shopping_cart WHERE id = %d AND wp_user_id =%d",
+                array($data['cart_id'], $current_user->ID)
             )
         );
     }else{
         $wpdb->query(
             $wpdb->prepare(
-                "UPDATE shopping_cart SET qty = %d where product_id = %d AND wp_user_id =%d",
-                array($qty, $product_id, $current_user->ID)
+                "UPDATE shopping_cart SET qty = %d where id = %d AND wp_user_id =%d",
+                array($qty, $data['cart_id'], $current_user->ID)
             )
         );
-        $total = geodir_get_post_meta($data['id'], 'geodir_price', true)*$qty;
+        //$total = geodir_get_post_meta($data['id'], 'geodir_price', true)*$qty;
+        $price_w_ex = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT price_w_ex FROM shopping_cart where id = %d", array($data['cart_id'])
+            )
+        );
+        $total = $price_w_ex*$qty;
     }
 
-    wp_send_json_success($total);
+    // Calculate Delivery Balance
+
+    $tamzang_profit = get_tamzang_delivery_balancing("shop",$data['shop_id'],$dtype,$default_deli);
+    file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $tamzang_profit, true),FILE_APPEND);
+
+    $return_arr["total"] = $total;
+    $return_arr["delivery_balancing"] =  $tamzang_profit[0]['delivery_balancing'];
+    $return_arr["show_delivery_fee"] =  $tamzang_profit[0]['show_delivery_fee'];
+
+    wp_send_json_success($return_arr);
 
   } catch (Exception $e) {
       wp_send_json_error($e->getMessage());
   }
-
-
   //return $data;
 }
 
@@ -885,29 +1096,47 @@ add_action('wp_ajax_delete_product_cart', 'delete_product_cart_callback');
 
 function delete_product_cart_callback(){
   global $wpdb, $current_user;
+  $return_arr = array();
   //$current_user->ID;
 
   $data = $_POST;
   //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
 
   // check the nonce
-  if ( check_ajax_referer( 'delete_product_cart_' . $data['id'], 'nonce', false ) == false ) {
+  if ( check_ajax_referer( 'delete_product_cart_' . $data['cart_id'], 'nonce', false ) == false ) {
       wp_send_json_error();
   }
 
-  $product_id = $data['id'];
+  $dtype = $data['deli_type']; 
+  $default_deli =  $data['default_delivery'];
 
   try {
 
     $wpdb->query(
         $wpdb->prepare(
-            "DELETE FROM shopping_cart WHERE product_id = %d AND wp_user_id =%d",
-            array($product_id, $current_user->ID)
+            "DELETE FROM shopping_cart WHERE id = %d AND wp_user_id =%d",
+            array($data['cart_id'], $current_user->ID)
         )
     );
 
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM shopping_cart_item_destials WHERE shopping_cart_id = %d ",
+            array($data['cart_id'])
+        )
+    );
+
+    // Calculate Delivery Balance
+
+    $tamzang_profit = get_tamzang_delivery_balancing("shop",$data['shop_id'],$dtype,$default_deli);
+    file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $tamzang_profit, true),FILE_APPEND);
+    
+    $return_arr["total"] = $total;
+    $return_arr["delivery_balancing"] =  $tamzang_profit[0]['delivery_balancing'];
+    $return_arr["show_delivery_fee"] =  $tamzang_profit[0]['show_delivery_fee'];
+
     //$total = tamzang_cart_count();
-    wp_send_json_success($total);
+    wp_send_json_success($return_arr);
 
   } catch (Exception $e) {
       wp_send_json_error($e->getMessage());
@@ -1069,14 +1298,12 @@ function user_received_product_callback(){
   if($current_user->ID == $order_owner)
   {
     try {
-
       $wpdb->query(
           $wpdb->prepare(
               "UPDATE orders SET status = %d where id = %d ",
               array(4, $order_id)
           )
       );
-
       wp_send_json_success($data);
 
     } catch (Exception $e) {
@@ -1085,7 +1312,6 @@ function user_received_product_callback(){
   }else{
     wp_send_json_error();
   }
-
 
   //wp_send_json_success($data);
   //return $data;
@@ -1097,6 +1323,9 @@ add_action('wp_ajax_load_order_status', 'load_order_status_callback');
 function load_order_status_callback(){
   $data = $_GET;
   set_query_var( 'order_status', $data['order_status'] );
+  if($data['pickup'] == 99){
+    set_query_var( 'pickup', true );
+  }
   get_template_part( 'ajax-order-status' );
   wp_die();
 }
@@ -1451,7 +1680,10 @@ function add_user_address_callback(){
     $user_address['phone'] = $data['phone'];
 	//Bank 20190206 add new 2 field
 	$user_address['latitude'] = $data['lat'];
-	$user_address['longitude'] = $data['lng'];
+    $user_address['longitude'] = $data['lng'];
+    
+    file_put_contents( dirname(__FILE__).'/debug/check_mobile.log', var_export( "user_address Start !!", true));
+    file_put_contents( dirname(__FILE__).'/debug/check_mobile.log', var_export( $user_address['phone'], true),FILE_APPEND);
 	
 
 
@@ -1710,7 +1942,8 @@ function confirm_order_select_shipping_callback(){
             )
         );
         list($delivery_fee,$distance) = get_delivery_fee($data['shop_id'],$data['deli_type']);
-        $sum = $delivery_fee+$data['total'];
+        $tamzang_profit = get_tamzang_delivery_balancing("shop",$data['shop_id'],$data['deli_type'],$delivery_fee);
+        $sum = $tamzang_profit[0]['show_delivery_fee'] + $data['total'];
         
 
         // 20190627 Bank put deliver fee
@@ -1730,9 +1963,11 @@ function confirm_order_select_shipping_callback(){
                             data-nonce="'.wp_create_nonce( 'select_shipping_address' . $pre ).'"
                             style="color:white;" >เลือก</a>',
             'new_sum' => $sum,
-            'new_delivery_fee' => $delivery_fee,
+            'new_delivery_fee' => $tamzang_profit[0]['show_delivery_fee'],
             'new_distance' => $distance,
-            'new_order_button' => $button
+            'new_order_button' => $button,
+            'delivery_balancing' => $tamzang_profit[0]['delivery_balancing'],
+            'new_delivery_default'=> $delivery_fee
         );
 
         wp_send_json_success($return);
@@ -1755,37 +1990,38 @@ function select_delivery_type_callback(){
     }   
     
 
-    try {
-
-        $pre = 1;
-        if($data['dtype'] == 1){// พนักงานตามสั่ง
-            $pre = 2; 
-        }else{// พนักงานประจำร้าน
-            $xx = 0;            
-        }
-        list($delivery_fee,$distance) = get_delivery_fee($data['pid'],$data['dtype']);
-        $sum = $delivery_fee+$data['total'];
-
-
+    try {    
 
         // 20191108 Bank put deliver fee Check
+
+        list($delivery_fee,$distance) = get_delivery_fee($data['pid'],$data['dtype']);
+        
         if(($delivery_fee == 0) && ($distance == 0))
             $button = 0;     
         else
             $button = 1; 
 
+        if($data['dtype'] == 99){// pickup
+            
+            $delivery_fee = 0;
+            $button = 1;
+        }else{// พนักงานประจำร้าน
+            $xx = 0;            
+        }       
+
+        $sum = $delivery_fee+$data['total'];   
+                
         $return = array(
-            'select' => '<img src="'.get_stylesheet_directory_uri().'/js/pass.png" />',
-            'select_type' => $data['dtype'],
-            'pre_type' => $pre,
-            'pre'      => '<a class="btn btn-success select-delivery_type" href="#"
-                            data-pid="'.$data['pid'].'"
-                            data-dtype="'.$pre.'"
-                            data-nonce="'.wp_create_nonce( 'select_delivery_type'.$current_user->ID ).'"
-                            style="color:white;" >เลือก</a>',
-                            'new_sum' => $sum,
-                            'new_delivery_fee' => $delivery_fee,
-                            'new_order_button' => $button
+            'new_order_button' => $button,
+            'new_sum' => $sum,
+            'new_delivery_fee' => $delivery_fee
+        ); 
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE shopping_cart SET user_delivery_type = %d where wp_user_id = %d ",
+                array($data['dtype'], $current_user->ID)
+            )
         );
 
         wp_send_json_success($return);
@@ -1895,105 +2131,7 @@ function tamzang_user_shop_screen_title()
 
 function tamzang_user_shop_screen_content()
 {
-  global $wpdb, $current_user;
-
-  $my_query = new WP_Query( array(
-      'post_type' => 'gd_place',
-      'order'             => 'ASC',
-      'orderby'           => 'title',
-      'author' => $current_user->ID,
-      'post_per_page' => -1,
-      'nopaging' => true
-  ) );
-
-  if ( $my_query->have_posts() ) {
-
-    if ( wp_is_mobile() ){
-
-        ?>
-
-        <table class="table">
-            <thead>
-            <th>ร้านค้า</th>
-
-            </thead>
-            <tbody>
-
-            <?php
-
-            while ( $my_query->have_posts() ) {
-
-                $my_query->the_post();
-                echo '<tr>';
-                echo '<td>';
-                echo '<a href="' .get_permalink(). ' ">';
-                the_title();
-                echo '</a>';
-                echo '<br><br><a class="btn btn-info btn-block" href="'. home_url('/shop-order/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >รายการสั่งซื้อของร้าน</span></a>';
-                echo '<br>';
-                echo '<div class="order-row">';
-                echo '<div class="order-col-6"><a class="btn btn-success btn-block" href="'. home_url('/add-listing/') . '?listing_type=gd_product&shop_id='.get_the_ID() .'"><span style="color: #ffffff !important;" >เพิ่มสินค้า</span></a></div>';
-                echo '<div class="order-col-6"><a class="btn btn-primary btn-block" href="'. home_url('/product-list/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >แก้ไขสินค้า</span></a></div>';
-                echo '</div>';
-                echo '</td>';
-                echo '</tr>';
-
-            }
-
-
-            ?>
-
-            </tbody>
-        </table>
-
-
-        <?php
-
-    }else{
-
-    ?>
-
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <th>ชื่อร้านค้า</th>
-          <th></th>
-          <th></th>
-          <th></th>
-        </thead>
-        <tbody>
-
-        <?php
-
-        while ( $my_query->have_posts() ) {
-
-            $my_query->the_post();
-            echo '<tr>';
-            echo '<td>';
-            echo '<a href="' .get_permalink(). ' ">';
-            the_title();
-            echo '</a>';
-            echo '</td>';
-            echo '<td style="text-align:center;"><a class="btn btn-info btn-block" href="'. home_url('/shop-order/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >รายการสั่งซื้อของร้าน</span></a></td>';
-            echo '<td style="text-align:center;"><a class="btn btn-success btn-block" href="'. home_url('/add-listing/') . '?listing_type=gd_product&shop_id='.get_the_ID() .'"><span style="color: #ffffff !important;" >เพิ่มสินค้า</span></a></td>';
-            echo '<td style="text-align:center;"><a class="btn btn-primary btn-block" href="'. home_url('/product-list/') . '?pid='.get_the_ID() .'"><span style="color: #ffffff !important;" >แก้ไขสินค้า</span></a></td>';
-            echo '</tr>';
-
-        }
-
-
-        ?>
-
-        </tbody>
-      </table>
-    </div>
-
-    <?php
-    }
-
-
-  }
-
+    get_template_part( 'my-shop' );
 }
 
 	// Make Google map direction
@@ -2007,7 +2145,7 @@ function geodirectory_detail_page_google_map_link( $options ) {
                     ), 'https://maps.google.com/maps' );
         ?>
         <div class="direction_button">
-        <p><a href="<?php echo $maps_url; ?>" target="_blank"><input type=button id=direction_button value='Get Directions on Google Maps'></a></p>
+        <p><a href="<?php echo $maps_url; ?>" target="_blank"><input type=button id=direction_button value='แผนที่นำทาง'></a></p>
         </div>
         <?php
     }
@@ -2024,29 +2162,6 @@ function hide_map_on_product_detail($hide_map){
 }
 
 add_filter( 'whoop_detail_page_hide_map', 'hide_map_on_product_detail',20,1);
-
-function shop_product_list_tab($arr_tabs){
-
-    $post_type = geodir_get_current_posttype();
-
-    if($post_type == "gd_product"){
-        unset($arr_tabs['post_map']);
-        $arr_tabs['post_profile']['heading_text'] = "รายละเอียดสินค้า";
-    }else{
-        $arr_tabs['product_list'] = array(
-            'heading_text'  => __( 'รายการสินค้า', 'geodirectory' ),
-            'is_active_tab' => false,
-            'is_display'    => true,
-            'tab_content'   => ''
-        );
-    }
-
-
-
-    return $arr_tabs;
-}
-
-add_filter('geodir_detail_page_tab_list_extend', 'shop_product_list_tab', 10, 1);
 
 function remove_sidebar_right_from_product_detail(){
     $post_type = geodir_get_current_posttype();
@@ -2137,14 +2252,14 @@ function add_shop_link(){
 
     $is_current_user_owner = geodir_listing_belong_to_current_user();
     if (!$preview){
-        
-        if ($is_current_user_owner){
-            $post_id = $post->ID;
+        $post_id = $post->ID;
+        if ($is_current_user_owner){ 
+            echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/shop-order/') . '?pid='.$post_id . '">รายการสั่งซื้อของร้าน</a></p>';
+            $group_id = geodir_get_post_meta($post->ID,'groupID',true);            
+        }
+        if(current_user_can('administrator')){
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/add-listing/') . '?listing_type=gd_product&shop_id='.$post_id . '">เพิ่มสินค้า</a></p>';
             echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/product-list/') . '?pid='.$post_id . '">แก้ไขสินค้า</a></p>';
-            echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/shop-order/') . '?pid='.$post_id . '">รายการสั่งซื้อของร้าน</a></p>';
-
-            $group_id = geodir_get_post_meta($post->ID,'groupID',true);
             if($group_id != 0)
                 echo ' <p class="edit_link"><i class="fa fa-pencil"></i> <a href="' . home_url('/shop-driver/') . '?pid='.$post_id . '">เพิ่มคนส่งประจำ</a></p>';
         }
@@ -2281,107 +2396,6 @@ function product_pagination($max_num_pages,$paged, $prev = '«', $next = '»') {
     }
  
     echo $html;
-}
-
-
-
-function shop_product_list_content($tab_index){
-    global $post;
-    if($tab_index == 'product_list')
-    {
-        if($post->geodir_shop_product_list == '1')
-        {
-            echo create_dropdown_categort(1,$post->ID);
-            echo '<div id="tamzang-menu">';
-            tamzang_menu_view($post->ID);
-            echo '</div>';
-        }
-        else
-        {
-            echo create_dropdown_categort(2,$post->ID);
-            echo '<div id="tamzang-menu">';
-            tamzang_ecommerce_view($post->ID);
-            echo '</div>';
-        }
-    }
-}
-
-add_action( 'geodir_after_tab_content', 'shop_product_list_content', 10, 1);
-
-function tamzang_menu_view($post_id)
-{
-    set_query_var( 'post_id', $post_id );
-    //set_query_var( 'geodir_tamzang_id', $geodir_tamzang_id );
-    set_query_var( 'cat_id', 0 );
-    get_template_part( 'menu-view' );
-}
-
-//Ajax functions
-add_action('wp_ajax_nopriv_load_tamzang_ecommerce_view', 'load_tamzang_ecommerce_view_callback');
-
-function load_tamzang_ecommerce_view_callback(){
-  $data = $_POST;
-  set_query_var( 'post_id', $data['post_id'] );
-  set_query_var( 'cat_id', $data['cat_id'] );
-  get_template_part( 'ecommerce-view' );
-  wp_die();
-}
-
-//Ajax functions
-add_action('wp_ajax_nopriv_load_tamzang_menu_view', 'load_tamzang_menu_view_callback');
-add_action('wp_ajax_load_tamzang_menu_view', 'load_tamzang_menu_view_callback');
-
-function load_tamzang_menu_view_callback(){
-  $data = $_POST;
-  set_query_var( 'pid', $data['pid'] );
-  set_query_var( 'cat_id', $data['cat_id'] );
-  if($data['cat_type'] == 1)
-    get_template_part( 'menu-view' );
-  else
-    get_template_part( 'ecommerce-view' );
-  wp_die();
-}
-
-function create_dropdown_categort($type, $post_id){
-    global $wpdb;
-    $catList = get_cat_id_from_shop($post_id);
-    $result = create_array_categort($catList);
-    $html = '';
-    if(!empty($result)){
-        $html .= '<div class="order-row"><div class="order-col-4" style="float:right">
-        <select id="dd_cat" data-cat_type="'.$type.'" data-id="'.$post_id.'">';
-        $html .= '<option value="">ทั้งหมด</option>';
-        foreach($result as $cl) {
-            $html .= '<option value="'.$cl["id"].'">'.$cl["name"].'</option>';
-        }
-        $html .= '</select></div></div><div class="order-clear"></div>';
-    }
-    return $html;
-}
-
-function create_array_categort($cat_list){
-    $cate_array = array();
-    $top_level = array();
-
-    foreach($cat_list as $cate){    
-        $temp = end(get_ancestors( $cate->default_category, 'gd_productcategory' ));
-        if(!empty($temp))    
-            $top_level[] = $temp;
-        else
-            $top_level[] = $cate->default_category;
-        
-    }
-
-    $top_level = array_unique($top_level);
-
-    foreach($top_level as $cate_id){
-        $spacing = '';
-        if(!empty($cate_id)){
-            $cate_array[] = array("id" => $cate_id, "name" => $spacing . get_term_by('id', $cate_id, 'gd_productcategory')->name);
-            $cate_array = fetchCategoryTree($cate_id, $spacing . '&nbsp;&nbsp;', $cate_array);
-        }
-    }
-    return $cate_array;
 }
 
 function get_cat_id_from_shop($post_id){
@@ -2607,6 +2621,18 @@ function tamzang_bp_user_driver_nav_adder()
             )
         );
     }
+
+    bp_core_new_nav_item(
+        array(
+            'name' => 'ข้อมูล Restaurant',
+            'slug' => 'restaurant_owner',
+            'position' => 105,
+            'show_for_displayed_user' => false,
+            'screen_function' => 'tamzang_restaurant_owner_screen',
+            'item_css_id' => 'lists',
+            'default_subnav_slug' => 'restaurant_owner'
+        )
+    );  
 }
 
 add_action('bp_setup_nav', 'tamzang_bp_user_driver_nav_adder',102);
@@ -2648,7 +2674,6 @@ function tamzang_user_driver_screen_content()
   <?php
 
 }
-
 function tamzang_driver_group_screen()
 {
   add_action( 'bp_template_content', 'tamzang_driver_group_screen_content' );
@@ -2699,6 +2724,91 @@ function tamzang_driver_money_screen_content()
     }
     echo '</div>';
 
+}
+
+// restaurant screen
+
+function tamzang_restaurant_owner_screen()
+{
+  add_action( 'bp_template_content', 'tamzang_restaurant_screen_content' );
+  bp_core_load_template(apply_filters('bp_core_template_plugin', 'members/single/plugins'));
+}
+
+function tamzang_restaurant_screen_content()
+{
+  wp_enqueue_script( 'tamzang_jquery_validate', get_stylesheet_directory_uri() . '/js/jquery.validate.min.js' , array(), '1.0',  false );
+
+//   wp_register_style( 'gd-captcha-style', GEODIR_RECAPTCHA_PLUGIN_URL . '/css/gd-captcha-style.css', array(), GEODIR_RECAPTCHA_VERSION);
+//   wp_enqueue_style( 'gd-captcha-style' );
+  ?>
+  <div id="restaurant-content">
+    <?php
+        global $wpdb, $current_user;
+
+        $restaurant_approve = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM register_restaurant where wp_user_id = %d ", array($current_user->ID)
+            )
+        );
+
+        if(empty($restaurant_approve)){
+            get_template_part( 'restaurant/restaurant', 'register' ); 
+        }else{
+            if($restaurant_approve->approve)
+                get_template_part( 'restaurant/restaurant', 'transaction_details' );                
+            else
+                get_template_part( 'restaurant/restaurant', 'pending' ); 
+        }
+        
+    ?>
+  </div>
+  <?php
+
+}
+
+add_action('wp_ajax_restaurant_money_screen', 'restaurant_money_screen_callback');
+function restaurant_money_screen_callback()
+{
+    global $wpdb, $current_user;
+    $data = $_GET;
+    file_put_contents( dirname(__FILE__).'/debug/restaurant_money_screen.log', var_export( "restaurant_money  START !!", true));
+    file_put_contents( dirname(__FILE__).'/debug/restaurant_money_screen.log', var_export( $data, true),FILE_APPEND);
+    // check the nonce
+    if ( check_ajax_referer( 'restaurant_money_' . $data['pid'], 'nonce', false ) == false ) {
+        wp_send_json_error("error nonce");
+    }
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT restaurant_id FROM restaurant_bank_account where owner_id = %d and restaurant_id = %d", array($current_user->ID,$data['pid'])
+        )
+    );
+    echo '<div class="wrapper-loading">';
+    if(empty($id)){
+        wp_send_json_error("ไม่สามารทำการได้ขณะนี้");
+    }else{
+        set_query_var( 'restaurant_id', $data['pid'] );
+        get_template_part( 'restaurant/restaurant', 'money' );
+    }
+    echo '</div>'; 
+    wp_die();  
+}
+
+add_action('wp_ajax_regis_new_restaurant', 'regis_new_restaurant_callback');
+function regis_new_restaurant_callback(){
+    get_template_part( 'restaurant/restaurant', 'register' ); 
+}
+
+//Ajax functions
+add_action('wp_ajax_load_restaurant_transaction_list', 'load_restaurant_transaction_list_callback');
+
+function load_restaurant_transaction_list_callback(){
+  set_query_var( 'start_date', $_POST['start_date'] );
+  set_query_var( 'end_date', $_POST['end_date'] );
+  set_query_var( 'type', $_POST['type'] );
+  set_query_var( 'pid', $_POST['id'] );
+  get_template_part( 'restaurant/restaurant', 'transaction_list' );
+  wp_die();
 }
 
 add_action('wp_ajax_driver_add_bankaccount', 'driver_add_bankaccount_callback');
@@ -3303,12 +3413,12 @@ function driver_confirm_order_callback(){
         {
             $commission_tamzang_value = $wpdb->get_row(
                 $wpdb->prepare(
-                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'tamzang'", array($owner->Driver_id,$order->user_delivery_type)
+                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'exclusive'", array($owner->Driver_id,$order->user_delivery_type)
                 )
             ); 
             $commission_agent_value = $wpdb->get_row(
                 $wpdb->prepare(
-                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'agent'", array($owner->Driver_id,$order->user_delivery_type)
+                    "SELECT * FROM driver_variable where driver_id = %d and geodir_delivery_type =9 and title = 'agent'", array($owner->Driver_id)
                 )
             );
             if(!empty($commission_tamzang_value)){
@@ -3622,16 +3732,15 @@ function driver_next_step_callback(){
           // Check status of the order
           $order = $wpdb->get_row(
               $wpdb->prepare(
-                  "SELECT status, commission, wp_user_id, id, redeem_point, cancel_code, promotion_id, user_delivery_type FROM orders where id = %d ", array($data['id'])
+                  "SELECT post_id,total_amt, driver_total_amt, tamzang_profit,delivery_balancing, payment_type, shipping_id, status, commission, wp_user_id, id, redeem_point, cancel_code, promotion_id, user_delivery_type FROM orders where id = %d ", array($data['id'])
               )
           );
 
           if(!empty($order->cancel_code) && $order->cancel_code != "ok")
             wp_send_json_error();
   
-          if($order->status < 5){
-              $order->status++;
-  
+          if($order->status < 5){  
+              $order->status++;  
               $wpdb->query(
                   $wpdb->prepare(
                       "UPDATE orders SET status = %d where id = %d ",
@@ -3654,15 +3763,24 @@ function driver_next_step_callback(){
                     )
                 );
 
+                // Get Shipping detail
+                $shipping_address = $wpdb->get_row(
+                    $wpdb->prepare(
+                        "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
+                    )
+                );
+
+                //Get Shop commission
+                $shop_commission = $wpdb->get_row(
+                    $wpdb->prepare(
+                        "SELECT * FROM delivery_variable where post_id = %d and geodir_delivery_type = %d", array($order->post_id,$order->user_delivery_type)
+                    )
+                );
+
                 // check If buyer use Promotion
                 if($order->promotion_id != 0)
                 {
                     file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "user used Promiton!!", true));
-                    $shipping_address = $wpdb->get_row(
-                        $wpdb->prepare(
-                            "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
-                        )
-                    );
                     $shipping_price = $shipping_address->price;
                     $result = cal_shipping_price_with_promotion($order->promotion_id, $shipping_price);
                     $driver_promotion_cash = number_format($shipping_price-$result,2,'.','') ;
@@ -3751,7 +3869,48 @@ function driver_next_step_callback(){
                         
                     }
 
+                    
+                if($shop_commission->shop_commission_active){ // Have a deal with Restaurant
+                    file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "Shop Commission!!", true));
+                    $shipping_price = $shipping_address->price;
+                    
+                    file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( $order, true),FILE_APPEND);
+                    file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( $shop_commission, true),FILE_APPEND);
 
+                    if($order->payment_type == 2){ // Pay Cash 
+                        //file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "Cash ", true),FILE_APPEND);
+                        $restaurant_return = $order->driver_total_amt - (($order->driver_total_amt * $shop_commission->shop_commission_percent)/100 + $shop_commission->shop_commission_constant) ; 
+                        $total_amt_order = $order->total_amt + $shipping_price;
+                        //file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "total_amt_order ".$total_amt_order, true),FILE_APPEND);
+                        // Debit Full Total Price from Driver balance
+                        debitBalance("Driver",$total_amt_order,"FOODA",$current_date,$order->id,$driver->Driver_id);
+                        // return Ship Fee
+                        creditCash("Driver",$shipping_price,"SHIPPINGA",$current_date,$order->id,$driver->Driver_id);
+                        // return food admin price to restauran
+                        creditCash("Restaurant",$restaurant_return,"FOOD_COST_A",$current_date,$order->id,$order->post_id);
+                    }
+                    elseif($order->payment_type == 3){// Pay QR or credit
+                        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "Pay QR ", true),FILE_APPEND);
+                        $restaurant_return = $order->driver_total_amt - (($order->driver_total_amt * $shop_commission->shop_commission_percent)/100 + $shop_commission->shop_commission_constant) ; 
+                        // return Ship Fee
+                        creditCash("Driver",$shipping_price,"SHIPPINGA",$current_date,$order->id,$driver->Driver_id);
+                        creditCash("Restaurant",$restaurant_return,"FOOD_COST_A",$current_date,$order->id,$order->post_id);
+                    }            
+                }else{// DON'T !!  Have a deal with Restaurant
+                    file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "NO !!! Shop Commission", true));
+                    file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "Pay Type :".$order->payment_type, true),FILE_APPEND);
+                    if($order->payment_type == 2){ // Pay Cash 
+                        $tamzang_food_profit = $order->total_amt - $order->driver_total_amt - $order->delivery_balancing;
+                        debitBalance("Driver",$tamzang_food_profit,"FOODB",$current_date,$order->id,$driver->Driver_id);
+                    }
+                    elseif($order->payment_type == 3){// Pay QR or credit
+                        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "Pay QR", true),FILE_APPEND);
+                        // return Ship Fee
+                        creditCash("Driver",$shipping_price,"SHIPPINGB",$current_date,$order->id,$driver->Driver_id);
+                        // return food admin price to driver
+                        creditCash("Driver",$order->driver_total_amt,"FOOD_COST_B",$current_date,$order->id,$driver->Driver_id);
+                    }
+                }
                 
 
 
@@ -3809,7 +3968,7 @@ function insert_driver_transaction_details($type, $parameters){// ตัด comm
                 $parameters
             )
         );
-    }elseif($type == "PROMOTION_CREDIT"){// balance_driver_cash
+    }elseif($type == "CREDIT"){// balance_driver_cash
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO driver_transaction_details SET
@@ -3826,7 +3985,7 @@ function insert_driver_transaction_details($type, $parameters){// ตัด comm
             )
         );
     }
-    else{// credit
+    else{// type == REVERSE_TO_DRIVER  credit
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO driver_transaction_details SET
@@ -3846,7 +4005,7 @@ function driver_commission($commission, $driver, $current_date, $order_id, $driv
     if($user_delivery_type != 1){
         $commission_agent_id = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT agent_id FROM driver_variable where driver_id = %d and geodir_delivery_type =%d and title = 'agent'", array($driver->Driver_id,$user_delivery_type)
+                "SELECT agent_id FROM driver_variable where driver_id = %d and geodir_delivery_type =9 and title = 'agent'", array($driver->Driver_id)
             )
         );
 
@@ -3863,12 +4022,12 @@ function driver_commission($commission, $driver, $current_date, $order_id, $driv
         );
         if(!empty($commission_agent_value)){
 
-            $commission = $commission - $commission_agent_value;
+            //$commission = $commission - $commission_agent_value;
             file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Agent Cash before :".$agent_profile->driver_cash, true));
             $driver_balacne_cash_bfr = (!empty($agent_profile->driver_cash))?$agent_profile->driver_cash:0 ;
             $New_driver_balacne_cash = $driver_balacne_cash_bfr + $commission_agent_value;
             file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "Agent Cash After :".$New_driver_balacne_cash, true),FILE_APPEND);
-            insert_driver_transaction_details("PROMOTION_CREDIT", 
+            insert_driver_transaction_details("CREDIT", 
             array($commission_agent_id, $commission_agent_value, $New_driver_balacne_cash, "REVERSE_TO_DRIVER", $current_date, $order_id));
 
             $wpdb->query(
@@ -3909,7 +4068,7 @@ function driver_commission($commission, $driver, $current_date, $order_id, $driv
     {
         $New_driver_balacne_cash = $driver->driver_cash + $driver_promotion_cash;
         file_put_contents( dirname(__FILE__).'/debug/promition_check.log', var_export( "PUT  INTO Transaction detail  :", true),FILE_APPEND);
-        insert_driver_transaction_details("PROMOTION_CREDIT",
+        insert_driver_transaction_details("CREDIT",
         array($driver->Driver_id, $driver_promotion_cash, $New_driver_balacne_cash, "PROMOTION_CREDIT", $current_date, $order_id));
 
         $wpdb->query(
@@ -4029,7 +4188,7 @@ function customer_response_adjust_callback(){
 
     $customer = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT o.wp_user_id,o.total_amt,o.driver_adjust,s.price,o.status as order_status,o.redeem_point FROM orders as o
+            "SELECT o.wp_user_id,o.total_amt,o.driver_adjust,s.price,o.delivery_balancing,o.status as order_status,o.redeem_point FROM orders as o
             inner join shipping_address as s on o.shipping_id = s.id
             where o.id = %d ", array($data['id'])
         )
@@ -4059,7 +4218,7 @@ function customer_response_adjust_callback(){
       if($customer->redeem_point)
         wp_send_json_success($customer->total_amt+$customer->driver_adjust);
       else
-        wp_send_json_success($customer->total_amt+$customer->driver_adjust+$customer->price);
+        wp_send_json_success($customer->total_amt+$customer->driver_adjust+$customer->price-$customer->delivery_balancing);
 
     }else{
         wp_send_json_error();
@@ -4360,7 +4519,7 @@ function assign_order_driver() {
     //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $is_exist, true),FILE_APPEND);
     
     // Check in driver_order_log_assign
-    $sql_assign = "SELECT * FROM driver_order_log_assign where (status = 2 and driver_id =".$driver_id_sql.") and (status IN (1,4) and driver_id =".$driver_id_sql." and driver_order_id =".$order_id.")";
+    $sql_assign = "SELECT * FROM driver_order_log_assign where (status = 2 and driver_id =".$driver_id_sql.") or (status IN (1,4) and driver_id =".$driver_id_sql." and driver_order_id =".$order_id.")";
     //file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $sql, true));
     $result_driver_assign = $wpdb->get_results($sql_assign, ARRAY_A );
     $is_exist_assign = $wpdb->num_rows;
@@ -4396,7 +4555,7 @@ function assign_order_driver() {
 	}
 	//Abort
 	else if( ($is_exist_assign >= 0) && ($status == "Abort") )
-	{      
+	{    
            	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "Cancel", true));
 	        // Update order in driver_order_log
             $wpdb->query(
@@ -4424,15 +4583,15 @@ function assign_order_driver() {
                 wp_send_json_success($return_result);
         
 	}
-	else if(($is_exist_assign >0) && ($status == null))
+	/*else if(($is_exist_assign >0) && ($status == null))
 	{
 		$return_result = "Cannot Assign this order to Driver This Order is already Assign";
 		wp_send_json_success($return_result);
-	}
+	}*/
     else
     {
-        if($is_exist_assign == 0)
-        {
+        /*if($is_exist_assign == 0)
+        {*/
             // Check this driver never reject this job
             $driver_log_status = $wpdb->get_var(
                 $wpdb->prepare(
@@ -4529,7 +4688,7 @@ function assign_order_driver() {
                 //echo $return_result;
 
             }		    
-        }
+        //}
         $return_result = "This Driver is waiting for answer another Order";
 		wp_send_json_success($return_result);
 
@@ -4809,7 +4968,12 @@ function get_delivery_fee($pid,$deliver_type) {
 
 	//$post_id = $_POST['postID'];
     $post_id = $pid;
-    $buyer_delivery_type = $deliver_type;
+    if($deliver_type == 3)
+        $buyer_delivery_type = 1;
+    elseif($deliver_type == 4)
+        $buyer_delivery_type = 2;
+    else
+        $buyer_delivery_type = $deliver_type;
 	//$buyer_id = $_POST['buyerID'];
 	
 	//Get Buyer Latitude and Longitude from address of user
@@ -4990,6 +5154,26 @@ add_action( 'geodir_after_listing_post_excerpt', 'short_des_listview', 10, 3 );
 
 function short_des_listview($post){
     echo '<div class="geodir-whoop-address">'.$post->post_content.'</div>';
+}
+
+add_action( 'geodir_after_review_rating_stars_on_listview', 'tamzang_shop_open_on_listview', 10, 2 );
+
+function tamzang_shop_open_on_listview($post_avgratings, $post_id){
+    $array_shop_time = check_shop_open($post_id);
+    $shop_time = $array_shop_time['shop_time'];
+    $is_shop_open = $array_shop_time['is_shop_open'];
+    $tamzang_id = geodir_get_post_meta( $post_id, 'geodir_tamzang_id', true );
+    if(!empty($tamzang_id)){
+        if(!empty($shop_time)){
+            if($is_shop_open){
+                echo '<div class="geodir_more_info"><p style="color: limegreen;">Online Menu</p></div>';
+            }else{
+                echo '<div class="geodir_more_info"><p style="color: #dc2f21;">Close Online Menu</p></div>';
+            }
+        }else{
+            echo '<div class="geodir_more_info"><p style="color: #dc2f21;">Close Online Menu</p></div>';
+        }
+    }
 }
 
 //AJAX FUNCTION
@@ -5318,7 +5502,7 @@ function addCartProductBtn()
 	}
 }
 
-add_action('geodir_detail_before_main_content','addOrderButton');
+//add_action('geodir_detail_before_main_content','addOrderButton');
 function addOrderButton()
 {
 global $post;
@@ -6225,6 +6409,11 @@ function get_place_delivery_setup() {
             $km_tier5 = $list->km_tier5;
             $km_tier5_value = $list->km_tier5_value;
             $geodir_delivery_type = $list->geodir_delivery_type;
+            $delivery_balancing_constant_value = $list->delivery_balancing_constant;
+            $delivery_balancing_percent_value = $list->delivery_balancing_percent;
+            $shop_commission_constant_value = $list->shop_commission_constant;
+            $shop_commission_percent_value = $list->shop_commission_percent;
+            $shop_commission_active = $list->shop_commission_active;
             $assign_restaurant['post_id'] = $post_id;
             $assign_restaurant['title'] = $title;
             $assign_restaurant['base'] = $base;
@@ -6240,6 +6429,12 @@ function get_place_delivery_setup() {
             $assign_restaurant['km_tier5'] = $km_tier5;
             $assign_restaurant['km_tier5_value'] = $km_tier5_value;
             $assign_restaurant['geodir_delivery_type'] = $geodir_delivery_type;
+            $assign_restaurant['radius_delivery'] = $restaurant_deli_radius;
+            $assign_restaurant['delivery_balancing_constant'] = $delivery_balancing_constant_value;
+            $assign_restaurant['delivery_balancing_percent'] = $delivery_balancing_percent_value;
+            $assign_restaurant['shop_commission_constant'] = $shop_commission_constant_value;
+            $assign_restaurant['shop_commission_percent'] = $shop_commission_percent_value;
+            $assign_restaurant['shop_commission_active'] = $shop_commission_active;
 
             file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "Not Empty", true));            
             $return_arr[] = $assign_restaurant;
@@ -6276,11 +6471,14 @@ function list_delivery_setup(){
     set_query_var('km_tier5_value',$data['km_tier5_value']);
     set_query_var('geodir_delivery_type',$data['geodir_delivery_type']); 
     set_query_var('radius_deli',$data['radius_deli']); 
-    
+    set_query_var('delivery_balancing_constant',$data['delivery_balancing_constant']); 
+    set_query_var('delivery_balancing_percent',$data['delivery_balancing_percent']); 
+    set_query_var('shop_commission_constant',$data['shop_commission_constant']); 
+    set_query_var('shop_commission_percent',$data['shop_commission_percent']); 
+    set_query_var('shop_commission_active',$data['shop_commission_active']);     
   //file_put_contents( dirname(__FILE__).'/debug/driver.log', var_export( $data['title'], true));
-
-  get_template_part( 'ajax-restaurant-delivery' );
-  wp_die();
+    get_template_part( 'operator/ajax-restaurant-delivery' );
+    wp_die();
 }
 
 //AJAX FUNCTION
@@ -6319,6 +6517,11 @@ function restaurant_delivery_setup(){
         $km_tier5 = $_POST['km_tier5_'.$i];
         $km_tier5_value = $_POST['km_tier5_value_'.$i];
         $geodir_delivery_type = $_POST['geodir_delivery_type_'.$i];
+        $delivery_balancing_constant = $_POST['delivery_balancing_constant_value_'.$i]; 
+        $delivery_balancing_percent = $_POST['delivery_balancing_percent_value_'.$i];
+        $shop_commission_constant = $_POST['shop_commission_constant_value_'.$i];
+        $shop_commission_percent = $_POST['shop_commission_percent_value_'.$i];
+        $shop_commission_active = $_POST['shop_commission_active_value_'.$i];
         
 
         if($doing == "UPDATE"){
@@ -6326,9 +6529,13 @@ function restaurant_delivery_setup(){
            $wpdb->query(
                 $wpdb->prepare(
                     "UPDATE delivery_variable SET base = %f, base_adjust =%f ,km_tier1 =%f,km_tier1_value = %f, km_tier2 =%f ,km_tier2_value =%f,km_tier3 = %f, km_tier3_value =%f
-                    ,km_tier4 =%f,km_tier4_value = %f, km_tier5 =%f ,km_tier5_value =%f
+                    ,km_tier4 =%f,km_tier4_value = %f, km_tier5 =%f ,km_tier5_value =%f,delivery_balancing_constant =%f,delivery_balancing_percent =%f
+                    ,shop_commission_constant =%f,shop_commission_percent =%f,shop_commission_active =%d
                     WHERE geodir_delivery_type = %d and post_id = %d ",
-                    array($base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value,$km_tier4,$km_tier4_value, $km_tier5,$km_tier5_value,$geodir_delivery_type,$post_id)
+                    array($base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value
+                    ,$km_tier4,$km_tier4_value, $km_tier5 ,$km_tier5_value,$delivery_balancing_constant,$delivery_balancing_percent
+                    ,$shop_commission_constant,$shop_commission_percent,$shop_commission_active
+                    ,$geodir_delivery_type,$post_id)
                 )
             );
 
@@ -6337,16 +6544,27 @@ function restaurant_delivery_setup(){
 
         }
         elseif($doing == "INSERT"){
+        $restaurant_check = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT 2574 FROM delivery_variable where 2574 = %d ", array($post_id)
+                )
+        );
           //  file_put_contents( dirname(__FILE__).'/debug/delivery_setup.log', var_export( $doing , true),FILE_APPEND);
-          if(!empty($post_id)){
+          if(!empty($post_id) && empty($restaurant_check)){
             $wpdb->query(
                 $wpdb->prepare(
-                 "INSERT INTO delivery_variable SET
-                 post_id = %d,title = %s,base = %f, base_adjust =%f ,km_tier1 =%f,km_tier1_value = %f, km_tier2 =%f ,km_tier2_value =%f,km_tier3 = %f, km_tier3_value =%f
-                    ,km_tier4 =%f,km_tier4_value = %f, km_tier5 =%f ,km_tier5_value =%f,geodir_delivery_type = %d",
-                 array($post_id,$title,$base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value,$km_tier4,$km_tier4_value, $km_tier5,$km_tier5_value,$geodir_delivery_type)
+                    "INSERT INTO delivery_variable SET
+                    post_id = %d,title = %s,base = %f, base_adjust =%f ,km_tier1 =%f,km_tier1_value = %f, km_tier2 =%f ,km_tier2_value =%f,km_tier3 = %f, km_tier3_value =%f
+                    ,km_tier4 =%f,km_tier4_value = %f, km_tier5 =%f ,km_tier5_value =%f,geodir_delivery_type = %d , delivery_balancing_constant =%f ,delivery_balancing_percent =%f 
+                    , shop_commission_constant =%f ,shop_commission_percent =%f ,shop_commission_active =%d",
+                 array($post_id,$title,$base, $base_adjust,$km_tier1,$km_tier1_value, $km_tier2,$km_tier2_value,$km_tier3, $km_tier3_value
+                 ,$km_tier4,$km_tier4_value, $km_tier5,$km_tier5_value,$geodir_delivery_type,$delivery_balancing_constant,$delivery_balancing_percent
+                 ,$shop_commission_constant,$shop_commission_percent,$shop_commission_active)
              )
             );
+          }
+          else {
+            wp_send_json_success("ร้านค้านี้มีแล้วในระบบ");
           }
             
         }
@@ -6544,7 +6762,7 @@ function user_use_promotion_callback(){
 
   try {
 
-    $check = check_promotion($data['promotion_input']);
+    $check = check_promotion($data['promotion_input'],$data['pid']);
 
     if($check['is_valid'])
     {
@@ -6565,7 +6783,7 @@ function user_use_promotion_callback(){
 
 }
 
-function check_promotion($promotion_code){
+function check_promotion($promotion_code,$post_id){
     global $wpdb, $current_user;
 
     $tz_date = tamzang_get_current_date();
@@ -6577,6 +6795,8 @@ function check_promotion($promotion_code){
             AND code = %s ', array($tz_date, $tz_date, $promotion_code)
         )
     );
+
+    
 
     if(empty($promotion))
         return array('is_valid' => false, 'msg' => "code invalid");
@@ -6595,8 +6815,24 @@ function check_promotion($promotion_code){
         )
     );
 
+    //file_put_contents( dirname(__FILE__).'/debug/promotion_shop.log', var_export("Start", true));
+
     if(!empty($check))
         return array('is_valid' => false, 'msg' => "ใช้ code แล้ว");
+
+    $promotion_group = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT post_id FROM promotion_shop
+            where promotion_id = %d ",
+            array($promotion->ID)
+        )
+    );
+   // file_put_contents( dirname(__FILE__).'/debug/promotion_shop.log', var_export( strchr($promotion_group,"0"), true),FILE_APPEND);
+
+    if(!empty($promotion_group)){
+        if(strchr($promotion_group,$post_id) == 0)
+            return array('is_valid' => false, 'msg' => "Code นี้ใช้กับร้านนี้ไม่ได้");
+    }
 
     return array('is_valid' => true, 'name' => $promotion->name, 'constant' => $promotion->constant, 
     'percent' => $promotion->percent, 'promotion_id' => $promotion->ID, 'device_id' => $device_id);
@@ -6690,275 +6926,6 @@ function tamzang_express_login(){
     wp_send_json_success($user_id);
 }
 
-// Driver Top up money
-
-add_action('wp_ajax_driver_topup_money', 'driver_topup_money_callback');
-function driver_topup_money_callback(){
-  global $wpdb, $current_user;
-
-  $data = $_POST;
-
-  // check the nonce
-  if ( check_ajax_referer( 'driver_topup_money_' . $current_user->ID, 'nonce', false ) == false ) {
-      wp_send_json_error("error nonce");
-  }
-
-  try { 
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Start check valid value ", true));
-    $valid_value = array('100', '200', '300', '400', '500', '1000');
-    
-    if(!in_array($data['dd_value'], $valid_value))
-        wp_send_json_error();    
-    $amount = $data['dd_value'];
-    $token = SCBTokenGenerater();
-    $token_decode = json_decode($token);
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After token ", true),FILE_APPLEND);
-    $QR_30_Data = SCBQRGenerate($token_decode->data->accessToken,$amount,$current_user->ID,"DRIVERTOPUP","Driver","QR30");
-    //$QR_30_decode = json_decode($QR_30_Data);  
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After QR ".$QR_30_Data, true),FILE_APPLEND); 
-    wp_send_json_success($QR_30_Data);
-    //return $QR_30_Data;
-
-  } catch (Exception $e) {
-      wp_send_json_error($e->getMessage());
-  }
-
-}
-
-add_action('wp_ajax_generateQRpayment', 'generateQRpayment');
-// For operater get Driver for adjust his balance
-function generateQRpayment(){
-    global $wpdb;
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
-    $data = $_POST;
-
-    $Amount_topup = $data['amount'];
-    $user_id = get_current_user_id();
-
-    /*
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( $Order_id, true));
-		$sql = $wpdb->prepare(
-         "SELECT * FROM driver WHERE driver_id = %d ",array($Driver_id)  
-    );
-	$result_driver = $wpdb->get_results($sql);
-    */
-    $scb_token_obj = json_decode(SCBTokenGenerater());
-
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $scb_token_obj, true));
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Token is :".$scb_token_obj->data->accessToken, true),FILE_APPEND);
-
-    //$scb_qr_obj = json_decode(SCBQRGenerate($scb_token_obj->data->accessToken,$Amount_topup,"DRIVERTOPUP","Driver","QR30"));
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Data is :".$scb_qr_obj->data->qrRawData, true),FILE_APPEND);
-    //wp_send_json_success($scb_qr_obj->data->qrRawData);
-    wp_send_json_success($scb_token_obj->data->accessToken);
-    
-}
-
-add_action('wp_ajax_buyerQRpayment', 'buyerQRpayment');
-// For Buyer QR payment
-function buyerQRpayment(){
-    global $wpdb;
-	//file_put_contents( dirname(__FILE__).'/debug/driver_start.log', var_export( "wp_ajax_get_order_list_delivery START!", true));
-    $data = $_POST; 
-
-    // check the nonce
-    if ( check_ajax_referer( 'buyerQRpayment_'.$data['orderId'], 'nonce', false ) == false ) {
-        wp_send_json_error("error nonce");
-    }
-
-    try { 
-        file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "Start check valid value ", true));
-        $order = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT * FROM orders where ID = %d ", array($data['orderId'])
-            )
-        );
-        $shipping =  $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT * FROM shipping_address where order_id = %d ", array($data['orderId'])
-            )
-        );
-
-           
-        $amount = round($order->total_amt + $shipping->price,2);
-        $token = SCBTokenGenerater();
-        $token_decode = json_decode($token);
-        //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After token ", true),FILE_APPLEND);
-        $QR_30_Data = SCBQRGenerate($token_decode->data->accessToken,$amount,$order->wp_user_id,"ORDER".$data['orderId'],"BUY","QR30");
-        //$QR_30_decode = json_decode($QR_30_Data);  
-        //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "After QR ".$QR_30_Data, true),FILE_APPLEND); 
-        wp_send_json_success($QR_30_Data);
-        //return $QR_30_Data;
-    
-      } catch (Exception $e) {
-          wp_send_json_error($e->getMessage());
-      }
-    
-}
-
-
-function SCBTokenGenerater()
-{
-    $fields = array(        
-        'applicationKey' => "l7e0defea0cc1f4183ab3356ac23932a64",
-        'applicationSecret' => "805247453ba54aa69e0409637e5dd653"   
-    );
-    $fields = json_encode($fields);
-    //file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true));
-
-    // Sandbox  API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
-    // UAT API key: l70640876e6fac4f91afca88654030fb87 , Api Secret:3de09fe32d514725a0e4cc831b74077c
-    // url sandbox https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token || UAT https://api-uat.partners.scb/partners/v1/oauth/token
-    // resourceOwnerId : <Your API Key>
-
-	$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "https://api-sandbox.partners.scb/partners/sandbox/v1/oauth/token");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:123456789-01122'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_POST, TRUE);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-
-		$response = curl_exec($ch);
-		curl_close($ch);
-		file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "token :".$response, true));
-        return $response;
-}
-
-function SCBQRGenerate($token,$amount,$ref1,$pay_by,$ref3,$qr_type)
-{
-    global $wpdb;
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "QR Generate Start!! ".$qr_type, true),FILE_APPEND);
-    $tz = 'Asia/Bangkok';
-    $timestamp = time();
-    $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
-    $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
-
-    $uniq_qr = $dt->format("YmdHis");
-
-    $current_date = tamzang_get_current_date();
-    $ref3_postfix = ($ref3 == "Driver")?$uniq_qr:$uniq_qr.$ref3 ;
-    $ref3 = "KBT".$ref3_postfix;
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( "REF3 : ".$ref3, true),FILE_APPEND);
-
-    
-    $user_id = strval($ref1);
-    //ppId = Biller ID :632243887766375
-    $authorization = "Bearer ".$token;
-    
-    if($qr_type == "QR30"){
-        $requestUId = "7f53b03d";
-        /* PROD
-        $fields = array(        
-            'qrType' => "PP",
-            'ppType' => "BILLERID",
-            "ppId"  => "010556017498901", 
-            "amount"  => $amount,
-            "ref1"  => $user_id,
-            "ref2"  => $pay_by,
-            "ref3"  => $ref3
-        );*/
-
-        /* UAT
-        $fields = array(        
-            'qrType' => "PP",
-            'ppType' => "BILLERID",
-            "ppId"  => "311040039475180", 
-            "amount"  => $amount,
-            "ref1"  => $user_id,
-            "ref2"  => $pay_by,
-            "ref3"  => $ref3
-        );*/
-        
-        // Sandbox
-        $fields = array(        
-            'qrType' => "PP",
-            'ppType' => "BILLERID",
-            "ppId"  => "632243887766375", 
-            "amount"  => $amount,
-            "ref1"  => $user_id,
-            "ref2"  => $pay_by,
-            "ref3"  => $ref3
-        );
-        
-
-    }
-    elseif($qr_type == "QRCS"){
-        $requestUId = "7f53b03d-7b9c-42d6-8283-f522ee88ac1c";
-        $fields = array(        
-            'qrType' => "CS",
-            'merchantId' => "534340151318941",
-            "terminalId"  => "395224732472949", 
-            "amount"  => $amount,
-            "invoice"  => "INVOICE 1",
-            "csExtExpiryTime"  => "60"
-        );
-    }
-    
-    $fields = json_encode($fields);
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export( $fields, true),FILE_APPEND);
-
-        // Sandbox  API key:l7e0defea0cc1f4183ab3356ac23932a64, API Secret:805247453ba54aa69e0409637e5dd653
-
-    // UAT API key: l70640876e6fac4f91afca88654030fb87 , Api Secret:3de09fe32d514725a0e4cc831b74077c
-    // Prod API key :l7ec315a7902af465988aae2b792946ef2 , secret 2856b168c2c84f55826254041c21640b
-
-    // URL sandbox https://api-sandbox.partners.scb/partners/sandbox/v1/payment/qrcode/create || UAT https://api-uat.partners.scb/partners/v1/payment/qrcode/create
-	$ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/qrcode/create");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:'.$requestUId,'authorization:'.$authorization));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_POST, TRUE);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    $response = curl_exec($ch);
-    curl_close($ch);    
-    
-    
-    $response_decode = json_decode($response);
-
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export($response_decode->status->description, true),FILE_APPEND);
-    file_put_contents( dirname(__FILE__).'/debug/SCBQR_start.log', var_export($response_decode->data->qrRawData, true),FILE_APPEND);
-
-
-    
-    if($response_decode->status->description == "Success"){
-        $wpdb->query(
-            $wpdb->prepare(
-                "INSERT INTO qr_code SET REF1 = %s, REF2 = %s, REF3 = %s, status = '%d',amount_create = %f,create_date = %s, qrImage=%s",
-                array($user_id,$pay_by,$ref3,1,$amount,$current_date,$response_decode->data->qrImage)
-            )
-        );
-    }   
-    $return_ref = array(
-        "ref1"  => $user_id,
-        "ref2"  => $pay_by,
-        "ref3"  => $ref3
-    );
-    return $return_ref;
-}
-
-function SCBVerifySlip($token,$slipref)
-{
-    $url = "https://api-uat.partners.scb/partners/v1/payment/billpayment/transactions/".$slipref."?sendingBank=014";
-    $authorization = "Bearer ".$token;
-    $requestUId = "85230887-e643-4fa4-84b2-4e56709c4ac4";
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json','resourceOwnerId:l7e0defea0cc1f4183ab3356ac23932a64','requestUId:'.$requestUId,'authorization:'.$authorization));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    $response = curl_exec($ch);
-    curl_close($ch); 
-
-    $response_decode = json_decode($response);
-
-    return $response;
-    
-
-}
-
 
 // AJAX longdo get address
 add_action('wp_ajax_longdo_address', 'longdo_address_callback');
@@ -7017,16 +6984,16 @@ function longdo_address_callback() {
             );
             if(!empty($express_address)){
                // update
-               user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],"UPDATE",0);
+               user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],$data['Phone'],"UPDATE",0);
             }
             else{
                 //Insert Not default;
-                user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],"NEW",0);
+                user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],$data['Phone'],"NEW",0);
             }            
         }
         else{
             //insert default
-            user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],"NEW",1);
+            user_address_express($address,$district,$province,$postcode,$data['lat'],$data['lng'],$data['Phone'],"NEW",1);
         }        
         return "Success";
     }
@@ -7036,17 +7003,18 @@ function longdo_address_callback() {
 
 }
 
-function user_address_express($address,$district,$province,$postcode,$lat,$lng,$command,$set_default){
+function user_address_express($address,$district,$province,$postcode,$lat,$lng,$phone,$command,$set_default){
     global $wpdb, $current_user;
 
+    /*
     $phone = $wpdb->get_row(
         $wpdb->prepare(
             "SELECT * FROM wp_bp_xprofile_data where user_id = %d and field_id = 17 ", array($current_user->ID)
         )
     );
+*/
 
-
-    file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( "Phone : ".$phone->value, true),FILE_APPEND);
+    //file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( "Phone : ".$phone->value, true),FILE_APPEND);
 
     if($command == "NEW"){
         file_put_contents( dirname(__FILE__).'/debug/longdo_address.log', var_export( " We got New address : ", true),FILE_APPEND);
@@ -7054,7 +7022,7 @@ function user_address_express($address,$district,$province,$postcode,$lat,$lng,$
         $wpdb->query(
             $wpdb->prepare(
                 "INSERT INTO user_address SET wp_user_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s, shipping_address = %s, billing_address = %s, latitude = %s, longitude = %s ",
-                array($current_user->ID,"ตำแหน่งที่อยู่ปัจจุบัน",$address,$district,$province,$postcode,$phone->value,$set_default,$set_default,$lat,$lng)
+                array($current_user->ID,"ตำแหน่งที่อยู่ปัจจุบัน",$address,$district,$province,$postcode,$phone,$set_default,$set_default,$lat,$lng)
             )
         );
     }
@@ -7065,7 +7033,7 @@ function user_address_express($address,$district,$province,$postcode,$lat,$lng,$
             $wpdb->prepare(
                 "UPDATE user_address SET address = %s, district = %s, province = %s, postcode = %s, phone = %s, latitude = %s, longitude = %s
                 WHERE wp_user_id = %d and name = 'ตำแหน่งที่อยู่ปัจจุบัน' ",
-                array($address,$district,$province,$postcode,$phone->value,$lat,$lng,$current_user->ID)
+                array($address,$district,$province,$postcode,$phone,$lat,$lng,$current_user->ID)
             )
         );
     } 
@@ -7081,29 +7049,45 @@ function create_choice_group_callback() {
             wp_send_json_error();
         }
 
+        $admin_note = "";
+        if(!empty($data['admin_note'])){
+            $admin_note = ",  admin_note = %s ";
+        }
+
         if($data['optional'] == "0"){
             $wpdb->query(
                 $wpdb->prepare(
-                    "INSERT INTO choice_group SET group_title = %s, shop_id = %d, is_optional = %d, force_min = %d, force_max = %d ",
-                    array($data['group_title'], $data['sid'], $data['optional'], $data['force_min'], $data['force_max'])
+                    "INSERT INTO choice_group SET group_title = %s, shop_id = %d, is_optional = %d, force_min = %d, force_max = %d ".$admin_note,
+                    array($data['group_title'], $data['sid'], $data['optional'], $data['force_min'], $data['force_max'], $data['admin_note'])
                 )
             );
         }else{
             $wpdb->query(
                 $wpdb->prepare(
-                    "INSERT INTO choice_group SET group_title = %s, shop_id = %d, is_optional = %d ",
-                    array($data['group_title'], $data['sid'], $data['optional'])
+                    "INSERT INTO choice_group SET group_title = %s, shop_id = %d, is_optional = %d ".$admin_note,
+                    array($data['group_title'], $data['sid'], $data['optional'], $data['admin_note'])
                 )
             ); 
         }
         $id = $wpdb->insert_id;
 
         $nonce = wp_create_nonce( 'save_product_options_'.$current_user->ID.$id);
+        $nonce2 = wp_create_nonce( 'sort_options_'.$current_user->ID.$id);
+        $nonce3 = wp_create_nonce( 'delete_option_'.$current_user->ID.$id);
+        $nonce4 = wp_create_nonce( 'edit_choice_group_'.$current_user->ID.$id);
+        $nonce5 = wp_create_nonce( 'copy_choice_group_'.$current_user->ID.$id);
 
         $return = array(
             'id' => $wpdb->insert_id,
             'nonce' => $nonce,
-            'sid' => $data['sid']
+            'nonce2' => $nonce2,
+            'nonce3' => $nonce3,
+            'nonce4' => $nonce4,
+            'nonce5' => $nonce5,
+            'sid' => $data['sid'],
+            'is_optional' => $data['optional'],
+            'force_min' => $data['force_min'],
+            'force_max' => $data['force_max'],
         );
 
         wp_send_json_success($return);
@@ -7168,12 +7152,14 @@ function create_product_options($data){
     }
 
     $nonce = wp_create_nonce( 'update_product_options_'.$current_user->ID.$wpdb->insert_id);
+    $nonce2 = wp_create_nonce( 'delete_product_options_'.$current_user->ID.$wpdb->insert_id);
 
     return $return = array(
         'id' => $wpdb->insert_id,
         'option_name' => $data['post_data'][3]['value'],
         'option_value' => $data['post_data'][4]['value'],
-        'nonce' => $nonce
+        'nonce' => $nonce,
+        'nonce2' => $nonce2
     );
 }
 
@@ -7203,6 +7189,510 @@ function update_product_options($data){
         'option_value' => $data['post_data'][5]['value']
     );
     
+}
+
+add_action('wp_ajax_delete_product_options', 'delete_product_options_callback');
+function delete_product_options_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'delete_product_options_' . $current_user->ID.$data['id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+            
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM choice_adons where id = %d",
+                array($data['id'])
+            )
+        );
+
+        wp_send_json_success();
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_sort_options', 'sort_options_callback');
+function sort_options_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+        //file_put_contents( dirname(__FILE__).'/debug/sort_options.log', var_export( $_POST, true));
+        if($data['table'] == "remove_product" || $data['table'] == "option"){
+            if ( check_ajax_referer( 'remove_option_from_parent_' . $current_user->ID, 'nonce', false ) == false ) {
+                wp_send_json_error();
+            }
+
+            if($data['table'] == "remove_product"){
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "UPDATE wp_geodir_gd_product_detail SET tamzang_category_id = NULL where post_id = %d",
+                        array($data['parent_id'])
+                    )
+                );
+            }
+
+            if($data['table'] == "option"){
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "UPDATE choice_group SET product_id = NULL where id = %d",
+                        array($data['parent_id'])
+                    )
+                );
+            }
+
+        }else if($data['table'] == 'tamzang_catagory'){
+            if ( check_ajax_referer( 'category_sort_' . $current_user->ID, 'nonce', false ) == false ) {
+                wp_send_json_error();
+            }
+
+            $str_array_id = implode(",",$data['orders']);
+    
+            $wpdb->query(
+                "SET @rank := 0; "
+            );
+
+            $wpdb->query(
+                "UPDATE tamzang_catagory set orderby = @rank := @rank+1 WHERE id in ({$str_array_id}) ORDER BY FIELD(id,{$str_array_id})"
+            );
+        }else{
+            if ( check_ajax_referer( 'sort_options_' . $current_user->ID.$data['parent_id'], 'nonce', false ) == false ) {
+                wp_send_json_error();
+            }
+
+            $str_array_id = implode(",",$data['orders']);
+    
+            $wpdb->query(
+                "SET @rank := 0; "
+            );
+    
+            if($data['table'] == 'choice_adons'){
+                $wpdb->query(
+                    "UPDATE choice_adons set orderby = @rank := @rank+1 WHERE id in ({$str_array_id}) ORDER BY FIELD(id,{$str_array_id})"
+                );
+            }else if($data['table'] == 'sort_product'){
+                $wpdb->query(
+                    "UPDATE wp_geodir_gd_product_detail set tamzang_category_id = {$data['parent_id']}, orderby = @rank := @rank+1 WHERE post_id in ({$str_array_id}) ORDER BY FIELD(post_id,{$str_array_id})"
+                );
+            }else if($data['table'] == 'sort_product_options'){
+                $wpdb->query(
+                    "UPDATE product_options set orderby = @rank := @rank+1 WHERE  product_id = {$data['parent_id']} AND choice_group_id in ({$str_array_id}) ORDER BY FIELD(choice_group_id,{$str_array_id})"
+                );
+            }
+        }
+
+
+
+        // if($data['table'] == 'choice_adons'){
+
+        // }
+
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_create_category', 'create_category_callback');
+function create_category_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'create_category_' . $current_user->ID, 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+        
+        $count = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT count(id) FROM tamzang_catagory where shop_id = %d", array($data['post_data'][1]['value'])
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO tamzang_catagory SET name = %s, description = %s, shop_id = %d ",
+                array($data['post_data'][2]['value'], $data['post_data'][3]['value'], $data['post_data'][1]['value'])
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE tamzang_catagory SET orderby = %d where shop_id = %d AND id = %d ", 
+                array($count+1, $data['post_data'][1]['value'], $wpdb->insert_id)
+            )
+        );
+
+        $nonce = wp_create_nonce( 'edit_category_'.$current_user->ID.$wpdb->insert_id);
+        $nonce2 = wp_create_nonce( 'delete_category_'.$current_user->ID.$wpdb->insert_id);
+        $nonce3 = wp_create_nonce( 'edit_category_visibility_'.$current_user->ID.$wpdb->insert_id);
+
+        $return = array(
+            'id' => $wpdb->insert_id,
+            'nonce' => $nonce,
+            'nonce2' => $nonce2,
+            'nonce3' => $nonce3,
+            'sid' => $data['post_data'][3]['value'],
+            'cat_name' => $data['post_data'][2]['value'],
+            'cat_des' => $data['post_data'][3]['value'],
+        );
+
+        wp_send_json_success($return);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_edit_category', 'edit_category_callback');
+function edit_category_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'edit_category_' . $current_user->ID.$data['post_data'][0]['value'], 'nonce', false ) == false ) {
+            $return = array(
+                'cate_id' =>$data['post_data'][0]['value'],
+                'current_user' => $current_user->ID,
+                'nonce2' => wp_create_nonce( 'edit_category_'.$current_user->ID.$data['post_data'][0]['value'])
+            );
+            wp_send_json_error($return);
+        }
+            
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE tamzang_catagory SET name = %s, description = %s WHERE shop_id = %d AND id = %d ",
+                array($data['post_data'][3]['value'], $data['post_data'][4]['value'], $data['post_data'][2]['value'], $data['post_data'][0]['value'])
+            )
+        ); 
+
+        $return = array(
+            'category_name' => $data['post_data'][3]['value'],
+            'category_description' => $data['post_data'][4]['value']
+        );
+
+        wp_send_json_success($return);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_delete_category', 'delete_category_callback');
+function delete_category_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'delete_category_' . $current_user->ID.$data['id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+            
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE wp_geodir_gd_product_detail set tamzang_category_id = NULL WHERE tamzang_category_id = %d ",
+                array($data['id'])
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM tamzang_catagory where id = %d",
+                array($data['id'])
+            )
+        );
+
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_edit_category_visibility', 'edit_category_visibility_callback');
+function edit_category_visibility_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'edit_category_visibility_' . $current_user->ID.$data['post_data']['id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+        
+        $visibility = "1";
+
+        if(!empty($data['post_data']['visibility'])){
+            $visibility = $data['post_data']['visibility'];
+        }
+
+        if($visibility == "1" || $visibility == "2"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE tamzang_catagory SET visibility = %d WHERE id = %d ",
+                    array($visibility, $data['post_data']['id'])
+                )
+            ); 
+        }else if($visibility == "3"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE tamzang_catagory SET visibility = %d, hide_until_date = %s, hide_until_time = %s WHERE id = %d ",
+                    array($visibility, $data['post_data']['hide_until_date'], $data['post_data']['hide_until_time'], $data['post_data']['id'])
+                )
+            ); 
+        }else if($visibility == "4"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE tamzang_catagory SET visibility = %d, show_only_from = %s, show_only_to = %s, day_of_week = %s WHERE id = %d ",
+                    array($visibility, $data['post_data']['show_only_from'], $data['post_data']['show_only_to'], $data['post_data']['day_of_week'], $data['post_data']['id'])
+                )
+            ); 
+
+        }
+        
+        // $wpdb->query(
+        //     $wpdb->prepare(
+        //         "UPDATE tamzang_catagory SET name = %s, description = %s WHERE shop_id = %d AND id = %d ",
+        //         array($data['post_data'][3]['value'], $data['post_data'][4]['value'], $data['post_data'][2]['value'], $data['post_data'][0]['value'])
+        //     )
+        // ); 
+
+        // $return = array(
+        //     'category_name' => $data['post_data'][3]['value'],
+        //     'category_description' => $data['post_data'][4]['value']
+        // );
+
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_edit_shop_time', 'edit_shop_time_callback');
+function edit_shop_time_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'edit_shop_time_' . $current_user->ID.$data['post_data']['id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+        
+        $visibility = "1";
+
+        if(!empty($data['post_data']['visibility'])){
+            $visibility = $data['post_data']['visibility'];
+        }
+
+        $shop_id = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT shop_id FROM tamzang_shop_time where shop_id = %d", array($data['post_data']['id'])
+            )
+        );
+
+        if(empty($shop_id)){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "INSERT INTO tamzang_shop_time SET  shop_id = %d ",
+                    array($data['post_data']['id'])
+                )
+            );
+        }
+
+        if($visibility == "1" || $visibility == "2"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE tamzang_shop_time SET visibility = %d WHERE shop_id = %d ",
+                    array($visibility, $data['post_data']['id'])
+                )
+            ); 
+        }else if($visibility == "3"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE tamzang_shop_time SET visibility = %d, hide_until_date = %s, hide_until_time = %s WHERE shop_id = %d ",
+                    array($visibility, $data['post_data']['hide_until_date'], $data['post_data']['hide_until_time'], $data['post_data']['id'])
+                )
+            ); 
+        }else if($visibility == "4"){
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE tamzang_shop_time SET visibility = %d, show_only_from = %s, show_only_to = %s, day_of_week = %s WHERE shop_id = %d ",
+                    array($visibility, $data['post_data']['show_only_from'], $data['post_data']['show_only_to'], $data['post_data']['day_of_week'], $data['post_data']['id'])
+                )
+            ); 
+
+        }
+        
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_insert_option', 'insert_option_callback');
+function insert_option_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'sort_options_' . $current_user->ID.$data['product_id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+            
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO product_options SET  product_id = %d, choice_group_id = %d ",
+                array($data['product_id'], $data['choice_group_id'])
+            )
+        );
+
+        $str_array_id = implode(",",$data['orders']);
+
+        $wpdb->query(
+            "SET @rank := 0; "
+        );
+
+        $wpdb->query(
+            "UPDATE product_options set orderby = @rank := @rank+1 WHERE  product_id = {$data['product_id']} AND choice_group_id in ({$str_array_id}) ORDER BY FIELD(choice_group_id,{$str_array_id})"
+        );
+
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_delete_option', 'delete_option_callback');
+function delete_option_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'delete_option_' . $current_user->ID.$data['choice_group_id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+        //file_put_contents( dirname(__FILE__).'/debug/delete_option_1.log', var_export( $_POST, true));
+        if($data['product_id'] == 0){
+
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM product_options where choice_group_id = %d ",
+                    array($data['choice_group_id'])
+                )
+            );
+
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM choice_adons where choice_group_id = %d ",
+                    array($data['choice_group_id'])
+                )
+            );
+
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM choice_group where id = %d ",
+                    array($data['choice_group_id'])
+                )
+            );
+
+        }else{
+            //file_put_contents( dirname(__FILE__).'/debug/delete_option_2.log', var_export( $_POST, true));
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM product_options where product_id = %d AND choice_group_id = %d ",
+                    array($data['product_id'], $data['choice_group_id'])
+                )
+            );
+        }
+
+
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_edit_choice_group', 'edit_choice_group_callback');
+function edit_choice_group_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'edit_choice_group_' . $current_user->ID.$data['post_data'][5]['value'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+            
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE choice_group SET group_title = %s, 	is_optional = %d, force_min = %d, force_max = %d, admin_note = %s WHERE id = %d ",
+                array($data['post_data'][0]['value'], $data['post_data'][1]['value'], 
+                $data['post_data'][2]['value'], $data['post_data'][3]['value'], $data['post_data'][4]['value'], $data['post_data'][5]['value']
+                )
+            )
+        ); 
+
+        $return = array(
+            'group_title' => $data['post_data'][0]['value'],
+            'is_optional' => $data['post_data'][1]['value']
+        );
+
+        wp_send_json_success($return);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
+}
+
+add_action('wp_ajax_copy_choice_group', 'copy_choice_group_callback');
+function copy_choice_group_callback() {
+    try{
+        global $wpdb, $current_user;
+        $data = $_POST;
+
+        if ( check_ajax_referer( 'copy_choice_group_' . $current_user->ID.$data['id'], 'nonce', false ) == false ) {
+            wp_send_json_error();
+        }
+            
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "insert into choice_group (group_title,shop_id,is_optional,force_min,force_max,orderby,admin_note)
+                select CONCAT(cg.group_title, '_copy'),cg.shop_id,cg.is_optional,cg.force_min,cg.force_max,cg.orderby,cg.admin_note
+                from choice_group as cg
+                where cg.id = %d ",
+                array($data['id'])
+            )
+        );
+
+        $new_id = $wpdb->insert_id;
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "insert into choice_adons (choice_group_id,choice_adon_detail,extra_price,orderby)
+                select %d,ca.choice_adon_detail,ca.extra_price,ca.orderby
+                from choice_adons as ca
+                where ca.choice_group_id = %d ",
+                array($new_id, $data['id'])
+            )
+        );
+
+        wp_send_json_success($wpdb->last_query);
+
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
 }
 
 add_action('wp_ajax_update_driver_pin_range', 'update_driver_pin_range_callback');
@@ -7361,6 +7851,787 @@ function restaurant_insert_menu(){
     
     wp_send_json_success("Success");
     
+}
+
+add_action('wp_ajax_promotion_setup', 'promotion_setup_callback');
+
+function promotion_setup_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+   //file_put_contents( dirname(__FILE__).'/debug/update_promotion.log', var_export( $data['promo_start_date'], true));
+//    file_put_contents( dirname(__FILE__).'/debug/register_driver.log', var_export( $_FILES, true));
+//    wp_send_json_error();
+  if ( check_ajax_referer( 'setup_promotion', 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+  try
+  {   
+    $id =+ $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT MAX(id) FROM promotion ", array()
+        )
+    );
+
+    file_put_contents( dirname(__FILE__).'/debug/setup_promotion.log', var_export( $id, true));
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO promotion SET ID = %d,name = %s,code = %s,description = %s,uses = 0, max_uses = %d,type = %d ,constant = %f, percent = %d , start_date = %s , end_date = %s ,transfer_to_driver = %d",
+            array($id+1,$data['promo_name'],$data['promo_code'],$data['promo_desc'],$data['promo_max_uses'], $data['promo_type'], $data['promo_constant'], $data['promo_percent'], $data['promo_start_date'], $data['promo_end_date'], $data['promo_transfer_to_driver'])
+        )
+    );
+    wp_send_json_success();      
+    
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+add_action('wp_ajax_update_promotion', 'update_promotion_callback');
+
+function update_promotion_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+   file_put_contents( dirname(__FILE__).'/debug/update_promotion.log', var_export( $data['promo_start_date'], true));
+//    file_put_contents( dirname(__FILE__).'/debug/register_driver.log', var_export( $_FILES, true));
+//    wp_send_json_error();
+  if ( check_ajax_referer( 'update_promotion_' . $data['promo_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try
+  {   
+    if(!empty($data['promo_shop'])){
+        file_put_contents( dirname(__FILE__).'/debug/update_promotion.log', var_export( "Promoshop Start ".$data['promo_shop'], true),FILE_APPEND);
+        // update or insert Promotion_shop
+        $promo = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM promotion_shop where promotion_id = %d", array($data['promo_id'])
+            )
+        );
+        if($promo->promotion_id != NULL && !empty($promo->promotion_id) ){
+            file_put_contents( dirname(__FILE__).'/debug/update_promotion.log', var_export( "found promoID", true),FILE_APPEND);           
+            $wpdb->query(
+                $wpdb->prepare(
+                    "UPDATE promotion_shop SET post_id = %s WHERE promotion_id = %d ",
+                    array($data['promo_shop'],  $data['promo_id'])
+                )
+            );                                       
+        }
+        else{
+            file_put_contents( dirname(__FILE__).'/debug/update_promotion.log', var_export( "New Row".$new_post_id, true),FILE_APPEND);
+            $wpdb->query(
+                $wpdb->prepare(
+                    "INSERT INTO promotion_shop SET post_id = %s, promotion_id = %d ",
+                    array($data['promo_shop'],  $data['promo_id'])
+                )
+            );            
+        }
+    }
+    else{
+        file_put_contents( dirname(__FILE__).'/debug/update_promotion.log', var_export( "DELETE ".$data['promo_shop'], true),FILE_APPEND);
+        $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM  promotion_shop WHERE promotion_id = %d ",
+                array($data['promo_id'])
+            )
+        ); 
+    }
+
+
+    // update to Promotion
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT id FROM promotion where ID = %d", array($data['promo_id'])
+        )
+    );
+    if($id != NULL && !empty($id) ){        
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE promotion SET max_uses = %d,type = %d ,constant = %f, percent = %d , start_date = %s , end_date = %s ,transfer_to_driver=%d WHERE ID = %d ",
+                array($data['promo_max_uses'], $data['promo_type'], $data['promo_constant'], $data['promo_percent'], $data['promo_start_date'], $data['promo_end_date'], $data['promo_transfer_to_driver'], $data['promo_id'])
+            )
+        );
+        wp_send_json_success();        
+    }
+    else{
+        wp_send_json_error("ไม่พบ id");
+    }
+
+    
+
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+
+//AJAX FUNCTION user Position
+add_action('wp_ajax_list_user_marker', 'list_user_marker');
+function list_user_marker(){
+    global $wpdb;
+    
+    $user_id = $_POST['user_id'];
+
+    file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_user_marker !!", true));
+   
+    if(empty($user_id))
+    {
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !! Empty", true));
+        $userList  = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM wp_users where wp_users.current_latitude is not null AND wp_users.id not IN (select driver_id from driver ) ",array()         
+            )
+        );
+    }    
+    else
+    {
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !!".$driver_id, true));
+        $userList  = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM wp_users where ID = %d  ",array($user_id)          
+            )
+        );
+    }  
+        //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "current !!".$driver_id, true));
+        foreach ($userList as $user) {
+            $user_array = array();
+            $user_array['ID'] = $user->ID;
+            $user_array['display_name'] = $user->display_name;
+            $user_array['lat'] =$user->current_latitude;
+            $user_array['lon'] = $user->current_longitude;            
+            //file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( $driver->Driver_id, true),FILE_APPEND);	            
+            $return_arr[] = $user_array;
+        }
+
+    if(empty($userList))
+    {
+        file_put_contents( dirname(__FILE__).'/debug/driver_ID.log', var_export( "list_driver_marker !! Empty", true));
+        wp_send_json_success("empty");
+    }
+    else
+    wp_send_json_success($return_arr);
+}
+
+
+// Register restaurant Onwer
+add_action('wp_ajax_register_restaurant', 'register_restaurant_callback');
+
+function register_restaurant_callback(){
+  global $wpdb, $current_user;
+  $data = $_POST;
+//   file_put_contents( dirname(__FILE__).'/debug/POST.log', var_export( $_POST, true));
+//    file_put_contents( dirname(__FILE__).'/debug/register_driver.log', var_export( $_FILES, true));
+//    wp_send_json_error();
+  if ( check_ajax_referer( 'register_restaurant_' . $current_user->ID, 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try
+  {
+    file_put_contents( dirname(__FILE__).'/debug/restaurant_regis.log', var_export( "regis Restaurant Start !!", true));
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT post_id FROM wp_geodir_gd_place_detail where post_title = %s", array($data['res_name'])
+        )
+    );
+
+    file_put_contents( dirname(__FILE__).'/debug/restaurant_regis.log', var_export( $id, true),FILE_APPEND);
+    file_put_contents( dirname(__FILE__).'/debug/restaurant_regis.log', var_export( $data['bank_account'], true),FILE_APPEND);
+
+    if($id != NULL || !empty($id) ){
+        $tz = 'Asia/Bangkok';
+        $timestamp = time();
+        $dt = new DateTime("now", new DateTimeZone($tz)); //first argument "must" be a string
+        $dt->setTimestamp($timestamp); //adjust the object to correct timestamp
+    
+        $current_date = $dt->format("Y-m-d H:i:s");
+
+        
+        $result_avatars = tamzang_upload_picture('/restaurant_regis/', $_FILES['image']['name'], $_FILES['image']['tmp_name']);
+        if(!$result_avatars['result'])
+            wp_send_json_error($result_avatars['msg']);
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO register_restaurant SET wp_user_id = %d, post_id = %d, restaurant_name = %s, name = %s, phone = %s, note = %s, regis_date = %s, approve = %d,
+                 profile_pic = %s, bank_account = %s, bank_code = %s",
+                array($current_user->ID,$id, $data['res_name'], $data['owner_name'], $data['phone'], $data['note'], $current_date, 0, 
+                $result_avatars['file_name'], $data['bank_account'], $data['bank_code'])
+            )
+        );
+
+        wp_send_json_success();
+    }
+    else{
+        wp_send_json_error("ขออภัยเราไม่พบร้านของคุณในระบบกรุณาตรวจสอบชื่อร้านใหม่");
+    }
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+//Ajax functions Approve Restaurant Account
+add_action('wp_ajax_approve_restaurant_account', 'approve_restaurant_account');
+
+function approve_restaurant_account(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  //file_put_contents( dirname(__FILE__).'/debug/debug_add_to_cart_.log', var_export( $data, true));
+
+  //check the nonce
+  if ( check_ajax_referer( 'approve_driver_' . $data['id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+
+  try {
+
+    $id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT id FROM driver where Driver_id = %d", array($data['id'])
+        )
+    );
+    if(!empty($id))
+        wp_send_json_success();
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE register_driver SET approve = !approve, approve_by = %d where wp_user_id = %d ",
+            array($current_user->ID, $data['id'])
+        )
+    );
+
+	$driver = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT * FROM register_driver where wp_user_id = %d ", array($data['id'])
+		)
+    );
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO driver SET
+             Driver_id = %d,driver_name = %s,phone =%s, profile_pic = %s ",
+             array($driver->wp_user_id, $driver->name, $driver->phone, $driver->profile_pic)
+        )
+    );
+
+    wp_send_json_success($data);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+//Ajax functions Approve Restaurant Account
+add_action('wp_ajax_update_restaurant_regis_profile', 'update_restaurant_regis_profile');
+
+function update_restaurant_regis_profile(){
+  global $wpdb, $current_user;
+  //$current_user->ID;
+
+  $data = $_POST;
+  
+  //check the nonce
+  if ( check_ajax_referer( 'update_restaurant_regis_profile_' . $data['restaurant_owner_id'], 'nonce', false ) == false ) {
+      wp_send_json_error();
+  }
+  file_put_contents( dirname(__FILE__).'/debug/restaurant_regis_profile.log', var_export( $data, true));
+
+  try {
+      /*
+    $ownerid = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT id FROM register_restaurant where wp_user_id = %d", array($data['restaurant_owner_id'])
+        )
+    );
+    if(!empty($ownerid))
+        wp_send_json_success();*/
+
+    $wpdb->query(
+        $wpdb->prepare(
+            "UPDATE register_restaurant SET post_id = %d, restaurant_name = %s, name = %s, phone = %s, bank_account = %s, bank_code = %s
+            , note = %s where wp_user_id = %d and id =%d ",
+            array($data['post_id'], $data['restaurant_name'], $data['owner_name'], $data['phone'], $data['bank_account'], $data['bank_code']
+            , $data['note'], $data['restaurant_owner_id'],$data['id'])
+        )
+    );
+
+    
+    if($data['restaurant_approve'] == "approve"){
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE register_restaurant SET approve = 1, approve_by = %d where wp_user_id = %d and id =%d ",
+                array($current_user->ID, $data['restaurant_owner_id'],$data['id'])
+            )
+        );
+
+        $restaurant_account = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM register_restaurant where wp_user_id = %d and id =%d", array($data['restaurant_owner_id'],$data['id'])
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO restaurant_bank_account SET
+                 restaurant_id = %d,owner_id = %d, owner_name =%s, bank_account = %s, bank_account_code = %s, balance = 0, add_on_credit = 0, restaurant_cash = 0, previous_restaurant_debit_cash = NULL ",
+                 array($restaurant_account->post_id, $restaurant_account->wp_user_id, $restaurant_account->name, $restaurant_account->bank_account, $restaurant_account->bank_code)
+            )
+        );
+    } 
+    wp_send_json_success($data);
+
+  } catch (Exception $e) {
+      wp_send_json_error($e->getMessage());
+  }
+
+}
+
+
+//First we remove the current forms function:
+    remove_action('geodir_signup_forms', 'geodir_action_signup_forms', 10);
+
+    //then we call our own function:
+    add_action('geodir_signup_forms', 'my_new_geodir_action_signup_forms', 10);
+    
+    
+    /* 
+    The function below is a copy of the on GD uses and then altered to our needs
+    If we want to include the two form files in our theme then we can change where the files are looked for.
+    For example we cahnge 
+      include(geodir_plugin_path() . "/geodirectory-templates/login_frm.php");
+    to
+      include("geodirectory/login_frm.php");
+    This will now look for the files in our theme, we can simply copy them from GD to our theme
+    */
+    function my_new_geodir_action_signup_forms()
+    {
+    
+        global $user_login;
+    
+        ?>
+        <script type="text/javascript">
+            <?php if ( $user_login ) { ?>
+            setTimeout(function () {
+                try {
+                    d = document.getElementById('user_pass');
+                    d.value = '';
+                    d.focus();
+                } catch (e) {
+                }
+            }, 200);
+            <?php } else { ?>
+            try {
+                document.getElementById('user_login').focus();
+            } catch (e) {
+            }
+            <?php } ?>
+        </script>
+        <script type="text/javascript">
+            <?php if ( $user_login ) { ?>
+            setTimeout(function () {
+                try {
+                    d = document.getElementById('user_pass');
+                    d.value = '';
+                    d.focus();
+                } catch (e) {
+                }
+            }, 200);
+            <?php } else { ?>
+            try {
+                document.getElementById('user_login').focus();
+            } catch (e) {
+            }
+            <?php } ?>
+        </script><?php
+    
+        global $errors;
+        if (isset($_REQUEST['msg']) && $_REQUEST['msg'] == 'claim')
+            $errors->add('claim_login', LOGIN_CLAIM);
+    
+        if (!empty($errors)) {
+            foreach ($errors as $errorsObj) {
+                foreach ($errorsObj as $key => $val) {
+                    for ($i = 0; $i < count($val); $i++) {
+                        echo "<div class=sucess_msg>" . $val[$i] . '</div>';
+                        $registration_error_msg = 1;
+                    }
+                }
+            }
+        }
+    
+        if (isset($_REQUEST['page']) && $_REQUEST['page'] == 'login' && isset($_REQUEST['page1']) && $_REQUEST['page1'] == 'sign_in') {
+            ?>
+    
+            <div class="login_form">
+                <?php
+                /**
+                 * Contains login form template.
+                 *
+                 * @since 1.0.0
+                 */
+                include( "geodirectory/login_frm.php"); ?>
+            </div>
+    
+        <?php } elseif (isset($_REQUEST['page']) && $_REQUEST['page'] == 'login' && isset($_REQUEST['page1']) && $_REQUEST['page1'] == 'sign_up') { ?>
+    
+            <div class="registration_form">
+                <?php
+                /**
+                 * Contains registration form template.
+                 *
+                 * @since 1.0.0
+                 */
+                include( "geodirectory/reg_frm.php"); ?>
+            </div>
+    
+        <?php } else { ?>
+    
+            <div class="login_form_l">
+                <?php
+                /**
+                 * Contains login form template.
+                 *
+                 * @since 1.0.0
+                 */
+                include("geodirectory/login_frm.php"); ?>
+            </div>
+            <div class="registration_form_r">
+                <?php
+                /**
+                 * Contains registration form template.
+                 *
+                 * @since 1.0.0
+                 */
+                include( "geodirectory/reg_frm.php"); ?>
+            </div>
+    
+        <?php }?>
+        <script type="text/javascript">
+            try {
+                document.getElementById('user_login').focus();
+            } catch (e) {
+            }
+        </script>
+    
+    
+        <?php if ((isset($errors->errors['invalidcombo']) && $errors->errors['invalidcombo'] != '') || (isset($errors->errors['empty_username']) && $errors->errors['empty_username'] != '')) { ?>
+        <script type="text/javascript">document.getElementById('lostpassword_form').style.display = '';</script>
+    <?php }
+    }
+
+function get_tamzang_delivery_balancing($type_id,$p_id,$buyer_delivery_type,$delivery_fee){
+    global $wpdb, $current_user;
+    $tamzang_profit_arr = array();
+    if($type_id == "product")
+        $post_id = geodir_get_post_meta($p_id, 'geodir_shop_id', true);
+    else if($type_id == "shop")
+        $post_id = $p_id;
+
+    file_put_contents( dirname(__FILE__).'/debug/debug_get_tamzang_delivery_balancing_.log', var_export( "Start !!", true));
+
+    $restaurant_delivery_balancing = $wpdb->get_row(
+      $wpdb->prepare(
+          "SELECT * from delivery_variable where post_id = %d and geodir_delivery_type = %d", array($post_id,$buyer_delivery_type)
+      )
+    );    
+
+    $sell_price_arr = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT (cart.qty*p_detail.admin_price) as A_PRICE,(cart.qty*p_detail.geodir_price) as SELL_PRICE from shopping_cart as cart
+            LEFT JOIN wp_geodir_gd_product_detail as p_detail 
+            ON p_detail.post_id = cart.product_id
+            WHERE cart.wp_user_id = %d and p_detail.geodir_shop_id = %d ", array($current_user->ID,$post_id)
+        )
+    );
+
+    foreach ($sell_price_arr as $sell_price) {
+        $sum += $sell_price->SELL_PRICE;
+        $sum_admin += $sell_price->A_PRICE;
+    }
+
+    // Calculate delivery balanceing
+    $tamzang_profit_pre = $sum - $sum_admin;
+    if($tamzang_profit_pre < 0){
+      $tamzang_profit_pre = 0;
+    }
+    //file_put_contents( dirname(__FILE__).'/debug/debug_get_tamzang_delivery_balancing_.log', var_export( "tamzang_profit_pre ".$tamzang_profit_pre, true),FILE_APPEND);
+    $delivery_balancing = (($tamzang_profit_pre * $restaurant_delivery_balancing->delivery_balancing_percent)/100) + $restaurant_delivery_balancing->delivery_balancing_constant;
+    //file_put_contents( dirname(__FILE__).'/debug/debug_get_tamzang_delivery_balancing_.log', var_export( "delivery_balancing Before ".$delivery_balancing, true),FILE_APPEND);
+    //file_put_contents( dirname(__FILE__).'/debug/debug_get_tamzang_delivery_balancing_.log', var_export( "Delivery Fee ".$delivery_fee, true),FILE_APPEND);
+    if($delivery_balancing > $delivery_fee){
+      $delivery_balancing = $delivery_fee;
+    }
+    file_put_contents( dirname(__FILE__).'/debug/debug_get_tamzang_delivery_balancing_.log', var_export( "delivery_balancing After ".$delivery_balancing, true),FILE_APPEND);
+    $show_delivery_fee = $delivery_fee - $delivery_balancing;
+
+    $tamzang_profit_arr['delivery_balancing'] = $delivery_balancing;
+    $tamzang_profit_arr['show_delivery_fee'] = $show_delivery_fee;
+
+    $return_arr[] = $tamzang_profit_arr;
+
+    file_put_contents( dirname(__FILE__).'/debug/debug_get_tamzang_delivery_balancing_.log', var_export( "Sum ".$sum." SUM ADmin: ".$sum_admin, true),FILE_APPEND);
+
+    return($return_arr);
+}
+
+function get_tamzang_shop_commission($post_id,$dtype,$admin_total){
+    global $wpdb;
+
+    $restaurant_delivery_profile = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * from delivery_variable where post_id = %d and geodir_delivery_type = %d", array($post_id,$dtype)
+        )
+    );
+    
+    if($restaurant_delivery_profile->shop_commission_active == 1){
+        $shop_commission_price =  ($admin_total * $restaurant_delivery_profile->shop_commission_percent)/100 + $restaurant_delivery_profile->shop_commission_constant;
+    }
+    else{
+        $shop_commission_price = 0;
+    }
+
+    file_put_contents( dirname(__FILE__).'/debug/get_tamzang_shop_commission.log', var_export( "shop_commission_price ".$shop_commission_price, true));
+    
+    return $shop_commission_price;
+}
+                     
+function debitBalance($choise,$amt,$transaction_type,$current_date,$order_id,$id){
+    global $wpdb;
+    if($choise == "Driver"){
+        $driver_account = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM driver where Driver_id = %d ", array($id)
+            )
+        );
+        $driver_balacne_bfr = (!empty($driver_account->balance))?$driver_account->balance:0 ;
+        $newBalance = $driver_balacne_bfr - $amt; 
+        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( " Debit balance ".$newBalance, true),FILE_APPEND);
+        insert_driver_transaction_details("COMMISSION",array($driver_account->Driver_id, $amt, $newBalance, $transaction_type, $current_date, $order_id)); 
+        // update table
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET balance = %f where driver_id = %d ",
+                array($newBalance, $driver_account->Driver_id)
+            )
+        );
+    }
+    
+
+}
+
+function creditCash($choise,$amt,$transaction_type,$current_date,$order_id,$id){
+    global $wpdb;
+    if($choise == "Driver"){
+        $driver_account = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM driver where Driver_id = %d ", array($id)
+            )
+        );
+        $driver_balacne_cash_bfr = (!empty($driver_account->driver_cash))?$driver_account->driver_cash:0 ;
+        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "credit to Driver ", true),FILE_APPEND);        
+        $newBalance = $driver_balacne_cash_bfr + $amt; 
+        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( " Credit balance ".$newBalance, true),FILE_APPEND);
+        insert_driver_transaction_details("CREDIT",array($driver_account->Driver_id, $amt, $newBalance, $transaction_type, $current_date, $order_id)); 
+        
+        // update table
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE driver SET driver_cash = %f where driver_id = %d ",
+                array($newBalance, $driver_account->Driver_id)
+            )
+        );
+
+    }elseif($choise == "Restaurant"){
+        $restaurant = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM restaurant_bank_account where restaurant_id = %d ", array($id)
+            )
+        );
+        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "credit to Restaurant :".$amt, true),FILE_APPEND);
+        $restaurant_balacne_cash_bfr = (!empty($restaurant->restaurant_cash))?$restaurant->restaurant_cash:0 ;        
+        $newBalance = $restaurant_balacne_cash_bfr + $amt; 
+        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( " Credit balance ".$newBalance, true),FILE_APPEND);
+        insert_restaurant_transaction_details("CREDIT",array($restaurant->restaurant_id, $amt, $newBalance, $transaction_type, $current_date, $order_id));
+
+        // update table
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE restaurant_bank_account SET restaurant_cash = %f where restaurant_id = %d ",
+                array($newBalance, $id)
+            )
+        );
+
+    }
+
+}
+
+function insert_restaurant_transaction_details($type, $parameters){// ตัด commission
+    global $wpdb;
+    if($type == "DEBIT"){// balance
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO restaurant_transaction_details SET
+                post_id = %d,debit = %f,balance = %f,	transaction_type = %s, transaction_date = %s, order_id = %d",
+                $parameters
+            )
+        );
+    }elseif($type == "CREDIT"){// balance_restaurant_cash
+        file_put_contents( dirname(__FILE__).'/debug/tamzang_return_cash.log', var_export( "credit to Restaurant 2 ", true),FILE_APPEND);
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO restaurant_transaction_details SET
+                post_id = %d,credit = %f,balance_cash = %f,	transaction_type = %s, transaction_date = %s, order_id = %d, user_id = 1",
+                $parameters
+            )
+        );
+    }elseif($type == "WITHDRAW"){
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO restaurant_transaction_details SET
+                post_id = %d,debit = %f, balance_driver_cash = %f, transaction_type = %s, transaction_date = %s ",
+                $parameters
+            )
+        );
+    }
+    else{// type == REVERSE_TO_DRIVER  credit
+        $wpdb->query(
+            $wpdb->prepare(
+                "INSERT INTO restaurant_transaction_details SET
+                post_id = %d, debit = %f, balance_add_on_credit = %f,	transaction_type = %s, transaction_date = %s, order_id = %d",
+                $parameters
+            )
+        );
+    }
+}
+
+add_action('wp_ajax_upload_shop_image', 'upload_shop_image_callback');
+
+function upload_shop_image_callback(){
+    global $current_user;
+    $data = $_POST;
+    // check the nonce
+    if ( check_ajax_referer( 'upload_shop_image_'.$current_user->ID.$data['shop_id'], 'nonce', false ) == false ) {
+        wp_send_json_error($current_user->ID.'-'.$data['shop_id']);
+    }
+
+    $uploads = wp_upload_dir();
+    $path = $uploads['basedir'] . '/shop_menu_image/';
+    $valid_extensions = array('jpeg', 'jpg', 'png');
+    $img = $_FILES['shop_image']['name'];
+    $tmp = $_FILES['shop_image']['tmp_name'];
+    
+    $ext = strtolower(pathinfo($img, PATHINFO_EXTENSION));
+
+    if(!in_array($ext, $valid_extensions))
+        wp_send_json_error("allow jpeg jpg png");
+    
+    if ( !is_dir( $path ) ) {
+        wp_mkdir_p( $path );
+    }
+
+    $path = $path.strtolower($data['shop_id'].'.'.$ext);
+    if(move_uploaded_file($tmp,$path)) 
+    {
+        wp_send_json_success($path);
+    }else{
+        wp_send_json_error("move_uploaded_file error");
+    }
+}
+
+function is_english($str)
+{
+	if (strlen($str) != strlen(utf8_decode($str))) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function check_shop_open($pid){
+    global $wpdb;
+    
+    $shop_time = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT * FROM tamzang_shop_time where shop_id = %d ", array($pid)
+        )
+    );
+    
+    $is_shop_open = false;
+    
+    if(!empty($shop_time)){
+
+        if(!empty($shop_time->owner_close) && $shop_time->owner_close){//owner_close true = ปิด
+            $is_shop_open = false;
+        }else{
+            $check_shop_open = $wpdb->get_row(
+                $wpdb->prepare(
+                    "SELECT *
+                    FROM tamzang_shop_time
+                    WHERE shop_id = %d
+                    AND visibility <> 2
+                    AND ( visibility = 1 
+                        OR ( visibility = 4 AND POWER(2,DAYOFWEEK(NOW())-1)&day_of_week > 0 ) 
+                        OR ( visibility = 3  AND ( now() > CONCAT(hide_until_date,' ',hide_until_time)) )
+                        )
+                    ",
+                    array($pid)
+                )
+            );
+            
+            if(!empty($check_shop_open)){// ร้านเปิด
+                $is_shop_open = true;
+            }
+        }
+    
+    }
+
+    return array('is_shop_open' => $is_shop_open,
+                 'shop_time' => $shop_time );
+}
+
+add_action('wp_ajax_change_shop_status', 'change_shop_status_callback');
+
+function change_shop_status_callback(){
+    global $wpdb, $current_user;
+
+    $data = $_POST;
+    if ( check_ajax_referer( 'change_shop_status_'.$current_user->ID.$data['id'], 'nonce', false ) == false ) {
+        wp_send_json_error();
+    }
+
+    $is_current_user_owner = geodir_listing_belong_to_current_user((int)$data['id']);
+    if(!$is_current_user_owner)
+        wp_send_json_error();
+
+    try {
+        $shop = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT id FROM tamzang_shop_time where shop_id = %d ", array($data['id'])
+            )
+        );
+
+        if(empty($shop))
+            wp_send_json_error();
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "UPDATE tamzang_shop_time SET owner_close = !owner_close WHERE id = %d ", array($shop)
+            )
+        );
+
+        wp_send_json_success($wpdb->last_query);
+    } catch (Exception $e) {
+        wp_send_json_error($e->getMessage());
+    }
 }
 
 ?>

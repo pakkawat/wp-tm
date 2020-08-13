@@ -95,6 +95,109 @@ function check_user_point($use_point){
 
 }
 
+  // <table>
+  //   <tbody>
+  //     <tr id="1402">
+  //       <td>
+  //         <div class="order-row">
+  //           <div class="order-col-9">
+  //             <h4 class="product-name">
+  //               <strong><a href="x" style="color: #e34f43;">ทดสอบ เพิ่ม</a></strong>
+  //             </h4>
+  //             <div>op2 : aaab (2222)</div>
+  //             <div>optional : ddd (400)</div>
+  //             <div>mandatory : ฟฟฟ (222)</div>
+  //             <div class="order-clear"></div>
+  //           </div>
+  //         </div>
+  //       </td>
+  //       <td>
+  //         <strong>100 <span class="text-muted">x</span> 1</strong>
+  //       </td>
+  //       <td>
+  //         <strong><div id="1402-total" class="price">5708.30</div></strong>
+  //       </td>
+  //     </tr>
+  //   </tbody>
+  // </table>
+
+function open_tr($product, $total){
+  echo '<tr>';
+  echo '<td>';
+  echo '<div class="order-row">';
+  echo '<div class="order-col-9">';
+  echo '<h4 class="product-name">';
+  echo '<strong>'.$product->product_name.'</strong></h4>';
+  if(!empty($product->choice_group_title)){
+    echo '<div>'.$product->choice_group_title.' : '.$product->choice_adon_detail.' ('.$product->extra_price.')</div>';
+    $total += (float)$product->extra_price;
+  }
+
+  return $total;
+}
+
+function close_tr($product, $total){
+  echo '<div>'.$product->special.'</div>';
+  echo '</div>';// class="order-col-9"
+  echo '</div>';// class="order-row"
+  echo '</td>';
+  echo '<td>';
+  echo '<strong>'.($product->price+$total).' <span class="text-muted">x</span> '.$product->qty.'</strong>';
+  echo '</td>';
+  echo '<td>';
+  echo '<strong><div class="price">'.number_format(($product->price+$total)*$product->qty,2,'.','').'</div></strong>';
+  echo '</td>';
+  echo '</tr>';
+}
+
+// <tr id="1414">
+// <td>
+// <div class="order-row">
+// <div class="order-col-12">
+// <h4 class="product-name"><strong>สินค้า222</strong></h4>
+// <div>op2 : aaab (2222)</div>
+// <div>mandatory : กกกก (555)</div>
+// <div>mandatory : ccc (300)</div>
+// </div>
+// </div>
+// <div class="order-clear"></div>
+// <div class="order-row">
+// <div class="order-col-6" style="padding-top: 5%;"><strong>100 x 1</strong></div>
+// <div class="order-col-6"><strong><div id="1414-total" class="price" style="text-align: right;padding-top: 13%;">5299.00</div></strong></div>
+// </div><div class="order-clear"></div>
+// </td>
+// </tr>
+
+function open_tr_mobile($product, $total){
+  echo '<tr>';
+  echo '<td>';
+  echo '<div class="order-row">';
+  echo '<div class="order-col-12">';
+  echo '<h4 class="product-name">';
+  echo '<strong>'.$product->product_name.'</strong></h4>';
+  if(!empty($product->choice_group_title)){
+    echo '<div>'.$product->choice_group_title.' : '.$product->choice_adon_detail.' ('.$product->extra_price.')</div>';
+    $total += (float)$product->extra_price;
+  }
+
+  return $total;
+}
+
+function close_tr_mobile($product, $total){
+  echo '<div>'.$product->special.'</div>';
+  echo '</div>';// class="order-col-12"
+  echo '</div>';// class="order-row"
+  echo '<div class="order-row">';
+  echo '<div class="order-col-6" style="padding-top: 5%;">';
+  echo '<strong>'.($product->price+$total).' <span class="text-muted">x</span> '.$product->qty.'</strong>';
+  echo '</div>';
+  echo '<div class="order-col-6">';
+  echo '<strong><div class="price" style="text-align: right;padding-top: 13%;">'.number_format(($product->price+$total)*$product->qty,2,'.','').'</div></strong>';
+  echo '</div>';
+  echo '</div>';
+  echo '</td>';
+  echo '</tr>';
+}
 
 global $wpdb, $current_user;
 $PERPAGE_LIMIT = 5;
@@ -110,8 +213,27 @@ else{
 }
 
 if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้าง order
-  $arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
+  //$arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
+  $arrProducts = $wpdb->get_results(
+    $wpdb->prepare(
+        "SELECT
+        cart.id as cart_id, product.post_id, cart.qty as shopping_cart_qty, cart.product_price, cart.product_title, 
+        cart.admin_price, product.featured_image, cart.price_w_ex, cart.special
+        FROM shopping_cart as cart
+        LEFT OUTER JOIN wp_geodir_gd_product_detail as product
+        ON product.post_id = cart.product_id
+        WHERE cart.wp_user_id = %d AND product.geodir_shop_id = %d
+        ORDER BY cart_id",
+        array($current_user->ID, $_POST['pid'])
+    )
+  );
   $delivery_type_buyer = $_POST['dtype'];
+  $payment_type = $_POST['payment-type'];
+  $delivery_balancing = $_POST['delivery_balancing_input'];
+ 
+  file_put_contents( dirname(__FILE__).'/debug/debug_payment.log', var_export( "delivery_balancing_input".$delivery_balancing, true));
+
+
   if(!empty($arrProducts))
   {
     /* 20190102 Bank put deliver_ticket */
@@ -169,10 +291,20 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
       }
     }
 
-
-    $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, status = %d, payment_type = %d,user_delivery_type =%d, promotion_id =%d ".
+    
+    if (($payment_type === '3') || ($delivery_type_buyer === '99')){
+      file_put_contents( dirname(__FILE__).'/debug/debug_payment.log', var_export( "Insert INTO Order QR", true),FILE_APPEND);
+      // QR payment
+      $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d, driver_total_amt = %d, tamzang_profit = %d, delivery_balancing = %d, status = %d, payment_type = %d,user_delivery_type =%d, promotion_id =%d ".
+    ($need_delivery ? ", deliver_ticket = 'N'" : "").(($use_point) ? ", redeem_point = true" : ""),
+      array($current_user->ID, $_POST['pid'], $current_date, 0,0,0,0, 1, $_POST['payment-type'],$delivery_type_buyer, $promotion_id)));
+    }    
+    else{
+      file_put_contents( dirname(__FILE__).'/debug/debug_payment.log', var_export( "Insert INTO Order ELSE", true),FILE_APPEND);
+      $wpdb->query($wpdb->prepare("INSERT INTO orders SET wp_user_id = %d, post_id = %d, order_date = %s, total_amt = %d,driver_total_amt = %d,tamzang_profit = %d,delivery_balancing = %d, status = %d, payment_type = %d,user_delivery_type =%d, promotion_id =%d ".
     ($need_delivery ? ", deliver_ticket = 'Y'" : "").(($use_point) ? ", redeem_point = true" : ""),
-      array($current_user->ID, $_POST['pid'], $current_date, 0, 1, $_POST['payment-type'],$delivery_type_buyer, $promotion_id)));
+      array($current_user->ID, $_POST['pid'], $current_date, 0,0,0,0, 1, $_POST['payment-type'],$delivery_type_buyer, $promotion_id)));
+    }
     $order_id = $wpdb->insert_id;
 
     $shipping_id = 0;
@@ -184,6 +316,8 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
             "SELECT * FROM user_address where wp_user_id = %d AND shipping_address = 1 ", array($current_user->ID)
         )
     );
+    file_put_contents( dirname(__FILE__).'/debug/debug_payment.log', var_export( "Insert INTO shipping_address", true),FILE_APPEND);
+
     $wpdb->query($wpdb->prepare("INSERT INTO shipping_address SET order_id = %d, name = %s, address = %s, district = %s, province = %s, postcode = %s, phone = %s, ship_latitude = %s, ship_longitude = %s, price = %f , distance= %s ",
       array($order_id, $shipping_address->name, $shipping_address->address, $shipping_address->district, $shipping_address->province, $shipping_address->postcode, $shipping_address->phone, $shipping_address->latitude, $shipping_address->longitude, $delivery_fee,$distance)));
     $shipping_id = $wpdb->insert_id;
@@ -200,25 +334,57 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
 
 
     $sum = 0;
-
+    $arr_cart_id = array();
     foreach ($arrProducts as $product) {
-      $sum += $product->geodir_price*$product->shopping_cart_qty;
+      $sum += $product->price_w_ex*$product->shopping_cart_qty;
+      $driver_sum += $product->admin_price*$product->shopping_cart_qty;
       //geodir_save_post_meta($product->ID, 'geodir_stock', $product->geodir_stock - $product->shopping_cart_qty);// ตัด stock
       $wpdb->query(
         $wpdb->prepare(
-          "INSERT INTO order_items SET order_id = %d, product_id = %d, product_name = %s, product_img = %s, qty = %d, price = %f ",
-          array($order_id, $product->ID, $product->post_title, $product->featured_image, $product->shopping_cart_qty, $product->geodir_price)
+          "INSERT INTO order_items SET order_id = %d, cart_id = %d, product_id = %d, product_name = %s, product_img = %s, qty = %d, price = %f , admin_price =%f, special = %s",
+          array($order_id, $product->cart_id, $product->post_id, $product->product_title, $product->featured_image, $product->shopping_cart_qty, $product->product_price, $product->admin_price, $product->special)
         )
       );
 
       $wpdb->query(
-          $wpdb->prepare(
-              "DELETE FROM shopping_cart WHERE product_id = %d AND wp_user_id =%d",
-              array($product->ID, $current_user->ID)
-          )
+        $wpdb->prepare(
+            "insert into order_items_detail (order_id,cart_id,choice_group_title,choice_addon_detail,extra_price)
+            select %d,scid.shopping_cart_id,scid.choice_group_title,scid.choice_adon_detail,scid.extra_price
+            from shopping_cart_item_destials as scid
+            where scid.shopping_cart_id = %d",
+            array($order_id, $product->cart_id)
+        )
       );
 
+      $arr_cart_id[] = $product->cart_id;
+
+
     }// end foreach
+
+// insert into order_items_detail (order_id,order_cart_id,choice_group_title,choice_addon_detail,extra_price)
+// select 1,scid.shopping_cart_id,scid.choice_group_title,scid.choice_adon_detail,scid.extra_price
+// from shopping_cart_item_destials as scid
+// where scid.shopping_cart_id in (1402,1403)
+    $arr_cart_id_str = implode(",",$arr_cart_id);
+
+    $wpdb->query(
+      $wpdb->prepare(
+          "DELETE FROM shopping_cart_item_destials WHERE shopping_cart_id = %d in ($arr_cart_id_str)",
+          array()
+      )
+    );
+
+    $wpdb->query(
+      $wpdb->prepare(
+          "DELETE FROM shopping_cart WHERE id in ($arr_cart_id_str) AND wp_user_id =%d",
+          array($current_user->ID)
+      )
+    );
+
+    // calculate Shop commission
+
+    $shop_commission = get_tamzang_shop_commission($_POST['pid'],$delivery_type_buyer,$driver_sum);
+    $tamzang_profit = $shop_commission+($sum - $driver_sum);
 
     $thread_id = $wpdb->get_var(
       $wpdb->prepare(
@@ -229,8 +395,8 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
 
     $wpdb->query(
         $wpdb->prepare(
-            "UPDATE orders SET total_amt = %f, shipping_id = %d, billing_id = %d, thread_id = %d where id =%d",
-            array($sum, $shipping_id, $billing_id, $thread_id, $order_id)
+            "UPDATE orders SET total_amt = %f,driver_total_amt =%f,tamzang_profit = %f,delivery_balancing =%f, shipping_id = %d, billing_id = %d, thread_id = %d where id =%d",
+            array($sum,$driver_sum, $tamzang_profit ,$delivery_balancing, $shipping_id, $billing_id, $thread_id, $order_id)
         )
     );
 
@@ -287,7 +453,7 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     curl_close($ch);
     //file_put_contents( dirname(__FILE__).'/debug/autoassign.log', var_export( "Start :".$order_id."\n", true));
 
-    
+    // Call web socket to refresh page
     $ch = curl_init();
     // set URL and other appropriate options
     curl_setopt($ch, CURLOPT_URL, "https://tamzang.com:3443/?buyer-confirm&order_id:".$order_id."&shop_id:".$_POST['pid']);
@@ -296,6 +462,19 @@ if(($_SERVER["REQUEST_METHOD"] == "POST") && isset($_POST['pid'])){// สร้�
     curl_exec($ch);
     // close cURL resource, and free up system resources
     curl_close($ch);
+
+    if(($delivery_type_buyer === '99')||($delivery_type_buyer === '0')){
+      // Call NodeJs Wedsocket to create array detail this order
+      $ch = curl_init();
+      // set URL and other appropriate options
+      curl_setopt($ch, CURLOPT_URL, "https://tamzang.com:3443/?new_order&order_id:".$order_id."&shop_id:".$_POST['pid']."&driver_id:0&buyer_id:".$current_user->ID);
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      // grab URL and pass it to the browser
+      curl_exec($ch);
+      // close cURL resource, and free up system resources
+      curl_close($ch);
+    }
+
     
 
   }// end if !empty
@@ -309,7 +488,11 @@ $uploads = wp_upload_dir();
 
 get_header(); ?>
 
-
+<style>
+.order_item td{
+   border:none;
+}
+</style>
 <script>
 jQuery(document).ready(function($){
  
@@ -474,6 +657,11 @@ jQuery(document).ready(function($){
   jQuery(document).on("click", ".received-product", function(){
     var order_id = $(this).data('id');
     var nonce = $(this).data('nonce');
+    var deliUser = $(this).data('deliuser');
+
+    console.log("Deli User :"+deliUser);
+    if(deliUser == 1)
+    var pickup = 99;
 
     $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
     var send_data = 'action=user_received_product&id='+order_id+'&nonce='+nonce;
@@ -484,16 +672,20 @@ jQuery(document).ready(function($){
       data: send_data,
       success: function(msg){
             //console.log( "Updated status callback: " + JSON.stringify(msg) );
-            if(msg.success){
-              $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+4, function( response, status, xhr ) {
+            if(msg.success){           
+              $( "#status_"+order_id ).load( ajaxurl+"?action=load_order_status&order_status="+4+"&pickup="+pickup, function( response, status, xhr ) {
                 if ( status == "error" ) {
                   var msg = "Sorry but there was an error: ";
                   $( "#status_"+order_id ).html( msg + xhr.status + " " + xhr.statusText );
-                }
-
+                }                
               });
+              // socket to shopper // driver
+              buyerMessage(order_id);
+              // delete order out of socket
+              completeOrder(order_id);
             }
             $( "#panel_"+order_id ).find('.wrapper-loading').toggleClass('order-status-loading');
+            location.reload();
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
          console.log(textStatus);
@@ -662,6 +854,35 @@ jQuery(document).ready(function($){
       });
 
     });
+
+    // Pay QR click
+
+    jQuery(document).on("click", '[id="QrPay"]', function(){
+      var id = $(this).data('id');
+      var nonce = $(this).data('nonce');
+      console.log(nonce);
+      var send_data = 'action=buyerQRpayment&nonce='+nonce+'&orderId='+id;
+      $.ajax({
+        type: "POST",
+        url: ajaxurl,
+        data: send_data,
+        success: function(msg){
+          console.log(msg);
+          if(msg.success){
+            if(msg.data == "Already Pay"){
+              location.reload();
+            }else{
+              window.open('https://test02.tamzang.com/driver_qr/?Ref1='+msg.data.ref1+'&Ref2='+msg.data.ref2+'&Ref3='+msg.data.ref3, '_blank');
+            }
+            
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.log(textStatus);          
+        }
+      });
+
+    });
     
 
 });
@@ -813,6 +1034,15 @@ jQuery(document).ready(function($){
             set_query_var( 'my_order', true );
             set_query_var( 'id', $order->id );
             set_query_var( 'deliver_ticket', $order->deliver_ticket );
+            if($order->user_delivery_type == 99)
+            {
+              set_query_var( 'pickup', true );
+            }              
+            else{
+              set_query_var( 'pickup', false );
+            }              
+            set_query_var( 'payment_type', $order->payment_type );
+
 		      ?>
           <div style="padding:0; margin:0; width:auto; height:auto;">
 		  <!-- bank change div panel into 100% from 900px -->
@@ -820,7 +1050,7 @@ jQuery(document).ready(function($){
             <div class="panel-heading">
               <div class="order-col-12">
                 <?php echo tamzang_thai_datetime($order->order_date); ?>
-              </div>
+              </div>              
               <div class="order-col-12">
                 Order id: #<?php echo $order->id; ?> ร้าน: <a href="<?php echo get_page_link($order->post_id); ?>"><?php echo get_the_title($order->post_id); ?></a>
               </div>
@@ -828,7 +1058,7 @@ jQuery(document).ready(function($){
                 <div class="order-col-5">
                   ที่อยู่ในการจัดส่ง: 
                 </div>
-                <div class="order-col-10">                
+                <div class="order-col-9">                
                   <?php
 
                   $shipping_address = $wpdb->get_row(
@@ -836,8 +1066,8 @@ jQuery(document).ready(function($){
                           "SELECT * FROM shipping_address where order_id = %d ", array($order->id)
                       )
                   );
-                  $shipping_price = $shipping_address->price;
-                  $old_shipping_price = $shipping_address->price;
+                  $shipping_price = $shipping_address->price - $order->delivery_balancing;
+                  $old_shipping_price = $shipping_address->price ;
                   if($wpdb->num_rows > 0)
                   {
                     echo "".$shipping_address->address." ".$shipping_address->district." ".$shipping_address->province." ".$shipping_address->postcode;
@@ -849,6 +1079,13 @@ jQuery(document).ready(function($){
 
                   ?>
                 </div>
+                <div class="<?php echo (wp_is_mobile() ? 'order-col-12' : 'order-col-3') ?>">
+                <?php if(($order->payment_type == '3') && ($order->deliver_ticket == 'N') &&($order->status <= 5) ){
+                  $qrnonce  = wp_create_nonce('buyerQRpayment_'.$order->id);
+                  echo "<button class='btn btn-primary' href='#' data-id='$order->id' data-nonce= '$qrnonce' id='QrPay'>คลิกที่นี่เพื่อจ่ายเงินผ่าน QR</button>";
+                }                  
+                ?>                            
+              </div>
               </div>
               <div class="order-clear"></div>
             </div>
@@ -857,34 +1094,68 @@ jQuery(document).ready(function($){
               <?php
               $OrderItems  = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SELECT * FROM order_items where order_id =%d ",
+                    "SELECT oi.*, oid.choice_group_title, oid.choice_addon_detail,oid.extra_price
+                    FROM order_items as oi
+                    LEFT OUTER JOIN order_items_detail as oid
+                    on oi.cart_id = oid.cart_id
+                    WHERE oi.order_id = %d ORDER BY oid.id ",
                     array($order->id)
                 )
               );
+              $is_mobile = wp_is_mobile();
+              $sum = 0;// ราคารวมทั้ง order
+              $total = 0;// ราคาสินค้า + extra
+              $temp_cart_id = 0;
+              $pre_product_price = 0;
+              $pre_product;
+              $pre_qty = 0;
               foreach ($OrderItems as $product) {
+                if($temp_cart_id == 0){//start first loop
+                  $temp_cart_id = $product->cart_id;
+                  $pre_product_price = (float)$product->product_price;
+                  $pre_qty = (int)$product->qty;
+                  $pre_product = $product;
 
-              ?>
-                <div class="order-row">
-                  <div class="order-col-12">
-                    <h4 class="product-name"><strong><?php echo $product->product_name; ?></strong></h4><h4><small><?php //echo $product->short_desc; ?></small></h4>
-                  </div>
-                  <div class="order-col-12">
-                    <div class="order-col-4" style="text-align:left;">
-                      <strong><?php echo str_replace(".00", "",number_format($product->price,2)); ?> <span class="text-muted">x</span> <?php echo $product->qty; ?></strong>
-                    </div>
-                    <div class="order-col-2">
-                      <strong>=</strong>
-                    </div>
-                    <div class="order-col-4">
-                      <strong><?php echo str_replace(".00", "",number_format($product->price*$product->qty,2)); ?> บาท</strong>
-                    </div>
-                  </div>
-                </div>
-                <div class="order-clear"></div>
-                <hr>
+                  echo '<table class="order_item">';
+                  echo '<tbody>';
+                  if($is_mobile)
+                    $total = open_tr_mobile($product, $total);
+                  else
+                    $total = open_tr($product, $total);
+                }else if($product->cart_id != $temp_cart_id){
+                  if($is_mobile)
+                    close_tr_mobile($pre_product, $total);// $total ตอนนี้คือผลรวมของ extra_price เท่านั้น
+                  else
+                    close_tr($pre_product, $total);// $total ตอนนี้คือผลรวมของ extra_price เท่านั้น
+                  $total = ($pre_product_price + $total)* $pre_qty;
+                  $sum += $total;
 
-              <?php
-
+                  $temp_cart_id = $product->cart_id;
+                  $pre_product_price = (float)$product->product_price;
+                  $pre_qty = (int)$product->qty;
+                  $pre_product = $product;
+                  $total = 0;
+                  if($is_mobile)
+                    $total = open_tr_mobile($product, $total);
+                  else
+                    $total = open_tr($product, $total);
+                }else{// product options
+                  if(!empty($product->choice_group_title)){
+                    echo '<div>'.$product->choice_group_title.' : '.$product->choice_adon_detail.' ('.$product->extra_price.')</div>';
+                    $total += (float)$product->extra_price;
+                  }
+                }
+              }
+              if(count($OrderItems) > 0){
+                $product = end($OrderItems);
+                if($is_mobile)
+                  close_tr_mobile($product, $total);
+                else
+                  close_tr($product, $total);
+                echo '</tbody>';
+                echo '</table>';
+                $total = ($product->price + $total)* $product->qty;
+                $sum += $total;
               }
               ?>
 
@@ -946,7 +1217,7 @@ jQuery(document).ready(function($){
                     ราคาค่าจัดส่ง
                   </div>
                   <div class="order-col-3">
-                    <strong><?php echo str_replace(".00", "",number_format($old_shipping_price,2)); ?></strong> บาท
+                    <strong><?php echo str_replace(".00", "",number_format($shipping_price,2)); ?></strong> บาท
                   </div>
                 </div>
                 <div class="order-clear"></div>
@@ -983,14 +1254,12 @@ jQuery(document).ready(function($){
                 <div class="order-col-3">
                   <h4><strong id="total_amt_<?php echo $order->id; ?>">
                     <?php //echo ($order->adjust_accept ? $order->total_amt+$order->driver_adjust+$shipping_price : $order->total_amt+$shipping_price);
-                      $sum = $order->total_amt;
+                      $sum = $order->total_amt;                     
 
                       if($order->adjust_accept)
-                          $sum += $order->driver_adjust;
-  
+                          $sum += $order->driver_adjust;                       
                       if(!$order->redeem_point)
-                          $sum += $shipping_price;
-                          
+                          $sum += $shipping_price;                          
                       echo str_replace(".00", "",number_format($sum,2));
                     ?>
                   </strong> บาท</h4>

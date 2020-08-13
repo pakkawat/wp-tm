@@ -29,7 +29,7 @@
 
         <div class="whoop-profile-fields">
             <span><?php echo __('Member Since', GEODIRECTORY_FRAMEWORK) ?></span>
-            <p><?php echo date_i18n("j F Y H:i a", strtotime(get_userdata(bp_displayed_user_id())->user_registered));  ?></p>
+			<p><?php echo date_i18n("j F Y H:i a", strtotime(get_userdata(bp_displayed_user_id())->user_registered.' +7 hours'));?></p>
 
             <?php if ( bp_has_profile() ) : ?>
 

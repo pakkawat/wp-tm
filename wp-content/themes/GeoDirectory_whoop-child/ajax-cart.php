@@ -9,93 +9,158 @@ global $current_user;
 // else
 // $post_id = $post->ID;
 
-$arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
+//$arrProducts = tamzang_get_all_products_in_cart($current_user->ID);
+
+// SELECT product.post_id as product_id, product.post_title, cart.id as cart_id, cart.qty, cart.product_price, item_detail.*
+// FROM wp_geodir_gd_product_detail as product
+// INNER JOIN shopping_cart as cart
+// ON product.post_id = cart.product_id
+// LEFT OUTER JOIN shopping_cart_item_destials as item_detail
+// on item_detail.shopping_cart_id = cart.id
+// WHERE cart.wp_user_id = 6 AND product.geodir_shop_id = 2337
+$pid = $_GET['pid'];
+$product_in_cart = $wpdb->get_results(
+  $wpdb->prepare(
+      "SELECT 
+      cart.id as cart_id, cart.qty, cart.product_price, cart.product_title, cart.special,
+      item_detail.*
+      FROM shopping_cart as cart
+      LEFT OUTER JOIN wp_geodir_gd_product_detail as product
+      ON product.post_id = cart.product_id
+      LEFT OUTER JOIN shopping_cart_item_destials as item_detail
+      on item_detail.shopping_cart_id = cart.id
+      WHERE cart.wp_user_id = %d AND product.geodir_shop_id = %d
+      ORDER BY cart_id",
+      array($current_user->ID, $pid)
+  )
+);
 
 ?>
 
+<style>
+.p-options{
+  color:grey;
+  font-size:12px;
+  line-height:18px;
+}
+.remove_cart_item{
+  cursor: pointer;
+}
+</style>
 
 
-
-<table id="tb-cart" class="table">
+<table id="tb_cart" class="table" style="margin-top: 10px;">
   <thead>
     <tr>
-      <th></th>
+      <th>Qty</th>
+      <th>Item</th>
+      <th>Price(บาท)</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
     <?php
-
-      $sum = 0;
+      $sum_all = 0;
+      $sum_product_price = 0;
       $uploads = wp_upload_dir();
+      $temp_cart_id = 0;
+      $pre_product_price = 0;
+      $pre_qty = 0;
+      $str_tr = "";
 
-      foreach ($arrProducts as $product) {
-        $total = (float)$product->geodir_price*(int)$product->shopping_cart_qty;
-        $sum += $total;
-        echo '<tr id="'.$product->ID.'">';
-          echo "<td>";
-            echo "<div>";
-              if($product->featured_image != "")
-                echo '<a class="thumbnail pull-left" href="#"> <img class="media-object" src="'.$uploads['baseurl'].$product->featured_image.'" style="width: 72px; height: 72px;"> </a>';
-              // echo '<div class="media-body">';
-              //   echo '<h4 class="media-heading" style="word-break:break-word;">'.$product->post_title.'@'.str_replace(".00", "",number_format($product->geodir_price,2)).'</h4>';
-              // echo "</div>";
-            echo "</div>";
-          echo "</td>";
+      foreach ($product_in_cart as $product) {
+        if($temp_cart_id == 0){//start first loop
+          $temp_cart_id = $product->cart_id;
+          $pre_product_price = (float)$product->product_price;
+          $pre_qty = (int)$product->qty;
+          $str_tr = "";
+          $pre_product_spacial = $product->special;
+
+          echo '<tr id="tb_cart_'.$product->cart_id.'">';
+          echo'<td>'.$product->qty.'</td>';
           echo '<td>';
-
-            echo '<h4>'.$product->post_title.' @'.str_replace(".00", "",number_format($product->geodir_price,2)).'</h4>';
-
-            echo '<div class="order-row">';
-
-              echo '<div class="order-col-6">';
-                echo '<strong><div id="'.$product->ID.'-total" class ="price" >'.str_replace(".00", "",number_format($total,2)).' บาท</div></strong>';
-              echo '</div>';
-
-              echo '<div class="order-col-6">';
-                echo '<div class="sp-quantity">';
-                echo '<div class="input-group">';
-                echo '<span class="input-group-btn">';
-                echo '<button type="button" class="btn-tamzang-quantity quantity-left-minus btn btn-danger btn-number"  data-type="minus" data-id="'.$product->ID.'" data-nonce="'.wp_create_nonce( 'update_product_cart_' . $product->ID ).'">';
-                echo '<span class="glyphicon glyphicon-minus"></span>';
-                echo '</button>';
-                echo '</span>';
-                echo '<div class="sp-input">';
-                echo '<input type="text" class="quntity-input form-control" name="qty" value="'.$product->shopping_cart_qty.'">';
-                echo '</div>';
-                echo '<span class="input-group-btn">';
-                echo '<button type="button" class="btn-tamzang-quantity btn-quantity quantity-right-plus btn btn-success btn-number" data-type="plus" data-id="'.$product->ID.'" data-nonce="'.wp_create_nonce( 'update_product_cart_' . $product->ID ).'">';
-                echo '<span class="glyphicon glyphicon-plus"></span>';
-                echo '</button>';
-                echo '</span>';
-                echo '</div>';
-                echo '</div>';
-              echo '</div>';
-
+          echo '<div class="row">';
+          echo '<h4>'.$product->product_title.'</h4>';
+          echo'</div>';
+          echo '<div class="row">';// start product options
+          if(!empty($product->choice_group_title)){
+            echo '<div class="col-12 p-options">';
+            echo $product->choice_group_title.' : '.$product->choice_adon_detail.' ('.$product->extra_price.')';
             echo '</div>';
+            $sum_product_price += (float)$product->extra_price;
+          }
 
+        }else if($product->cart_id != $temp_cart_id){
+          // end tr
+          $sum_product_price = ($sum_product_price+$pre_product_price)*$pre_qty;
+          echo '<div class="col-12 p-options">'.$pre_product_spacial.'</div>';
+          echo '</div>';// close product options
+          echo '</td>';
+          echo '<td>';
+          echo '<strong><div id="'.$temp_cart_id.'-total" class="price" data-total="'.round($sum_product_price, 2).'">'.str_replace(".00", "",number_format($sum_product_price,2)).'</div></strong>';
+          echo '</td>';
+          echo '<td><i class="fa fa-remove remove_cart_item" data-nonce="'.wp_create_nonce( 'remove_cart_item_'.$current_user->ID.$temp_cart_id).'" data-cart_id="'.$temp_cart_id.'"></i></td>';
+          echo '</tr>';
+          $sum_all += $sum_product_price;
 
-          //   //echo '<input type="text" class="quntity-input form-control" name="qty" value="'.$product->qty.'">';
-          // echo "</td>";
-          // // echo '<td style="text-align: center">';
-          // //   echo '<strong><div id="'.$product->ID.'-price" >'.str_replace(".00", "",number_format($product->geodir_price,2)).'</div></strong>';
-          // // echo "</td>";
-          // echo '<td style="text-align: center">';
-          //   echo '<strong><div id="'.$product->ID.'-total" class ="price" >'.str_replace(".00", "",number_format($total,2)).'</div></strong>';
-          // echo "</td>";
-          // echo "<td>";
-          //   echo '<a class="btn btn-danger btn-xs" href="#"
-          //   data-record-id="'.$product->ID.'"
-          //   data-record-title="'.$product->post_title.'"
-          //   data-record-nonce="'.wp_create_nonce( 'delete_product_cart_' . $product->ID ).'"
-          //   data-toggle="modal" data-target="#confirm-delete" style="color:white;" ><span class="glyphicon glyphicon-trash"></span> ลบ</a>';
-          // echo "</td>";
-        echo "</tr>";
+          //echo $str_tr;
+
+          // start new product
+          $temp_cart_id = $product->cart_id;
+          $pre_product_price = (float)$product->product_price;
+          $pre_qty = (int)$product->qty;
+          $sum_product_price = 0;
+          $pre_product_spacial = $product->special;
+          
+          echo '<tr id="tb_cart_'.$product->cart_id.'">';
+          echo '<td>'.$product->qty.'</td>';
+          echo '<td>';
+          echo '<div class="row">';
+          echo '<h4>'.$product->product_title.'</h4>';
+          echo '</div>';
+          echo '<div class="row">';// start product options
+          if(!empty($product->choice_group_title)){
+            echo '<div class="col-12 p-options">';
+            echo $product->choice_group_title.' : '.$product->choice_adon_detail.' ('.$product->extra_price.')';
+            echo '</div>';
+            $sum_product_price += (float)$product->extra_price;
+          }
+          
+        }else{// product options
+          if(!empty($product->choice_group_title)){
+            echo '<div class="col-12 p-options">';
+            echo $product->choice_group_title.' : '.$product->choice_adon_detail.' ('.$product->extra_price.')';
+            echo '</div>';
+            $sum_product_price += (float)$product->extra_price;
+          }
+
+        }
+        
+      }
+
+      if(count($product_in_cart) > 0){
+        // end tr
+        $sum_product_price = ($sum_product_price+$pre_product_price)*$pre_qty;
+        $product = end($product_in_cart);
+        echo '<div class="col-12 p-options">'.$product->special.'</div>';
+        echo '</div>';// close product options
+        echo '</td>';
+        echo '<td>';
+        echo '<strong><div id="'.$temp_cart_id.'-total" class="price" data-total="'.round($sum_product_price, 2).'">'.str_replace(".00", "",number_format($sum_product_price,2)).'</div></strong>';
+        echo '</td>';
+        echo '<td><i class="fa fa-remove remove_cart_item" data-nonce="'.wp_create_nonce( 'remove_cart_item_'.$current_user->ID.$temp_cart_id).'" data-cart_id="'.$temp_cart_id.'"></i></td>';
+        echo '</tr>';
+        $sum_all += $sum_product_price;
       }
     ?>
     <tr>
-      <td style="text-align:left;white-space:nowrap;"><h3>รวมทั้งหมด</h3></td>
-      <td style="text-align:right;"><h3><strong><div id="sum"><?php echo str_replace(".00", "",number_format($sum,2)); ?> บาท</div></strong></h3></td>
+      <td colspan="2" style="text-align:left;white-space:nowrap;"><h3>รวมทั้งหมด</h3></td>
+      <td colspan="2" ><h3><strong><div id="sum" data-sum="<?php echo round($sum_all, 2);?>">
+      <h3><strong><?php echo str_replace(".00", "",number_format($sum_all,2)); ?> บาท</strong></h3></td>
+    </tr>
+    <tr>
+      <td colspan="2">==</td>
+      <td colspan="2">==</td>
     </tr>
   </tbody>
 </table>
